@@ -29,7 +29,6 @@ var Application =
 
 	Update : function()
 	{
-		alert(1);
 	},
 
 	Run : function (tickRate)
