@@ -17,7 +17,7 @@ var Renderer =
 
 	Update : function ()
 	{
-		//this.ClearFramebuffer(vec4.fromValues(0, 0, 0, 1));
+		this.ClearFramebuffer(vec4.fromValues(0, 0, 0, 1));
 	},
 
 	DrawFullscreenQuad : function ()

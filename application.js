@@ -1,10 +1,12 @@
 var Application = 
 {
 
+	terrain : null,
+
 	Initialize : function()
 	{
 
-		// initializ terrain
+		// initialize terrain
 		ImageLoader.LoadFromURL("heightmap.png", function(image)
 		{
 			var pixels = ImageLoader.GetPixels(image);
@@ -21,25 +23,34 @@ var Application =
 				}
 			}
 
-			var terrain = Terrain.CreateFromHeightmap(data, size_x, size_y);
-			Renderer.DrawIndexedTriangleStrip(terrain.vertices, terrain.indices);
-
+			self.terrain = Terrain.CreateFromHeightmap(data, size_x, size_y);
 		});
 	},
 
 	Update : function()
 	{
+
+	},
+
+	Render : function()
+	{
+		if(self.terrain)
+		{
+			self.terrain.renderSelf();
+		}
 	},
 
 	Run : function (tickRate)
 	{
+		window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+
 		Renderer.Initialize();
 		Application.Initialize();
 
 		var timeForTick = 1.0 / tickRate;
 		var nextTick = (new Date).getTime() + timeForTick;
 
-		var doFrame = function()
+		var doFrame = function(time)
 		{
 			var time = (new Date).getTime();
 
@@ -50,6 +61,7 @@ var Application =
 			}
 
 			Renderer.Update();
+			Application.Render();
 			window.requestAnimationFrame(doFrame);
 		};
 

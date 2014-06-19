@@ -58,7 +58,17 @@ var Terrain =
 			}
 		}
 
-		return { vertices: vertices, indices: indices, size_x: size_x, size_y: size_y };
+		return {
+			vertices: vertices,
+			indices: indices,
+			size_x: size_x,
+			size_y: size_y,
+
+			renderSelf : function ()
+			{
+				Renderer.DrawIndexedTriangleStrip(this.vertices, this.indices);
+			}
+		};
 	},
 
 }
