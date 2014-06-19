@@ -69,15 +69,6 @@ var Renderer =
 
 	DrawIndexedTriangleStrip : function (vertices, indices)
 	{
-		var vertexSource = Shader.GetSourceFromHTMLElement("vertex-shader");
-		var fragmentSource = Shader.GetSourceFromHTMLElement("fragment-shader");
-
-		var program = Shader.CreateProgram(vertexSource, fragmentSource);
-		Shader.ActiveProgram(program);
-		Shader.SetUniformMat4("viewProjection", this._ActiveCamera.GetViewProjectionMatrix());
-		Shader.SetUniformMat4("model", mat4.create());
-		Shader.SetUniformMat3("inverseView", mat3.create());
-
 		var buffer = GL.createBuffer();
 		GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
 		GL.bufferData(GL.ARRAY_BUFFER, vertices, GL.STATIC_DRAW);
@@ -86,17 +77,13 @@ var Renderer =
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, indexBuffer);
 		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, indices, GL.STATIC_DRAW);
 
-		var position = GL.getAttribLocation(program, "position");
-		var normal = GL.getAttribLocation(program, "normal");
-		var uvs = GL.getAttribLocation(program, "uvs");
+		GL.enableVertexAttribArray(Shader._ActiveProgram.position);
+		GL.enableVertexAttribArray(Shader._ActiveProgram.normal);
+		GL.enableVertexAttribArray(Shader._ActiveProgram.uvs);
 
-		GL.enableVertexAttribArray(position);
-		GL.enableVertexAttribArray(normal);
-		GL.enableVertexAttribArray(uvs);
-
-		GL.vertexAttribPointer(position, 3, GL.FLOAT, false, 32, 0);
-		GL.vertexAttribPointer(normal, 3, GL.FLOAT, false, 32, 12);
-		GL.vertexAttribPointer(uvs, 2, GL.FLOAT, false, 32, 24);
+		GL.vertexAttribPointer(Shader._ActiveProgram.position, 3, GL.FLOAT, false, 32, 0);
+		GL.vertexAttribPointer(Shader._ActiveProgram.normal, 3, GL.FLOAT, false, 32, 12);
+		GL.vertexAttribPointer(Shader._ActiveProgram.uvs, 2, GL.FLOAT, false, 32, 24);
 
 		GL.drawElements(GL.TRIANGLE_STRIP, indices.length, GL.UNSIGNED_SHORT, 0);
 	},

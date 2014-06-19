@@ -5,6 +5,19 @@ var Application =
 
 	Initialize : function()
 	{
+		var vertexSource = Shader.GetSourceFromHTMLElement("vertex-shader");
+		var fragmentSource = Shader.GetSourceFromHTMLElement("fragment-shader");
+
+		var program = Shader.CreateProgram(vertexSource, fragmentSource);
+
+		program.position = GL.getAttribLocation(program, "position");
+		program.normal = GL.getAttribLocation(program, "normal");
+		program.uvs = GL.getAttribLocation(program, "uvs");
+
+		Shader.ActiveProgram(program);
+		Shader.SetUniformMat4("viewProjection", Renderer._ActiveCamera.GetViewProjectionMatrix());
+		Shader.SetUniformMat4("model", mat4.create());
+		Shader.SetUniformMat3("inverseView", mat3.create());
 
 		// initialize terrain
 		ImageLoader.LoadFromURL("heightmap.png", function(image)
