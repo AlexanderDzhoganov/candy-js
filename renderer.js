@@ -10,6 +10,7 @@ var Renderer =
 		GL = this._Canvas.getContext("experimental-webgl");
 		GL.viewportWidth = this._Canvas.width;
 		GL.viewportHeight = this._Canvas.height;
+		GL.viewport(0, 0, GL.viewportWidth, GL.viewportHeight);
 		this._ActiveCamera = Camera.Create(GL.viewportWidth, GL.viewportHeight, 45, 0.1, 100);
 		this.ClearFramebuffer(vec4.fromValues(0, 0, 0, 1));
 	},

@@ -29,7 +29,7 @@ var Application =
 
 	Update : function()
 	{
-
+		alert(1);
 	},
 
 	Run : function (tickRate)
@@ -40,7 +40,7 @@ var Application =
 		var timeForTick = 1.0 / tickRate;
 		var nextTick = (new Date).getTime() + timeForTick;
 
-		this._interval = setInterval(function()
+		var doFrame = function()
 		{
 			var time = (new Date).getTime();
 
@@ -51,7 +51,10 @@ var Application =
 			}
 
 			Renderer.Update();
-		}, 0);
+			window.requestAnimationFrame(doFrame);
+		};
+
+		window.requestAnimationFrame(doFrame);
 	},
 
 	Stop : function()
