@@ -1,8 +1,29 @@
 var Application = 
 {
 
+	Initialize : function()
+	{
+
+		// initializ terrain
+		ImageLoader.LoadFromURL("heightmap.png", function(image)
+		{
+			var pixels = ImageLoader.GetPixels(image);
+			var size_x = image.width;
+			var size_y = image.height;
+
+			
+
+		});
+	},
+
+	Update : function()
+	{
+
+	},
+
 	Run : function (tickRate)
 	{
+		Application.Initialize();
 		Renderer.Initialize();
 
 		var timeForTick = 1.0 / tickRate;
@@ -28,11 +49,6 @@ var Application =
 		{
 			clearInterval(this._interval);
 		}
-	},
-
-	Update : function()
-	{
-
 	},
 
 	_interval : null,

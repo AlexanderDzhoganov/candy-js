@@ -11,15 +11,6 @@ var Renderer =
 		GL.viewportWidth = this._canvas.width;
 		GL.viewportHeight = this._canvas.height;
 
-		var vertexSource = Shader.GetSourceFromHTMLElement("vertex-shader");
-		var fragmentSource = Shader.GetSourceFromHTMLElement("fragment-shader");
-
-		var program = Shader.CreateProgram(vertexSource, fragmentSource);
-		if(program)
-		{
-			GL.useProgram(program);
-		}
-
 		var camera = Camera.Create(GL.viewportWidth, GL.viewportHeight, 45, 0.1, 100);
 		var cameraMatrix = camera.GetViewProjectionMatrix();
 
@@ -36,13 +27,45 @@ var Renderer =
 	{
 		var texture = Texture.CreateFromURL("test.jpg", function()
 		{
+			var vertexSource = Shader.GetSourceFromHTMLElement("vertex-shader");
+			var fragmentSource = Shader.GetSourceFromHTMLElement("fragment-shader");
+
+			var program = Shader.CreateProgram(vertexSource, fragmentSource);
+			if(program)
+			{
+				Shader.ActiveProgram(program);
+				Shader.SetUniformMat4("viewProjection", mat4.create());
+				Shader.SetUniformMat4("model", mat4.create());
+				Shader.SetUniformMat3("inverseView", mat3.create())
+			}
+
 			GL.bindTexture(GL.TEXTURE_2D, texture);
 
 			var buffer = GL.createBuffer();
 			GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
-			GL.bufferData(GL.ARRAY_BUFFER, new Float32Array([-1.0, -1.0, 1.0, -1.0, -1.0,  1.0, -1.0,  1.0,  1.0, -1.0,  1.0,  1.0]), GL.STATIC_DRAW);
-			GL.enableVertexAttribArray(0);
-			GL.vertexAttribPointer(0, 2, GL.FLOAT, false, 0, 0);
+			GL.bufferData(GL.ARRAY_BUFFER, new Float32Array
+			([
+				-1.0, -1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+				 1.0, -1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0,
+				 1.0,  1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0,
+				-1.0, -1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+		   		 1.0,  1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0,
+		   		-1.0,  1.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0,
+
+			]), GL.STATIC_DRAW);
+
+			var position = GL.getAttribLocation(program, "position");
+			var normal = GL.getAttribLocation(program, "normal");
+			var uvs = GL.getAttribLocation(program, "uvs");
+
+			GL.enableVertexAttribArray(position);
+			GL.enableVertexAttribArray(normal);
+			GL.enableVertexAttribArray(uvs);
+
+			GL.vertexAttribPointer(position, 3, GL.FLOAT, false, 32, 0);
+			GL.vertexAttribPointer(normal, 3, GL.FLOAT, false, 32, 12);
+			GL.vertexAttribPointer(uvs, 2, GL.FLOAT, false, 32, 24);
+
 			GL.drawArrays(GL.TRIANGLES, 0, 6);
 		});	
 	},

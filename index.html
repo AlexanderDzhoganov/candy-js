@@ -14,6 +14,7 @@
 	<script src="shader.js"></script>
 	<script src="camera.js"></script>
 	<script src="texture.js"></script>
+	<script src="terrain.js"></script>
 	<script src="renderer.js"></script>
 	<script src="application.js"></script>
 </head>
@@ -22,23 +23,37 @@
 	<div id="vertex-shader" hidden>
 		precision mediump float;
 
-		attribute vec3 aVertexPosition;
+		attribute vec3 position;
+		attribute vec3 normal;
+		attribute vec2 uvs;
+
+		varying vec3 normal_out;
+		varying vec2 uvs_out;
+
+		uniform mat4 viewProjection;
+		uniform mat4 model;
+		uniform mat3 inverseView;
 
 		void main()
 		{
-			gl_Position = vec4(aVertexPosition, 1.0);
+			mat4 modelViewProj = viewProjection * model;
+			normal_out = normalize(inverseView * normal);
+			uvs_out = uvs;
+			gl_Position = modelViewProj * vec4(position.xyz, 1.0);
 		}
 	</div>
 
 	<div id="fragment-shader" hidden>
 		precision mediump float;
 
+		varying vec3 normal_out;
+		varying vec2 uvs_out;
+
 		uniform sampler2D tex;
 
 		void main()
 		{
-			vec2 uvs = gl_FragCoord.xy / vec2(1280.0, 720.0);
-			gl_FragColor = texture2D(tex, uvs);
+			gl_FragColor = texture2D(tex, uvs_out);
 		}
 	</div>
 

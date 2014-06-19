@@ -36,6 +36,24 @@ var Shader =
 		return program;
 	},
 
+	ActiveProgram : function(program)
+	{
+		this._ActiveProgram = program;
+		GL.useProgram(program);
+	},
+
+	SetUniformMat3 : function (uniform, matrix)
+	{
+		var index = GL.getUniformLocation(this._ActiveProgram, uniform);
+		GL.uniformMatrix3fv(index, GL.FALSE, matrix);
+	},
+
+	SetUniformMat4 : function (uniform, matrix)
+	{
+		var index = GL.getUniformLocation(this._ActiveProgram, uniform);
+		GL.uniformMatrix4fv(index, GL.FALSE, matrix);
+	},
+
 	_CreateShader : function (source, type)
 	{
 		var shader = GL.createShader(type);
@@ -50,6 +68,8 @@ var Shader =
 
 		return shader;
 	},
+
+	_ActiveProgram : null,
 
 }
 
