@@ -3,6 +3,7 @@ var Application =
 
 	terrain : null,
 	cube : null,
+	sceneGraph: null,
 
 	Initialize : function()
 	{
@@ -16,8 +17,11 @@ var Application =
 		this._FirstPersonController.position = vec3.fromValues(0, 0.1, -4.0);
 		Renderer.SetActiveCamera(this._FirstPersonController._Camera);
 
-		self.cube = Cube.Create();
-		self.cube.uploadVertexData();
+		this.sceneGraph = SceneGraph.Create();
+
+		this.cube = Cube.Create();
+		this.cube.uploadVertexData();
+		this.sceneGraph.insert(this.cube);
 
 		/*// initialize terrain
 		ImageLoader.LoadFromURL("heightmap.png", function(image)
@@ -49,7 +53,7 @@ var Application =
 
 	Render : function()
 	{
-		self.cube.renderSelf();
+		this.sceneGraph.render();
 	},
 
 	Run : function (tickRate)
@@ -77,7 +81,6 @@ var Application =
 
 			Renderer.BeginFrame();
 			Application.Render();
-
 			window.requestAnimationFrame(doFrame);
 		};
 

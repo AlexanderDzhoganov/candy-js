@@ -75,6 +75,11 @@ var Cube =
 				GL.deleteBuffer(this._indexBuffer);
 			},
 
+			getModelMatrix : function()
+			{
+				return mat4.create();
+			},
+
 		};
 	},
 

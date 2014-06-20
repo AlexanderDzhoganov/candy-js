@@ -49,6 +49,19 @@ var Renderer =
 		this.SetViewport();
 	},
 
+	SetActiveMaterial: function(material)
+	{
+		Shader.SetActiveProgram(material.getProgram());
+		
+		var textures = material.getTextures();
+
+		for(var i = 0; i < textures.length; i++)
+		{
+			GL.activeTexture(GL.TEXTURE0 + i);
+			GL.bindTexture(GL.TEXTURE_2D, textures[i]);
+		}
+	},
+
 	DrawIndexedTriangleStrip : function (indicesCount)
 	{
 		if(Shader._ActiveProgram)

@@ -5,9 +5,9 @@ var SceneGraph =
 	{
 		return {
 
-			Insert : function(sceneNode)
+			insert: function(sceneNode)
 			{
-				if(!this._VerifySceneNodeType(sceneNode))
+				if(!this._verifySceneNodeType(sceneNode))
 				{
 					return;
 				}
@@ -21,9 +21,10 @@ var SceneGraph =
 				{
 					sceneNode._Render = function(parentModelMatrix)
 					{
-						this.RenderSelf();
+						this.renderSelf();
+
 						var modelMatrix = mat4.create();
-						mat4.multiply(modelMatrix, parentModelMatrix, this.GetModelMatrix());
+						mat4.multiply(modelMatrix, parentModelMatrix, this.getModelMatrix());
 
 						for(var i = 0; i < this._ChildNodes.length; i++)
 						{
@@ -31,23 +32,25 @@ var SceneGraph =
 						}
 					}
 				}
+
+				this._SceneNodes.push(sceneNode);
 			},
 
-			Render : function()
+			render: function()
 			{
 				var modelMatrix = mat4.create();
 
 				for(var i = 0; i < this._SceneNodes.length; i++)
 				{
-					this._SceneNodes[i].Render(modelMatrix);
+					this._SceneNodes[i]._Render(modelMatrix);
 				}
 			},
 
-			_VerifySceneNodeType : function(sceneNode)
+			_verifySceneNodeType : function(sceneNode)
 			{
-				if(!sceneNode.GetModelMatrix)
+				if(!sceneNode.getModelMatrix)
 				{
-					Console.Log("invalid scene node type, GetModelMatrix() not found");
+					console.log("invalid scene node type, getModelMatrix() not found");
 					return false;
 				}
 
