@@ -17,7 +17,7 @@ var Terrain =
 				vertices[vertexIndex * 8 + 3] = 0; // normal_x
 				vertices[vertexIndex * 8 + 4] = 1; // normal_y
 				vertices[vertexIndex * 8 + 5] = 0; // normal_z
-				vertices[vertexIndex * 8 + 6] = 0; // uv_s
+				vertices[vertexIndex * 8 + 6] = 0; // uv_s	
 				vertices[vertexIndex * 8 + 7] = 0; // uv_t
 			}
 		}
@@ -60,13 +60,36 @@ var Terrain =
 
 		return {
 			vertices: vertices,
+
 			indices: indices,
+
 			size_x: size_x,
+
 			size_y: size_y,
+		
+			_vertexBuffer : null,
+
+			_indexBuffer : null,
 
 			renderSelf : function ()
 			{
-				Renderer.DrawIndexedTriangleStrip(this.vertices, this.indices);
+				if(!this._vertexBuffer)
+				{
+					this._vertexBuffer = GL.createBuffer();
+					GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
+					GL.bufferData(GL.ARRAY_BUFFER, this.vertices, GL.STATIC_DRAW);
+
+					this._indexBuffer = GL.createBuffer();
+					GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+					GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, indices, GL.STATIC_DRAW);
+				}
+				else
+				{
+					GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
+					GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+				}
+
+				Renderer.DrawIndexedTriangleStrip();
 			}
 		};
 	},

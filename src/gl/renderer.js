@@ -67,16 +67,8 @@ var Renderer =
 		});	
 	},
 
-	DrawIndexedTriangleStrip : function (vertices, indices)
+	DrawIndexedTriangleStrip : function (indicesCount)
 	{
-		var buffer = GL.createBuffer();
-		GL.bindBuffer(GL.ARRAY_BUFFER, buffer);
-		GL.bufferData(GL.ARRAY_BUFFER, vertices, GL.STATIC_DRAW);
-
-		var indexBuffer = GL.createBuffer();
-		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, indexBuffer);
-		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, indices, GL.STATIC_DRAW);
-
 		GL.enableVertexAttribArray(Shader._ActiveProgram.position);
 		GL.enableVertexAttribArray(Shader._ActiveProgram.normal);
 		GL.enableVertexAttribArray(Shader._ActiveProgram.uvs);
@@ -85,7 +77,7 @@ var Renderer =
 		GL.vertexAttribPointer(Shader._ActiveProgram.normal, 3, GL.FLOAT, false, 32, 12);
 		GL.vertexAttribPointer(Shader._ActiveProgram.uvs, 2, GL.FLOAT, false, 32, 24);
 
-		GL.drawElements(GL.TRIANGLE_STRIP, indices.length, GL.UNSIGNED_SHORT, 0);
+		GL.drawElements(GL.TRIANGLE_STRIP, indicesCount, GL.UNSIGNED_SHORT, 0);
 	},
 
 	ClearFramebuffer : function (color)
