@@ -11,11 +11,16 @@
 	<script src="src/math/quat.js"></script>
 
 	<script src="src/image.js"></script>
+
+	<script src="src/firstpersoncontroller.js"></script>
+
 	<script src="src/gl/shader.js"></script>
 	<script src="src/gl/camera.js"></script>
 	<script src="src/gl/texture.js"></script>
-	<script src="src/terrain.js"></script>
 	<script src="src/gl/renderer.js"></script>
+
+	<script src="src/terrain.js"></script>
+	<script src="src/cube.js"></script>
 	<script src="src/application.js"></script>
 </head>
 
@@ -29,17 +34,19 @@
 
 		varying vec3 normal_out;
 		varying vec2 uvs_out;
+		varying vec4 position_out;
 
 		uniform mat4 viewProjection;
 		uniform mat4 model;
-		uniform mat3 inverseView;
+		uniform mat4 inverseView;
 
 		void main()
 		{
 			mat4 modelViewProj = viewProjection * model;
-			normal_out = normalize(inverseView * normal);
+			normal_out = normalize(inverseView * vec4(normal, 1.0)).xyz;
 			uvs_out = uvs;
-			gl_Position = modelViewProj * vec4(position.xyz, 1.0);
+			position_out = modelViewProj * vec4(position.xyz, 1.0);
+			gl_Position = position_out;
 		}
 	</div>
 
@@ -48,10 +55,18 @@
 
 		varying vec3 normal_out;
 		varying vec2 uvs_out;
+		varying vec4 position_out;
+
+		uniform vec3 lightPosition;
 
 		void main()
 		{
-			gl_FragColor = vec4(1, 0, 0, 1);
+			vec3 lightDir = position_out.xyz - lightPosition;
+			float dist = length(lightDir);
+			float t = max(dot(normal_out, lightDir / dist), 0.0);
+			float falloff = 1.0 / sqrt(dist);
+			vec3 color = vec3(0.1, 0.1, 0.1) + vec3(1, 0, 0) * t * falloff;	
+			gl_FragColor = vec4(color, 1.0);
 		}
 	</div>
 

@@ -2,6 +2,7 @@ var Application =
 {
 
 	terrain : null,
+	cube : null,
 
 	Initialize : function()
 	{
@@ -15,7 +16,7 @@ var Application =
 		program.uvs = GL.getAttribLocation(program, "uvs");
 
 		Shader.ActiveProgram(program);
-		Shader.SetUniformMat4("viewProjection", Renderer._ActiveCamera.GetViewProjectionMatrix());
+		Shader.SetUniformMat4("viewProjection", Renderer._ActiveCamera.getViewProjectionMatrix());
 		Shader.SetUniformMat4("model", mat4.create());
 		Shader.SetUniformMat3("inverseView", mat3.create());
 
@@ -36,7 +37,11 @@ var Application =
 				}
 			}
 
-			self.terrain = Terrain.CreateFromHeightmap(data, size_x, size_y);
+			//self.terrain = Terrain.CreateFromHeightmap(data, size_x, size_y);
+			//self.terrain.uploadVertexData();
+
+			self.cube = Cube.Create();
+			self.cube.uploadVertexData();
 		});
 	},
 
@@ -47,6 +52,11 @@ var Application =
 
 	Render : function()
 	{
+		if(self.cube)
+		{
+			self.cube.renderSelf();
+		}
+
 		if(self.terrain)
 		{
 			self.terrain.renderSelf();

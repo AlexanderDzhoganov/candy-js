@@ -42,6 +42,12 @@ var Shader =
 		GL.useProgram(program);
 	},
 
+	SetUniformVec3 : function (uniform, vector)
+	{
+		var index = GL.getUniformLocation(this._ActiveProgram, uniform);
+		GL.uniform3fv(index, vector);
+	},
+
 	SetUniformMat3 : function (uniform, matrix)
 	{
 		var index = GL.getUniformLocation(this._ActiveProgram, uniform);

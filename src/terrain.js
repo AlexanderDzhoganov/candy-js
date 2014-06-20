@@ -1,6 +1,47 @@
 var Terrain =
 {
 
+	Create : function(vertices, indices, size_x, size_y)
+	{
+		return {
+
+			vertices: vertices,
+
+			indices: indices,
+
+			size_x: size_x,
+
+			size_y: size_y,
+		
+			_vertexBuffer : GL.createBuffer(),
+
+			_indexBuffer : GL.createBuffer(),
+
+			uploadVertexData : function ()
+			{
+				GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
+				GL.bufferData(GL.ARRAY_BUFFER, this.vertices, GL.STATIC_DRAW);
+
+				GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+				GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, this.indices, GL.STATIC_DRAW);
+			},
+
+			renderSelf : function ()
+			{
+				GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
+				GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+				Renderer.DrawIndexedTriangleStrip(indices.length);
+			},
+
+			dispose : function()
+			{
+				GL.deleteBuffer(this._vertexBuffer);
+				GL.deleteBuffer(this._indexBuffer);
+			},
+
+		};
+	},
+
 	CreateFromHeightmap : function (data, size_x, size_y)
 	{
 		var vertexCount = size_x * size_y;
@@ -58,40 +99,7 @@ var Terrain =
 			}
 		}
 
-		return {
-			vertices: vertices,
-
-			indices: indices,
-
-			size_x: size_x,
-
-			size_y: size_y,
-		
-			_vertexBuffer : null,
-
-			_indexBuffer : null,
-
-			renderSelf : function ()
-			{
-				if(!this._vertexBuffer)
-				{
-					this._vertexBuffer = GL.createBuffer();
-					GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
-					GL.bufferData(GL.ARRAY_BUFFER, this.vertices, GL.STATIC_DRAW);
-
-					this._indexBuffer = GL.createBuffer();
-					GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-					GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, indices, GL.STATIC_DRAW);
-				}
-				else
-				{
-					GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
-					GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-				}
-
-				Renderer.DrawIndexedTriangleStrip();
-			}
-		};
+		return this.Create(vertices, indices, size_x, size_y);
 	},
 
 }

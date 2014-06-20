@@ -6,38 +6,41 @@ var Camera =
 	Create : function (width, height, fov, near, far)
 	{
 		return {
+
 			position : vec3.create(),
-			rotation : quat.create(),
+			orientation : quat.create(),
 			width : width,
 			height : height,
 			fov : fov,
 			near : near,
 			far : far,
 
-			GetProjectionMatrix : function()
+			getProjectionMatrix : function()
 			{
 				return Camera._CreateProjectionMatrix(this.width, this.height, this.fov, this.near, this.far);
 			},
 
-			GetViewMatrix : function()
+			getViewMatrix : function()
 			{
-				return Camera._CreateViewMatrix(this.position, this.rotation);
+				return Camera._CreateViewMatrix(this.position, this.orientation);
 			},
 
-			GetInverseViewMatrix : function()
+			getNormalMatrix : function()
 			{
-				var matrix = Camera._CreateViewMatrix(this.position, this.rotation);
-				var inverse = mat4.create();
-				mat4.invert(inverse, matrix); 
-				return inverse;
+				var rotationMatrix = mat4.create();
+				mat4.fromQuat(rotationMatrix, this.orientation);
+				mat4.invert(rotationMatrix, rotationMatrix);
+				mat4.transpose(rotationMatrix, rotationMatrix);
+				return rotationMatrix;
 			},
 
-			GetViewProjectionMatrix : function()
+			getViewProjectionMatrix : function()
 			{
 				var cameraMatrix = mat4.create();
-				mat4.multiply(cameraMatrix, this.GetProjectionMatrix(), this.GetViewMatrix());
+				mat4.multiply(cameraMatrix, this.getProjectionMatrix(), this.getViewMatrix());
 				return cameraMatrix;
 			},
+
 		};
 	},
 
@@ -51,10 +54,16 @@ var Camera =
 
 	_CreateViewMatrix : function (position, rotation)
 	{
-		var matrix = mat4.create();
-		mat4.identity(matrix);
-		mat4.fromRotationTranslation(matrix, rotation, position);
-		return matrix;
+		var rotationMatrix = mat4.create();
+		mat4.fromQuat(rotationMatrix, rotation);
+		mat4.invert(rotation, rotation);
+
+		var translationMatrix = mat4.create();
+		mat4.translate(translationMatrix, translationMatrix, position);
+
+		var viewMatrix = mat4.create();
+		mat4.multiply(viewMatrix, rotationMatrix, translationMatrix);
+		return viewMatrix;
 	},
 
 };
