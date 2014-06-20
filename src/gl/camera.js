@@ -27,11 +27,10 @@ var Camera =
 
 			getNormalMatrix : function()
 			{
-				var rotationMatrix = mat4.create();
-				mat4.fromQuat(rotationMatrix, this.orientation);
-				mat4.invert(rotationMatrix, rotationMatrix);
-				mat4.transpose(rotationMatrix, rotationMatrix);
-				return rotationMatrix;
+				var viewMatrix = this.getViewMatrix();
+				mat4.invert(viewMatrix, viewMatrix);
+				mat4.transpose(viewMatrix, viewMatrix);
+				return viewMatrix;
 			},
 
 			getViewProjectionMatrix : function()

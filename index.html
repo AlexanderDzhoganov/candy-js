@@ -36,17 +36,23 @@
 		varying vec2 uvs_out;
 		varying vec4 position_out;
 
+		uniform mat4 view;
 		uniform mat4 viewProjection;
 		uniform mat4 model;
 		uniform mat4 inverseView;
 
+		uniform vec3 lightPosition;
+
+		varying vec3 lightPositionOut;
+
 		void main()
 		{
 			mat4 modelViewProj = viewProjection * model;
-			normal_out = normalize(inverseView * vec4(normal, 1.0)).xyz;
+			normal_out = normalize(mat3(inverseView) * normal);
 			uvs_out = uvs;
-			position_out = modelViewProj * vec4(position.xyz, 1.0);
-			gl_Position = position_out;
+			position_out = view * vec4(position.xyz, 1.0);
+			lightPositionOut = (view * vec4(lightPosition, 1.0)).xyz;
+			gl_Position = modelViewProj * vec4(position.xyz, 1.0);
 		}
 	</div>
 
@@ -56,16 +62,13 @@
 		varying vec3 normal_out;
 		varying vec2 uvs_out;
 		varying vec4 position_out;
-
-		uniform vec3 lightPosition;
+		varying vec3 lightPositionOut;
 
 		void main()
 		{
-			vec3 lightDir = position_out.xyz - lightPosition;
-			float dist = length(lightDir);
-			float t = max(dot(normal_out, lightDir / dist), 0.0);
-			float falloff = 1.0 / sqrt(dist);
-			vec3 color = vec3(0.1, 0.1, 0.1) + vec3(1, 0, 0) * t * falloff;	
+			vec3 lightDir = normalize(lightPositionOut - position_out.xyz);
+			float d = max(dot(normal_out, lightDir), 0.0);
+			vec3 color = vec3(0.1, 0.1, 0.1) + vec3(1, 0, 0) * d;	
 			gl_FragColor = vec4(color, 1.0);
 		}
 	</div>

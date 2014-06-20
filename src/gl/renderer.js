@@ -19,6 +19,7 @@ var Renderer =
 		this.screenHeight = this._Canvas.height;
 
 		GL.enable(GL.DEPTH_TEST);
+		GL.enable(GL.CULL_FACE);
 
 		this._FirstPersonController = FirstPersonController.Create();
 
@@ -42,12 +43,13 @@ var Renderer =
 		this.lightPos[1] = 1;
 		this.lightPos[2] = Math.cos(this.lightD) * 3.0;
 
-		this.lightD += Math.random() * 0.001;
+		this.lightD += Math.random() * 0.01;
 
 		if(this._ActiveCamera)
 		{
 			this._ViewProjectionMatrix = this._ActiveCamera.getViewProjectionMatrix();
 			this._InverseViewMatrix = this._ActiveCamera.getNormalMatrix();
+			this._ViewMatrix = this._ActiveCamera.getViewMatrix();
 		}
 	},
 
@@ -129,6 +131,7 @@ var Renderer =
 		if(Shader._ActiveProgram)
 		{
 			Shader.SetUniformMat4("viewProjection", this._ViewProjectionMatrix);
+			Shader.SetUniformMat4("view", this._ViewMatrix);
 			Shader.SetUniformMat4("inverseView", this._InverseViewMatrix);
 			Shader.SetUniformVec3("lightPosition", this.lightPos)
 		}
@@ -157,6 +160,8 @@ var Renderer =
 	_ActiveCamera : null,
 
 	_ViewProjectionMatrix : mat4.create(),
+
+	_ViewMatrix : mat4.create(),
 
 	_InverseViewMatrix : mat3.create(),
 
