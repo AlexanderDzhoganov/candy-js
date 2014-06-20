@@ -14,7 +14,7 @@ var Application =
 
 		this._FirstPersonController = FirstPersonController.Create();
 		this._FirstPersonController.position = vec3.fromValues(0, 0.1, -4.0);
-		Renderer.SetActiveCamera(this._FirstPersonController.getCamera());
+		Renderer.SetActiveCamera(this._FirstPersonController._Camera);
 
 		self.cube = Cube.Create();
 		self.cube.uploadVertexData();
@@ -75,7 +75,7 @@ var Application =
 				timeUntilNextTick = 1.0 / tickRate + timeUntilNextTick;
 			}
 
-			Renderer.Update();
+			Renderer.BeginFrame();
 			Application.Render();
 
 			window.requestAnimationFrame(doFrame);

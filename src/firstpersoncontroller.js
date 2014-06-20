@@ -20,9 +20,12 @@ var FirstPersonController =
 
 			initialize : function()
 			{
+				this._Camera = Camera.Create(Renderer.screenWidth, Renderer.screenHeight, 45.0, 0.1, 100.0);
 				var controller = this;
+				controller.position = vec3.fromValues(0, 0.5, -2);
 
-				window.addEventListener("keypress", this.handleKeypress(this), false );
+				window.addEventListener("keydown", this.handleKeydown(this), false );
+				window.addEventListener("keyup", this.handleKeyup(this), false );
 
 				document.body.onclick = document.body.requestPointerLock || document.body.mozRequestPointerLock || document.body.webkitRequestPointerLock;
 
@@ -34,11 +37,6 @@ var FirstPersonController =
 					controller.yaw += dx * 0.001;
 					controller.pitch += dy * 0.001;
 				}
-			},
-
-			getCamera : function()
-			{
-				return this._Camera;
 			},
 
 			update : function(deltaTime)
@@ -56,39 +54,62 @@ var FirstPersonController =
 				this.position[2] += movement[2] * deltaTime * this.moveSpeed;
 
 				this._Camera.position = this.position;
-
 				this._Camera.orientation = quat.create();
 				quat.rotateX(this._Camera.orientation, this._Camera.orientation, this.pitch);
 				quat.rotateY(this._Camera.orientation, this._Camera.orientation, this.yaw);
-
 			},
 
-			handleKeypress : function(controller)
+			handleKeydown : function(controller)
 			{
 				return function(event)
 				{
 					var keyCode = event.keyCode;
 
-					if(keyCode == 97) // left
+					if(keyCode == 65) // left
 					{
-						this._Movement[0] += 0.1;
+						controller._Movement[0] = 1;
 					}
-					else if(keyCode == 100) // right
+					else if(keyCode == 68) // right
 					{
-						this._Movement[0] -= 0.1;
+						controller._Movement[0] = -1;
 					}
-					else if(keyCode == 119) // up
+					else if(keyCode == 87) // up
 					{
-						this._Movement[2] += 0.1;
+						controller._Movement[2] = 1;
 					}
-					else if(keyCode == 115) // down
+					else if(keyCode == 83) // down
 					{
-						this._Movement[2] -= 0.1;
+						controller._Movement[2] = -1;
 					}
 				}
 			},
 
-			_Camera : Camera.Create(Renderer.screenWidth, Renderer.screenHeight, 45.0, 0.1, 100.0),
+			handleKeyup : function(controller)
+			{
+				return function(event)
+				{
+					var keyCode = event.keyCode;
+
+					if(keyCode == 65) // left
+					{
+						controller._Movement[0] = 0.0;
+					}
+					else if(keyCode == 68) // right
+					{
+						controller._Movement[0] = 0.0;
+					}
+					else if(keyCode == 87) // up
+					{
+						controller._Movement[2] = 0.0;
+					}
+					else if(keyCode == 83) // down
+					{
+						controller._Movement[2] = 0.0;
+					}
+				}
+			},
+
+			_Camera : null,
 
 			_Movement : vec3.create(),
 

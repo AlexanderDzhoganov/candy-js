@@ -4,7 +4,7 @@ var Renderer =
 {
 
 	lightPos : vec3.create(),
-	
+
 	lightD : 0.0,
 
 	screenWidth : 0,
@@ -23,7 +23,7 @@ var Renderer =
 		GL.enable(GL.CULL_FACE);
 	},
 
-	Update : function ()
+	BeginFrame : function ()
 	{
 		this.ClearFramebuffer(vec4.fromValues(0, 0, 0, 1));
 
@@ -72,6 +72,7 @@ var Renderer =
 		if(Shader._ActiveProgram)
 		{
 			Shader.SetUniformMat4("viewProjection", this._ViewProjectionMatrix);
+			Shader.SetUniformMat4("model", mat4.create());
 			Shader.SetUniformMat4("view", this._ViewMatrix);
 			Shader.SetUniformMat4("inverseView", this._InverseViewMatrix);
 			Shader.SetUniformVec3("lightPosition", this.lightPos)

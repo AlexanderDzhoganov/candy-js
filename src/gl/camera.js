@@ -46,7 +46,6 @@ var Camera =
 	_CreateProjectionMatrix : function (width, height, fov, near, far)
 	{
 		var matrix = mat4.create();
-		mat4.identity(matrix);
 		mat4.perspective(matrix, fov, width / height, near, far);
 		return matrix;
 	},
