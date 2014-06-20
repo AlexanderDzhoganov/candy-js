@@ -20,23 +20,10 @@ var Renderer =
 
 		GL.enable(GL.DEPTH_TEST);
 		GL.enable(GL.CULL_FACE);
-
-		this._FirstPersonController = FirstPersonController.Create();
-
-		this._FirstPersonController.position = vec3.fromValues(0, 0.1, -4.0);
-		this._ActiveCamera = this._FirstPersonController._Camera;
-
-		this._ActiveCamera.orientation = quat.create();
-		quat.rotateX(this._ActiveCamera.orientation, this._ActiveCamera.orientation, -2);
-		quat.rotateY(this._ActiveCamera.orientation, this._ActiveCamera.orientation, 2);
-
-		this.SetViewport();
 	},
 
 	Update : function ()
 	{
-		this._FirstPersonController.updateCamera();
-
 		this.ClearFramebuffer(vec4.fromValues(0, 0, 0, 1));
 
 		this.lightPos[0] = Math.sin(this.lightD) * 3.0;
@@ -45,23 +32,23 @@ var Renderer =
 
 		this.lightD += Math.random() * 0.01;
 
-		if(this._ActiveCamera)
-		{
-			this._ViewProjectionMatrix = this._ActiveCamera.getViewProjectionMatrix();
-			this._InverseViewMatrix = this._ActiveCamera.getNormalMatrix();
-			this._ViewMatrix = this._ActiveCamera.getViewMatrix();
-		}
+		this._ViewMatrix = this._ActiveCamera.getViewMatrix();
+		this._InverseViewMatrix = this._ActiveCamera.getNormalMatrix();
+		this._ViewProjectionMatrix = this._ActiveCamera.getViewProjectionMatrix();
 	},
 
 	SetViewport : function()
 	{
-		if(this._ActiveCamera)
-		{
-			GL.viewport(0, 0, this._ActiveCamera.width, this._ActiveCamera.height);
-		}
+		GL.viewport(0, 0, this._ActiveCamera.width, this._ActiveCamera.height);
 	},
 
-	DrawFullscreenQuad : function ()
+	SetActiveCamera : function(camera)
+	{
+		this._ActiveCamera = camera;
+		this.SetViewport();
+	},
+
+	/*DrawFullscreenQuad : function ()
 	{
 		var texture = Texture.CreateFromURL("test.jpg", function()
 		{
@@ -106,7 +93,7 @@ var Renderer =
 
 			GL.drawArrays(GL.TRIANGLES, 0, 6);
 		});	
-	},
+	},*/
 
 	DrawIndexedTriangleStrip : function (indicesCount)
 	{
@@ -154,8 +141,6 @@ var Renderer =
 	},
 
 	_Canvas : null,
-
-	_FirstPersonController : null,
 
 	_ActiveCamera : null,
 

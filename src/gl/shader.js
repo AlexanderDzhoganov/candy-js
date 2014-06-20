@@ -1,5 +1,10 @@
 // Shader related functions
 
+function Capitalize(string)
+{
+	return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 var Shader =
 {
 
@@ -33,6 +38,20 @@ var Shader =
 			alert("failed to link program: " + GL.getProgramInfoLog(program));
 		}
 
+		var attributesCount = GL.getProgramParameter(program, GL.ACTIVE_ATTRIBUTES);
+		for(var i = 0; i < attributesCount; i++)
+		{
+			var name = GL.getActiveAttrib(program, i).name;
+			program[name] = GL.getAttribLocation(program, name);
+		}
+
+		var uniformsCount = GL.getProgramParameter(program, GL.ACTIVE_UNIFORMS);
+		for(var i = 0; i < uniformsCount; i++)
+		{
+			var name = GL.getActiveUniform(program, i).name;
+			program[name] = GL.getUniformLocation(program, name);
+		}
+
 		return program;
 	},
 
@@ -44,20 +63,17 @@ var Shader =
 
 	SetUniformVec3 : function (uniform, vector)
 	{
-		var index = GL.getUniformLocation(this._ActiveProgram, uniform);
-		GL.uniform3fv(index, vector);
+		GL.uniform3fv(this._ActiveProgram[uniform], vector);
 	},
 
 	SetUniformMat3 : function (uniform, matrix)
 	{
-		var index = GL.getUniformLocation(this._ActiveProgram, uniform);
-		GL.uniformMatrix3fv(index, GL.FALSE, matrix);
+		GL.uniformMatrix3fv(this._ActiveProgram[uniform], GL.FALSE, matrix);
 	},
 
 	SetUniformMat4 : function (uniform, matrix)
 	{
-		var index = GL.getUniformLocation(this._ActiveProgram, uniform);
-		GL.uniformMatrix4fv(index, GL.FALSE, matrix);
+		GL.uniformMatrix4fv(this._ActiveProgram[uniform], GL.FALSE, matrix);
 	},
 
 	_CreateShader : function (source, type)

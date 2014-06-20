@@ -52,7 +52,7 @@ var SceneGraph =
 				}
 
 				return true;
-			}
+			},
 
 			_SceneNodes : [],
 

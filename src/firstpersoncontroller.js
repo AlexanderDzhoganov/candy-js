@@ -34,6 +34,11 @@ var FirstPersonController =
 				}
 			},
 
+			getCamera : function()
+			{
+				return this._Camera;
+			},
+
 			updateCamera : function()
 			{
 				this._Camera.position = this.position;

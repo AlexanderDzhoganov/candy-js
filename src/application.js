@@ -10,17 +10,16 @@ var Application =
 		var fragmentSource = Shader.GetSourceFromHTMLElement("fragment-shader");
 
 		var program = Shader.CreateProgram(vertexSource, fragmentSource);
-
-		program.position = GL.getAttribLocation(program, "position");
-		program.normal = GL.getAttribLocation(program, "normal");
-		program.uvs = GL.getAttribLocation(program, "uvs");
-
 		Shader.ActiveProgram(program);
-		Shader.SetUniformMat4("viewProjection", Renderer._ActiveCamera.getViewProjectionMatrix());
-		Shader.SetUniformMat4("model", mat4.create());
-		Shader.SetUniformMat3("inverseView", mat3.create());
 
-		// initialize terrain
+		this._FirstPersonController = FirstPersonController.Create();
+		this._FirstPersonController.position = vec3.fromValues(0, 0.1, -4.0);
+		Renderer.SetActiveCamera(this._FirstPersonController.getCamera());
+
+		self.cube = Cube.Create();
+		self.cube.uploadVertexData();
+
+		/*// initialize terrain
 		ImageLoader.LoadFromURL("heightmap.png", function(image)
 		{
 			var pixels = ImageLoader.GetPixels(image);
@@ -40,27 +39,17 @@ var Application =
 			//self.terrain = Terrain.CreateFromHeightmap(data, size_x, size_y);
 			//self.terrain.uploadVertexData();
 
-			self.cube = Cube.Create();
-			self.cube.uploadVertexData();
-		});
+		});*/
 	},
 
 	Update : function()
 	{
-
+		this._FirstPersonController.updateCamera();
 	},
 
 	Render : function()
 	{
-		if(self.cube)
-		{
-			self.cube.renderSelf();
-		}
-
-		if(self.terrain)
-		{
-			self.terrain.renderSelf();
-		}
+		self.cube.renderSelf();
 	},
 
 	Run : function (tickRate)
@@ -99,6 +88,6 @@ var Application =
 		}
 	},
 
-	_interval : null,
+	_FirstPersonController : null,
 
 }
