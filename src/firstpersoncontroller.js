@@ -16,6 +16,8 @@ var FirstPersonController =
 
 			position : vec3.create(0.0, 0.0, 0.0),
 
+			moveSpeed : 1.0,
+
 			initialize : function()
 			{
 				var controller = this;
@@ -39,12 +41,30 @@ var FirstPersonController =
 				return this._Camera;
 			},
 
-			updateCamera : function()
+			update : function(deltaTime)
 			{
+				alert(this.position[0] + " - " + this.position[1] + " - " + this.position[2]);
+
+				var orientation = quat.create();
+				quat.rotateX(orientation, orientation, this.pitch);
+				quat.rotateY(orientation, orientation, this.yaw);
+				quat.invert(orientation, orientation);
+
+				var movement = vec3.create();
+				vec3.transformQuat(movement, this._Movement, orientation);
+
+				alert(deltaTime);
+
+				this.position[0] += movement[0] * deltaTime * this.moveSpeed;
+				this.position[1] += movement[1] * deltaTime * this.moveSpeed;
+				this.position[2] += movement[2] * deltaTime * this.moveSpeed;
+
 				this._Camera.position = this.position;
+
 				this._Camera.orientation = quat.create();
 				quat.rotateX(this._Camera.orientation, this._Camera.orientation, this.pitch);
 				quat.rotateY(this._Camera.orientation, this._Camera.orientation, this.yaw);
+
 			},
 
 			handleKeypress : function(controller)
@@ -53,38 +73,28 @@ var FirstPersonController =
 				{
 					var keyCode = event.keyCode;
 
-					var movement = vec3.create();
-
 					if(keyCode == 97) // left
 					{
-						movement[0] += 0.1;
+						this._Movement[0] += 0.1;
 					}
 					else if(keyCode == 100) // right
 					{
-						movement[0] -= 0.1;
+						this._Movement[0] -= 0.1;
 					}
 					else if(keyCode == 119) // up
 					{
-						movement[2] += 0.1;
+						this._Movement[2] += 0.1;
 					}
 					else if(keyCode == 115) // down
 					{
-						movement[2] -= 0.1;
+						this._Movement[2] -= 0.1;
 					}
-
-					var orientation = quat.create();
-					quat.rotateX(orientation, orientation, controller.pitch);
-					quat.rotateY(orientation, orientation, controller.yaw);
-					quat.invert(orientation, orientation);
-					vec3.transformQuat(movement, movement, orientation);
-
-					controller.position[0] += movement[0];
-					controller.position[1] += movement[1];
-					controller.position[2] += movement[2];
 				}
 			},
 
 			_Camera : Camera.Create(Renderer.screenWidth, Renderer.screenHeight, 45.0, 0.1, 100.0),
+
+			_Movement : vec3.create(),
 
 		};
 

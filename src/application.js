@@ -42,9 +42,9 @@ var Application =
 		});*/
 	},
 
-	Update : function()
+	Update : function(deltaTime)
 	{
-		this._FirstPersonController.updateCamera();
+		this._FirstPersonController.update(deltaTime);
 	},
 
 	Render : function()
@@ -59,21 +59,25 @@ var Application =
 		Renderer.Initialize();
 		Application.Initialize();
 
-		var timeForTick = 1.0 / tickRate;
-		var nextTick = (new Date).getTime() + timeForTick;
+		var timeUntilNextTick = 1.0 / tickRate;
+		var previousTime = 0.0;
 
 		var doFrame = function(time)
 		{
-			var time = (new Date).getTime();
+			time /= 1000.0;
+			var dt = time - previousTime;
+			previousTime = time;
 
-			if(time >= nextTick)
+			timeUntilNextTick -= dt;
+			if(timeUntilNextTick <= 0.0)
 			{
-				Application.Update();
-				nextTick += timeForTick;
+				Application.Update(dt);
+				timeUntilNextTick = 1.0 / tickRate + timeUntilNextTick;
 			}
 
 			Renderer.Update();
 			Application.Render();
+
 			window.requestAnimationFrame(doFrame);
 		};
 
