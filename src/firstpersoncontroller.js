@@ -43,8 +43,6 @@ var FirstPersonController =
 
 			update : function(deltaTime)
 			{
-				alert(this.position[0] + " - " + this.position[1] + " - " + this.position[2]);
-
 				var orientation = quat.create();
 				quat.rotateX(orientation, orientation, this.pitch);
 				quat.rotateY(orientation, orientation, this.yaw);
@@ -52,8 +50,6 @@ var FirstPersonController =
 
 				var movement = vec3.create();
 				vec3.transformQuat(movement, this._Movement, orientation);
-
-				alert(deltaTime);
 
 				this.position[0] += movement[0] * deltaTime * this.moveSpeed;
 				this.position[1] += movement[1] * deltaTime * this.moveSpeed;
