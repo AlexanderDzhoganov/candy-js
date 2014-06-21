@@ -36,27 +36,27 @@ Application.prototype.extend(
 		
 		this.sceneGraph.insert(this.cube);
 
-			/*// initialize terrain
-			ImageLoader.LoadFromURL("heightmap.png", function(image)
+		// initialize terrain
+		ImageLoader.LoadFromURL("heightmap.png", function(image)
+		{
+			var pixels = ImageLoader.GetPixels(image);
+			var size_x = image.width;
+			var size_y = image.height;
+
+			var data = new Uint8Array(size_x * size_y);
+
+			for(var x = 0; x < size_x; x++)
 			{
-				var pixels = ImageLoader.GetPixels(image);
-				var size_x = image.width;
-				var size_y = image.height;
-
-				var data = new Uint8Array(size_x * size_y);
-
-				for(var x = 0; x < size_x; x++)
+				for(var y = 0; y < size_y; y++)
 				{
-					for(var y = 0; y < size_y; y++)
-					{
-						data[x+y*size_x] = pixels[x*4+y*size_x];
-					}
+					data[x+y*size_x] = pixels[x*4+y*size_x];
 				}
+			}
 
-				//self.terrain = Terrain.CreateFromHeightmap(data, size_x, size_y);
-				//self.terrain.uploadVertexData();
-
-			});*/
+			this.terrain = new Terrain(data, size_x, size_y);
+			this.terrain.uploadVertexData();
+			this.sceneGraph.insert(this.terrain);
+		}.bind(this));
 	},
 
 	update : function(deltaTime)

@@ -5,7 +5,7 @@ var FirstPersonController = function ()
 	this.roll = 0.0;
 	this.upVector = vec3.create(0.0, 1.0, 0.0);
 	this.position = vec3.create(0.0, 0.0, 0.0);
-	this.moveSpeed = 1.0;
+	this.moveSpeed = 5.0;
 	this._Camera = null;
 	this._Movement = vec3.create();
 	
