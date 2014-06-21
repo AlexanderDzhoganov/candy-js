@@ -26,8 +26,8 @@ Renderer.prototype.extend(
 		this._Canvas = document.getElementById("gl-canvas");
 		GL = this._Canvas.getContext("experimental-webgl");
 
-		this.screenWidth = this._Canvas.width;
-		this.screenHeight = this._Canvas.height;
+		this.screenWidth = window.innerWidth;
+		this.screenHeight = window.innerHeight ;
 
 		GL.enable(GL.DEPTH_TEST);
 		GL.enable(GL.CULL_FACE);
