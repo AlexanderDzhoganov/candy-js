@@ -44,6 +44,8 @@ var Cube = function()
 
 	this._vertexBuffer = GL.createBuffer();
 	this._indexBuffer = GL.createBuffer();
+
+	this.renderingLayer = RENDERING_LAYER.PERSPECTIVE;
 };
 
 Cube.extend(

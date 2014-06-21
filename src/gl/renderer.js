@@ -1,3 +1,17 @@
+var FULLSCREEN_QUAD_VERTICES =
+[
+	-1.0, -1.0,
+	1.0, -1.0,
+	1.0, 1.0,
+	-1.0, 1.0
+];
+
+var FULLSCREEN_QUAD_INDICES =
+[
+	0, 1, 2,
+	0, 2, 3
+];
+
 var Renderer = function()
 {
 	this.lightPos = vec3.create();
@@ -9,7 +23,30 @@ var Renderer = function()
 	this._ViewProjectionMatrix = mat4.create();
 	this._ViewMatrix = mat4.create();
 	this._InverseModelViewMatrix = mat3.create();
-	
+
+	this._Canvas = document.getElementById("gl-canvas");
+	GL = this._Canvas.getContext("experimental-webgl");
+
+	this.screenWidth = window.innerWidth;
+	this.screenHeight = window.innerHeight ;
+
+	GL.enable(GL.DEPTH_TEST);
+	GL.enable(GL.CULL_FACE);
+
+	this.fullscreenQuad =
+	{
+		vertices: new Float32Array(FULLSCREEN_QUAD_VERTICES),
+		indices: new Float32Array(FULLSCREEN_QUAD_INDICES),
+		vertexBuffer: GL.createBuffer(),
+		indexBuffer: GL.createBuffer(),
+	};
+
+	GL.bindBuffer(GL.ARRAY_BUFFER, this.fullscreenQuad.vertexBuffer);
+	GL.bufferData(GL.ARRAY_BUFFER, this.fullscreenQuad.vertices, GL.STATIC_DRAW);
+
+	GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.fullscreenQuad.indexBuffer);
+	GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, this.fullscreenQuad.indices, GL.STATIC_DRAW);
+
 	this.init();
 };
 
@@ -23,14 +60,7 @@ Renderer.prototype.extend(
 	
 	init: function ()
 	{
-		this._Canvas = document.getElementById("gl-canvas");
-		GL = this._Canvas.getContext("experimental-webgl");
-
-		this.screenWidth = window.innerWidth;
-		this.screenHeight = window.innerHeight ;
-
-		GL.enable(GL.DEPTH_TEST);
-		GL.enable(GL.CULL_FACE);
+		
 	},
 		
 	beginFrame: function ()
@@ -44,7 +74,7 @@ Renderer.prototype.extend(
 		this.lightD += Math.random() * 0.01;
 
 		this._ViewMatrix = this._activeCamera.getViewMatrix();
-		
+
 		var inverseView = mat4.create();
 		mat4.invert(inverseView, this._ViewMatrix);
 		mat4.transpose(inverseView, inverseView);
@@ -115,6 +145,15 @@ Renderer.prototype.extend(
 		GL.vertexAttribPointer(Shader._ActiveProgram.uvs, 2, GL.FLOAT, false, 32, 24);
 
 		GL.drawElements(GL.TRIANGLES, indicesCount, GL.UNSIGNED_SHORT, 0);
+	},
+
+	drawFullscreenQuad: function ()
+	{
+		GL.enableVertexAttribArray(Shader._ActiveProgram.position);
+		GL.vertexAttribPointer(Shader._ActiveProgram.position, 2, GL.FLOAT, false, 8, 0);
+		GL.bindBuffer(GL.ARRAY_BUFFER, this.fullscreenQuad.vertexBuffer);
+		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.fullscreenQuad.indexBuffer);
+		GL.drawElements(GL.TRIANGLES, 6, GL.UNSIGNED_SHORT, 0);
 	},
 		
 	clearFramebuffer: function (color)

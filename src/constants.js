@@ -1,0 +1,5 @@
+var RENDERING_LAYER =
+{
+	GUI: 0,
+	PERSPECTIVE: 1,
+};

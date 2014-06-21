@@ -7,17 +7,17 @@ var Terrain = function (data, size_x, size_y)
 	{
 		for (var y = 0; y < size_y; y++)
 		{
-			var hL = data[(x - 1) + y * size_x];
-			var hR = data[(x + 1) + y * size_x];
-			var hD = data[x + (y - 1) * size_x];
-			var hU = data[x + (y + 1) * size_x];
+			var hL = data[(x - 1) + y * size_x] / 255.0;
+			var hR = data[(x + 1) + y * size_x] / 255.0;
+			var hD = data[x + (y - 1) * size_x] / 255.0;
+			var hU = data[x + (y + 1) * size_x] / 255.0;
 
 			var normal = vec3.create();
 			if(hL && hR && hD && hU)
 			{
 				normal[0] = hL - hR;
 				normal[1] = hD - hU;
-				normal[2] = 2.0;
+				normal[2] = Math.sqrt(normal[0] * normal[0] + normal[1] * normal[1]);
 				vec3.normalize(normal, normal);
 			}
 			else
@@ -45,31 +45,31 @@ var Terrain = function (data, size_x, size_y)
 	{
 		if (z % 2 == 0)
 		{
-		var x;
-		for (x = 0; x < size_x; x++)
-		{
-			indices[index++] = x + (z * size_x);
-			indices[index++] = x + (z * size_x) + size_x;
-		}
+			var x;
+			for (x = 0; x < size_x; x++)
+			{
+				indices[index++] = x + (z * size_x);
+				indices[index++] = x + (z * size_x) + size_x;
+			}
 
-		if (z != size_y - 2)
-		{
-			indices[index++] = --x + (z * size_x);
-		}
-		}
-		else
-		{
-		var x;
-		for (x = size_x - 1; x >= 0; x--)
-		{
-			indices[index++] = x + (z * size_x);
-			indices[index++] = x + (z * size_x) + size_x;
-		}
+			if (z != size_y - 2)
+			{
+				indices[index++] = --x + (z * size_x);
+			}
+			}
+			else
+			{
+			var x;
+			for (x = size_x - 1; x >= 0; x--)
+			{
+				indices[index++] = x + (z * size_x);
+				indices[index++] = x + (z * size_x) + size_x;
+			}
 
-		if (z != size_y - 2)
-		{
-			indices[index++] = ++x + (z * size_x);
-		}
+			if (z != size_y - 2)
+			{
+				indices[index++] = ++x + (z * size_x);
+			}
 		}
 	}
 
@@ -79,6 +79,7 @@ var Terrain = function (data, size_x, size_y)
 	this.size_y = size_y;
 	this._vertexBuffer = GL.createBuffer();
 	this._indexBuffer = GL.createBuffer();
+	this.renderingLayer = RENDERING_LAYER.PERSPECTIVE;
 };
 
 Terrain.extend(

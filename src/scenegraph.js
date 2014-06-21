@@ -52,8 +52,19 @@ SceneGraph.prototype.extend(
 		var modelMatrix = mat4.create();
 
 		for (var i = 0; i < this._SceneNodes.length; i++)
-		{
-			this._SceneNodes[i]._Render(modelMatrix);
+		{	
+			if(this._SceneNodes[i].renderingLayer == RENDERING_LAYER.PERSPECTIVE)
+			{
+					this._SceneNodes[i]._Render(modelMatrix);
+			}
+		}
+
+		for (var i = 0; i < this._SceneNodes.length; i++)
+		{	
+			if(this._SceneNodes[i].renderingLayer == RENDERING_LAYER.GUI)
+			{
+					this._SceneNodes[i]._Render(modelMatrix);
+			}
 		}
 	},
 		

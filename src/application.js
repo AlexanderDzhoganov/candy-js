@@ -31,11 +31,13 @@ Application.prototype.extend(
 
 		this.sceneGraph = new SceneGraph();
 
+		this.Gui = new Gui();
+
 		this.cube = new Cube();
 		this.cube.uploadVertexData();
 		
+		this.sceneGraph.insert(this.Gui);
 		this.sceneGraph.insert(this.cube);
-
 		// initialize terrain
 		ImageLoader.LoadFromURL("heightmap.png", function(image)
 		{
