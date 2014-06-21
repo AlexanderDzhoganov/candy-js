@@ -118,7 +118,19 @@ ResourceLoader.prototype.extend(
 				this.xmlHttp.open("GET", elObj.path, true);
 				this.xmlHttp.send();
 			} else if ( elObj.type == "json" ) {
+				this.xmlHttp.onreadystatechange=function()
+				{
+					if (this.xmlHttp.readyState==4 && this.xmlHttp.status==200)
+					{
+						this.resources[elKey].content = JSON.parse(this.xmlHttp.responseText);
+						elements.shift();
+						this._updateProgress( elKey );
+						this._fetchResources( elements );
+					}
+				}.bind(this);
 
+				this.xmlHttp.open("GET", elObj.path, true);
+				this.xmlHttp.send();
 			}
 		} else {
 			this.callback();
