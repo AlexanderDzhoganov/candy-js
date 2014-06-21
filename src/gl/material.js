@@ -1,30 +1,26 @@
-var Material =
-{
-
-	Create : function(name)
-	{
-		return {
-
-			getName: function()
-			{
-				return _Name;
-			},
-
-			getProgram: function()
-			{
-				return _Program;
-			},
-
-			getTextures: function()
-			{
-				return _Textures;
-			},
-
-			_Name: name,
-			_Program: null,
-			_Textures: [],
-
-		};
-	},
-
+var MATERIAL = function( name ) {
+    this._Name = name;
+    this._Program = null;
+    this._Textures = [];
 };
+
+MATERIAL.extend({
+    
+});
+
+MATERIAL.prototype.extend({
+    getName: function()
+    {
+	    return this._Name;
+    },
+
+    getProgram: function()
+    {
+	    return this._Program;
+    },
+
+    getTextures: function()
+    {
+	    return this._Textures;
+    }
+});
