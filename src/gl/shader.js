@@ -65,6 +65,11 @@ Shader.prototype.extend(
 		GL.useProgram(program);
 	},
 
+	SetUniformVec2: function (uniform, vector)
+	{
+		GL.uniform2fv(this._ActiveProgram[uniform], vector);
+	},
+
 	SetUniformVec3: function(uniform, vector)
 	{
 		GL.uniform3fv(this._ActiveProgram[uniform], vector);

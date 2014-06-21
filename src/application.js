@@ -25,8 +25,17 @@ Application.prototype.extend(
 
 		this.sceneGraph = new SceneGraph();
 
-		//this.Gui = new Gui();
-		//this.sceneGraph.insert(this.Gui);
+		this.Gui = new Gui();
+		var testWindow = new GuiWindow(vec2.fromValues(128.0, 128.0), vec4.fromValues(1, 1, 1, 1));
+		
+		testWindow.drawSelf = function (gui)
+		{
+			gui.label("hello world", "Georgia 26px");
+		};
+
+		this.Gui.attachWindow(testWindow);
+
+		this.sceneGraph.insert(this.Gui);
 
 		// initialize terrain
 		var heightmap = ResourceLoader.getContent("heightmap");

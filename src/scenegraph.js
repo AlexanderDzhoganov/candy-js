@@ -51,6 +51,10 @@ SceneGraph.prototype.extend(
 	{
 		var modelMatrix = mat4.create();
 
+		GL.enable(GL.CULL_FACE);
+		GL.enable(GL.DEPTH_TEST);
+		GL.disable(GL.BLEND);
+
 		for (var i = 0; i < this._SceneNodes.length; i++)
 		{	
 			if(this._SceneNodes[i].renderingLayer == RENDERING_LAYER.PERSPECTIVE)
@@ -59,11 +63,16 @@ SceneGraph.prototype.extend(
 			}
 		}
 
+		GL.disable(GL.CULL_FACE);
+		GL.disable(GL.DEPTH_TEST);
+		GL.enable(GL.BLEND); 
+		GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
+
 		for (var i = 0; i < this._SceneNodes.length; i++)
 		{	
 			if(this._SceneNodes[i].renderingLayer == RENDERING_LAYER.GUI)
 			{
-					this._SceneNodes[i]._Render(modelMatrix);
+				this._SceneNodes[i]._Render(modelMatrix);
 			}
 		}
 	},
