@@ -1,4 +1,4 @@
-var ResourceLoader = function( resources, step, callback )
+var ResourceLoader = function(resources, step, callback)
 {
 	this.step = typeof(step) === "function" ? step : function() {};
 	this.callback = typeof(callback) === "function" ? callback : function() {};
@@ -27,7 +27,8 @@ ResourceLoader.extend(
 
 ResourceLoader.prototype.extend(
 {
-	_ajaxLoad: function() {
+	_ajaxLoad: function()
+	{
 		if (window.XMLHttpRequest)
 		{// code for IE7+, Firefox, Chrome, Opera, Safari
 			this.xmlHttp = new XMLHttpRequest();
@@ -38,13 +39,15 @@ ResourceLoader.prototype.extend(
 		}
 	},
 
-	_loadResources: function( resources ) {
+	_loadResources: function(resources)
+	{
 		var length = resources.size(),
 			filename,
 			ext,
 			res;
 
-		resources.forEach(function( key, res ) {
+		resources.forEach(function(key, res)
+		{
 	   		filename = res.split("/");
 	   		ext = res.split(".");
 
@@ -61,12 +64,16 @@ ResourceLoader.prototype.extend(
 		this._parseResources();
 	},
 
-	_getFileType: function( ext ) {
+	_getFileType: function(ext)
+	{
 		var type = null;
 
-		ResourceLoader.EXT.forEach(function( key, val ) {
-			val.forEach(function( el, ind ) {
-				if( el === ext ) {
+		ResourceLoader.EXT.forEach(function( key, val )
+		{
+			val.forEach(function( el, ind )
+			{
+				if( el === ext )
+				{
 					type = key;
 				}
 			});
@@ -75,26 +82,32 @@ ResourceLoader.prototype.extend(
 		return type;
 	},
 
-	_parseResources: function() {
+	_parseResources: function()
+	{
 		var elements = [];
 
-		this.resources.forEach(function( k, v ) {
+		this.resources.forEach(function( k, v )
+		{
 			elements.push(k);
 		});
 
-		this._fetchResources( elements );
+		this._fetchResources(elements);
 	},
 
-	_fetchResources: function( elements ) {
+	_fetchResources: function(elements)
+	{
 		var elKey = elements[0];
 
-		if( elKey ) {
+		if(elKey)
+		{
 			var elObj = this.resources[elKey];
 
-			if( elObj.type == "image" ) {
+			if(elObj.type == "image")
+			{
 				var img = new Image();
 
-				img.onload = function() {
+				img.onload = function()
+				{
 					elements.shift();
 
 					this.resources[elKey].content = img;
@@ -103,24 +116,28 @@ ResourceLoader.prototype.extend(
 				}.bind(this);
 
 				img.src = elObj.path;
-			} else if ( elObj.type == "text") {
-				this.xmlHttp.onreadystatechange=function()
+			}
+			else if(elObj.type == "text")
+			{
+				this.xmlHttp.onreadystatechange = function ()
 				{
-					if (this.xmlHttp.readyState==4 && this.xmlHttp.status==200)
+					if (this.xmlHttp.readyState == 4 && this.xmlHttp.status == 200)
 					{
 						this.resources[elKey].content = this.xmlHttp.responseText;
 						elements.shift();
-						this._updateProgress( elKey );
-						this._fetchResources( elements );
+						this._updateProgress(elKey);
+						this._fetchResources(elements);
 					}
 				}.bind(this);
 
 				this.xmlHttp.open("GET", elObj.path, true);
 				this.xmlHttp.send();
-			} else if ( elObj.type == "json" ) {
-				this.xmlHttp.onreadystatechange=function()
+			}
+			else if (elObj.type == "json")
+			{
+				this.xmlHttp.onreadystatechange = function()
 				{
-					if (this.xmlHttp.readyState==4 && this.xmlHttp.status==200)
+					if (this.xmlHttp.readyState == 4 && this.xmlHttp.status == 200)
 					{
 						this.resources[elKey].content = JSON.parse(this.xmlHttp.responseText);
 						elements.shift();
@@ -131,34 +148,45 @@ ResourceLoader.prototype.extend(
 
 				this.xmlHttp.open("GET", elObj.path, true);
 				this.xmlHttp.send();
-			} else {
+			}
+			else
+			{
 				console.error("Extension not supported for '" + elObj.path + "'");
 				elements.shift();
-				this._updateProgress( elKey, true );
-				this._fetchResources( elements );
+				this._updateProgress(elKey, true);
+				this._fetchResources(elements);
 			}
-		} else {
+		}
+		else
+		{
 			this.callback();
 		}
 	},
 
-	_updateProgress: function( resName, failed ) {
+	_updateProgress: function(resName, failed)
+	{
 		this.progress++;
 
-		if( failed ) {
+		if(failed)
+		{
 			console.log("Resource '" + resName + "' not loaded: " + this.progress + "/" + this.numElements);
-		} else {
+		}
+		else
+		{
 			console.log("Resource '" + resName + "' loaded: " + this.progress + "/" + this.numElements);
 		}
 
-		this.step( resName, this.progress, this.numElements );
+		this.step(resName, this.progress, this.numElements );
 	},
 
-	getResource: function( name ) {
+	getResource: function(name)
+	{
 		return this.resources[name];
 	},
 
-	getContent: function( name ) {
+	getContent: function(name)
+	{
 		return this.resources[name] ? this.resources[name].content : null;
 	}
+
 });

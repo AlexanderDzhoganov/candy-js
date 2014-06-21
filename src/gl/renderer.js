@@ -164,6 +164,6 @@ Renderer.prototype.extend(
 	{
 		GL.clearColor(color[0], color[1], color[2], color[3]);
 		GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
-	}
+	},
 
 });
