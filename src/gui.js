@@ -25,6 +25,7 @@ var Gui = function ()
 	this._context = this._canvas.getContext('2d');
 	this._context.rect(20,20,150,100);
 	this._context.stroke();
+
 };
 
 Gui.extend(
@@ -37,10 +38,10 @@ Gui.prototype.extend(
 
 	renderSelf: function ()
 	{
-		//Shader.ActiveProgram(this._program);
-		//GL.bindTexture(GL.TEXTURE_2D, this._texture);
-		//GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, this._canvas);
-		//Renderer.drawFullscreenQuad();
+		Shader.ActiveProgram(this._program);
+		GL.bindTexture(GL.TEXTURE_2D, this._texture);
+		GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, this._canvas);
+		Renderer.drawFullscreenQuad();
 	},
 
 	getModelMatrix: function ()

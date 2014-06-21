@@ -18,12 +18,6 @@ Application.prototype.extend(
 
 	init: function ()
 	{
-		var vertexSource = Shader.GetSourceFromHTMLElement("vertex-shader"),
-		fragmentSource = Shader.GetSourceFromHTMLElement("fragment-shader"),
-		program = Shader.CreateProgram(vertexSource, fragmentSource);
-		
-		Shader.ActiveProgram(program);
-
 		this._FirstPersonController = new FirstPersonController();
 		this._FirstPersonController.position = vec3.fromValues(-128, -16, -128);
 		
@@ -31,14 +25,12 @@ Application.prototype.extend(
 
 		this.sceneGraph = new SceneGraph();
 
-		this.Gui = new Gui();
+		//this.Gui = new Gui();
+		//this.sceneGraph.insert(this.Gui);
 
-		this.cube = new Cube();
-		this.cube.uploadVertexData();
-		
-		this.sceneGraph.insert(this.Gui);
-		this.sceneGraph.insert(this.cube);
 		// initialize terrain
+		var heightmap = ResourceLoader.getContent("heightmap");
+
 		ImageLoader.LoadFromURL("heightmap.png", function(image)
 		{
 			var pixels = ImageLoader.GetPixels(image);

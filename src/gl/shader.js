@@ -14,8 +14,8 @@ Shader.prototype.extend(
 
 	GetSourceFromHTMLElement: function(elementId)
 	{
-	var element = document.getElementById(elementId);
-	return element.innerHTML;
+		var element = document.getElementById(elementId);
+		return element.innerHTML;
 	},
 
 	CreateProgram: function(vertexSource, fragmentSource)
