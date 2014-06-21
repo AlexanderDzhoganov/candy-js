@@ -9,3 +9,4 @@ var urls = ["test.jpg", "hello.txt"]; // iamges (jpg, png, etc...), text (string
 //{
 	Application.run(60);
 //});
+console.log("github works");
