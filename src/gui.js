@@ -1,4 +1,4 @@
-var Gui = function ()
+var Gui = function (canvas)
 {
 	this.renderingLayer = RENDERING_LAYER.GUI;
 
@@ -15,17 +15,8 @@ var Gui = function ()
 	GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.CLAMP_TO_EDGE);
 	GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
 	GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
-
-	this._canvas = document.createElement('canvas');
-	document.body.appendChild(this._canvas);
-	this._canvas.width = Renderer.screenWidth;
-	this._canvas.height = Renderer.screenHeight;
-	this._canvas.style.display = "none";
-
-	this._context = this._canvas.getContext('2d');
-	this._context.rect(20,20,150,100);
-	this._context.stroke();
-
+	
+	this._canvas = canvas;
 };
 
 Gui.extend(
