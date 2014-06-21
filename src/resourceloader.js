@@ -1,6 +1,6 @@
 var ResourceLoader = function( resources, step, callback )
 {
-	this.step = typeof(callback) === "function" ? callback : function() {};
+	this.step = typeof(step) === "function" ? step : function() {};
 	this.callback = typeof(callback) === "function" ? callback : function() {};
 
 	this.resources = {};
@@ -121,7 +121,6 @@ ResourceLoader.prototype.extend(
 
 			}
 		} else {
-			console.log("Resources Loaded.");
 			this.callback();
 		}
 	},
@@ -129,9 +128,7 @@ ResourceLoader.prototype.extend(
 	_updateProgress: function( resName ) {
 		this.progress++;
 
-		console.log("Resource '" + resName + "' loaded: " + this.progress + "/" + this.numElements)
-
-		this.step( this.progress, this.numElements );
+		this.step( resName, this.progress, this.numElements );
 	},
 
 	getResource: function( name ) {

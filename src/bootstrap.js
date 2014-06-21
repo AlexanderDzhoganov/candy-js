@@ -3,22 +3,16 @@ var Renderer = new Renderer();
 var Shader = new Shader();
 var Application = new Application();
 
-// var urls = ["test.jpg", "hello.txt"]; // iamges (jpg, png, etc...), text (string), binary (Uint8Array)
-
-var urls = {
-	"test": "test.jpg",
-	"text": "text.txt"
-}
-
 document.getElementById('gl-canvas').width = window.innerWidth
 document.getElementById('gl-canvas').height = window.innerHeight
 
-function step( progress, end ) {
-	console.log()
-}
-
-function finish() {
+var ResourceLoader = new ResourceLoader({
+	"test image": "test.jpg",
+	"text": "text.txt"
+}, function( resName, progress, final) {
+	console.log("Resource '" + resName + "' loaded: " + progress + "/" + final)
+}, function ()
+{
+	console.log("Resources Loaded.");
 	Application.run(60);
-}
-
-var ResourceLoader = new ResourceLoader(urls, step, finish);
+});
