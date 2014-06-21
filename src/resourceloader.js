@@ -21,7 +21,8 @@ ResourceLoader.extend(
 	{
 		image: ["jpg", "png", "gif"],
 		text: ["txt"],
-		json: ["json"]
+		json: ["json"],
+		uint8array: ["bin"]
 	}
 });
 
@@ -140,6 +141,22 @@ ResourceLoader.prototype.extend(
 					if (this.xmlHttp.readyState == 4 && this.xmlHttp.status == 200)
 					{
 						this.resources[elKey].content = JSON.parse(this.xmlHttp.responseText);
+						elements.shift();
+						this._updateProgress( elKey );
+						this._fetchResources( elements );
+					}
+				}.bind(this);
+
+				this.xmlHttp.open("GET", elObj.path, true);
+				this.xmlHttp.send();
+			}
+			else if (elObj.type == "uint8array")
+			{
+				this.xmlHttp.onreadystatechange = function()
+				{
+					if (this.xmlHttp.readyState == 4 && this.xmlHttp.status == 200)
+					{
+						this.resources[elKey].content = new Uint8Array(this.xmlHttp.responseText);
 						elements.shift();
 						this._updateProgress( elKey );
 						this._fetchResources( elements );
