@@ -30,27 +30,23 @@ Application.prototype.extend(
 
 		// initialize terrain
 		var heightmap = ResourceLoader.getContent("heightmap");
+		var pixels = ImageLoader.GetPixels(heightmap);
+		var size_x = heightmap.width;
+		var size_y = heightmap.height;
 
-		ImageLoader.LoadFromURL("heightmap.png", function(image)
+		var data = new Uint8Array(size_x * size_y);
+
+		for(var x = 0; x < size_x; x++)
 		{
-			var pixels = ImageLoader.GetPixels(image);
-			var size_x = image.width;
-			var size_y = image.height;
-
-			var data = new Uint8Array(size_x * size_y);
-
-			for(var x = 0; x < size_x; x++)
+			for(var y = 0; y < size_y; y++)
 			{
-				for(var y = 0; y < size_y; y++)
-				{
-					data[x+y*size_x] = pixels[x*4+4*y*size_x];
-				}
+				data[x+y*size_x] = pixels[x*4+4*y*size_x];
 			}
+		}
 
-			this.terrain = new Terrain(data, size_x, size_y);
-			this.terrain.uploadVertexData();
-			this.sceneGraph.insert(this.terrain);
-		}.bind(this));
+		this.terrain = new Terrain(data, size_x, size_y);
+		this.terrain.uploadVertexData();
+		this.sceneGraph.insert(this.terrain);
 	},
 
 	update : function(deltaTime)
@@ -83,7 +79,10 @@ Application.prototype.extend(
 
 			Renderer.beginFrame();
 			this.render();
-			window.requestAnimationFrame(doFrame);
+			if(!this.doStop)
+			{
+				window.requestAnimationFrame(doFrame);
+			}
 		}.bind(this);
 
 		window.requestAnimationFrame(doFrame);
@@ -91,10 +90,9 @@ Application.prototype.extend(
 
 	stop : function()
 	{
-		if(this._interval)
-		{
-			clearInterval(this._interval);
-		}
+		this.doStop = true;
 	},
+
+	doStop: false,
 
 });
