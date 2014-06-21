@@ -27,15 +27,15 @@ SceneGraph.prototype.extend(
 		{
 		    sceneNode._Render = function(parentModelMatrix)
 		    {
-			this.renderSelf();
+				this.renderSelf();
 
-			var modelMatrix = mat4.create();
-			mat4.multiply(modelMatrix, parentModelMatrix, this.getModelMatrix());
+				var modelMatrix = mat4.create();
+				mat4.multiply(modelMatrix, parentModelMatrix, this.getModelMatrix());
 
-			for (var i = 0; i < this._ChildNodes.length; i++)
-			{
-			    this._ChildNodes._Render(modelMatrix);
-			}
+				for (var i = 0; i < this._ChildNodes.length; i++)
+				{
+				    this._ChildNodes._Render(modelMatrix);
+				}
 		    }
 		}
 

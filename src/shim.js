@@ -26,7 +26,7 @@ String.capitalize = function (string)
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
 /* Coding conventions examples
-    var APPLICATION; // Class
+    var Application; // Class
 
     var Application; // Class initialization
 
@@ -34,31 +34,31 @@ window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequest
 
     this.application // Properties of a class
 
-    APPLICATION.FPS // Class constants
+    Application.FPS // Class constants
 
-    APPLICATION.getVersion() // Class static methods
+    Application.getVersion() // Class static methods
 
     window.CONST_PI // Global constants
 
     getViewportHeight: // Class methods
 
-    function() // function without params
+    function () // function without params
 
-    function(foo, bar) // function with params
+    function (foo, bar) // function with params
 
-    getViewportHeight: function(foo, bar) // full method declaration
+    getViewportHeight: function (foo, bar) // full method declaration
 
-    var APPLICATION = function() // class constructor
+    var Application = function () // class constructor
 
-    APPLICATION.fn = new BASE() // APPLICATION extends BASE; BASE is considered abstract Class
+    Application.fn = new Base () // APPLICATION extends BASE; BASE is considered abstract Class
 
-    APPLICATION.x({}) // Static members of Class
+    Application.x({}) // Static members of Class
 
-    APPLICATION.fn.x({}) // Non-static members of Class
+    Application.fn.x({}) // Non-static members of Class
 
     Avoid that = this; self = this;etc.; instead use bind/call/apply
 
-    Wrap classes into (function() {})();
+    Wrap classes into (function () {})();
 
     firstpersoncontroller.js // filenames
 */
