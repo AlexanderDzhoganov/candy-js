@@ -18,11 +18,6 @@ Object.extend = Object.prototype.extend = function(destination, props)
 	return destination;
 };
 
-String.capitalize = function (string)
-{
-	return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
 /* Coding conventions examples
