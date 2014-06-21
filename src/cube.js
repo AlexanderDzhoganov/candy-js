@@ -1,4 +1,5 @@
-var CUBE = function() {
+var Cube = function()
+{
     var v =
     [
 	    -0.5, -0.5,  0.5,  0.0,  0.0,  1.0, 0.0, 0.0, // front face
@@ -25,7 +26,6 @@ var CUBE = function() {
 	     0.5, -0.5, -0.5,  0.0, -1.0,  0.0, 0.0, 0.0,
 	     0.5, -0.5,  0.5,  0.0, -1.0,  0.0, 0.0, 0.0,
 	    -0.5, -0.5,  0.5,  0.0, -1.0,  0.0, 0.0, 0.0,
-
     ];
 
     this.vertices = new Float32Array(v);
@@ -46,32 +46,39 @@ var CUBE = function() {
     this._indexBuffer = GL.createBuffer();
 };
 
-CUBE.extend({
+Cube.extend(
+{
     
 });
 
-CUBE.prototype.extend({
+Cube.prototype.extend(
+{
+
     uploadVertexData: function()
     {
-	GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
-	GL.bufferData(GL.ARRAY_BUFFER, this.vertices, GL.STATIC_DRAW);
+		GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
+		GL.bufferData(GL.ARRAY_BUFFER, this.vertices, GL.STATIC_DRAW);
 
-	GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-	GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, this.indices, GL.STATIC_DRAW);
+		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, this.indices, GL.STATIC_DRAW);
     },
+
     renderSelf: function()
     {
-	GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
-	GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-	Renderer.drawIndexedTriangles(this.indices.length);
+		GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
+		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+		Renderer.drawIndexedTriangles(this.indices.length);
     },
+
     dispose: function()
     {
-	GL.deleteBuffer(this._vertexBuffer);
-	GL.deleteBuffer(this._indexBuffer);
+		GL.deleteBuffer(this._vertexBuffer);
+		GL.deleteBuffer(this._indexBuffer);
     },
+
     getModelMatrix: function()
     {
-	return mat4.create();
-    }
+		return mat4.create();
+    },
+    
 });

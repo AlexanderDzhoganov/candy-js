@@ -4,7 +4,6 @@ Object.extend = Object.prototype.extend = function(destination, props)
     if (props === undefined) 
     {
         props = destination;
-
         destination = this;
     }
 
@@ -45,9 +44,9 @@ window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequest
 
     function() // function without params
 
-    function( foo, bar ) // function with params
+    function(foo, bar) // function with params
 
-    getViewportHeight: function( foo, bar ) // full method declaration
+    getViewportHeight: function(foo, bar) // full method declaration
 
     var APPLICATION = function() // class constructor
 

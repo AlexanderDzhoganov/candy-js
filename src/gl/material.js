@@ -1,14 +1,18 @@
-var MATERIAL = function( name ) {
+var Material = function(name)
+{
     this._Name = name;
     this._Program = null;
     this._Textures = [];
 };
 
-MATERIAL.extend({
+Material.extend(
+{
     
 });
 
-MATERIAL.prototype.extend({
+Material.prototype.extend(
+{
+
     getName: function()
     {
 	    return this._Name;
@@ -23,4 +27,5 @@ MATERIAL.prototype.extend({
     {
 	    return this._Textures;
     }
+    
 });

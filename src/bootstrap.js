@@ -1,7 +1,5 @@
 var GL = null;
-var Renderer = new RENDERER();
-var Shader = new SHADER();
-
-var Application = new APPLICATION();
-
+var Renderer = new Renderer();
+var Shader = new Shader();
+var Application = new Application();
 Application.run(60);
