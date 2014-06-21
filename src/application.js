@@ -25,7 +25,7 @@ Application.prototype.extend(
 		Shader.ActiveProgram(program);
 
 		this._FirstPersonController = new FirstPersonController();
-		this._FirstPersonController.position = vec3.fromValues(0, 0.1, -4.0);
+		this._FirstPersonController.position = vec3.fromValues(-128, -16, -128);
 		
 		Renderer.setActiveCamera(this._FirstPersonController._Camera);
 
@@ -49,7 +49,7 @@ Application.prototype.extend(
 			{
 				for(var y = 0; y < size_y; y++)
 				{
-					data[x+y*size_x] = pixels[x*4+y*size_x];
+					data[x+y*size_x] = pixels[x*4+4*y*size_x];
 				}
 			}
 

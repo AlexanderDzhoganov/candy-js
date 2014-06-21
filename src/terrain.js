@@ -7,15 +7,33 @@ var Terrain = function (data, size_x, size_y)
 	{
 		for (var y = 0; y < size_y; y++)
 		{
-		var vertexIndex = x + y * size_x;
-		vertices[vertexIndex * 8 + 0] = x; // position_x
-		vertices[vertexIndex * 8 + 1] = 16 * (data[vertexIndex] / 255); // position_y
-		vertices[vertexIndex * 8 + 2] = y; // position_z
-		vertices[vertexIndex * 8 + 3] = 0; // normal_x
-		vertices[vertexIndex * 8 + 4] = 1; // normal_y
-		vertices[vertexIndex * 8 + 5] = 0; // normal_z
-		vertices[vertexIndex * 8 + 6] = 0; // uv_s	
-		vertices[vertexIndex * 8 + 7] = 0; // uv_t
+			var hL = data[(x - 1) + y * size_x];
+			var hR = data[(x + 1) + y * size_x];
+			var hD = data[x + (y - 1) * size_x];
+			var hU = data[x + (y + 1) * size_x];
+
+			var normal = vec3.create();
+			if(hL && hR && hD && hU)
+			{
+				normal[0] = hL - hR;
+				normal[1] = hD - hU;
+				normal[2] = 2.0;
+				vec3.normalize(normal, normal);
+			}
+			else
+			{
+				normal = vec3.fromValues(0, 1, 0);
+			}
+			
+			var vertexIndex = x + y * size_x;
+			vertices[vertexIndex * 8 + 0] = x; // position_x
+			vertices[vertexIndex * 8 + 1] = 16 * (data[vertexIndex] / 255); // position_y
+			vertices[vertexIndex * 8 + 2] = y; // position_z
+			vertices[vertexIndex * 8 + 3] = normal[0]; // normal_x
+			vertices[vertexIndex * 8 + 4] = normal[1]; // normal_y
+			vertices[vertexIndex * 8 + 5] = normal[2]; // normal_z
+			vertices[vertexIndex * 8 + 6] = 0; // uv_s	
+			vertices[vertexIndex * 8 + 7] = 0; // uv_t
 		}
 	}
 

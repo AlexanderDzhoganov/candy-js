@@ -29,14 +29,6 @@ Camera.prototype.extend(
 	   return this._CreateViewMatrix(this.position, this.orientation);
 	},
 
-	getNormalMatrix: function ()
-	{
-		var viewMatrix = this.getViewMatrix();
-		mat4.invert(viewMatrix, viewMatrix);
-		mat4.transpose(viewMatrix, viewMatrix);
-		return viewMatrix;
-	},
-
 	getViewProjectionMatrix: function ()
 	{
 		var cameraMatrix = mat4.create();

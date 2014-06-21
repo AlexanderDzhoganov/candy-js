@@ -8,7 +8,7 @@ var Renderer = function()
 	this._activeCamera = null;
 	this._ViewProjectionMatrix = mat4.create();
 	this._ViewMatrix = mat4.create();
-	this._InverseViewMatrix = mat3.create();
+	this._InverseModelViewMatrix = mat3.create();
 	
 	this.init();
 };
@@ -44,7 +44,12 @@ Renderer.prototype.extend(
 		this.lightD += Math.random() * 0.01;
 
 		this._ViewMatrix = this._activeCamera.getViewMatrix();
-		this._InverseViewMatrix = this._activeCamera.getNormalMatrix();
+		
+		var inverseView = mat4.create();
+		mat4.invert(inverseView, this._ViewMatrix);
+		mat4.transpose(inverseView, inverseView);
+
+		this._InverseModelViewMatrix = inverseView;
 		this._ViewProjectionMatrix = this._activeCamera.getViewProjectionMatrix();
 	},
 		
@@ -97,7 +102,7 @@ Renderer.prototype.extend(
 			Shader.SetUniformMat4("viewProjection", this._ViewProjectionMatrix);
 			Shader.SetUniformMat4("model", mat4.create());
 			Shader.SetUniformMat4("view", this._ViewMatrix);
-			Shader.SetUniformMat4("inverseView", this._InverseViewMatrix);
+			Shader.SetUniformMat4("inverseModelView", this._InverseModelViewMatrix);
 			Shader.SetUniformVec3("lightPosition", this.lightPos)
 		}
 
