@@ -25,7 +25,7 @@ SceneGraph.prototype.extend(
 
 		if (!sceneNode._Render)
 		{
-		    sceneNode._Render = function(parentModelMatrix)
+		    sceneNode._Render = function (parentModelMatrix)
 		    {
 				this.renderSelf();
 
@@ -36,6 +36,11 @@ SceneGraph.prototype.extend(
 				{
 				    this._ChildNodes._Render(modelMatrix);
 				}
+		    }
+
+		    sceneNode.AddChild = function (childNode)
+		    {
+		    	sceneNode._ChildNodes.push(childNode);
 		    }
 		}
 

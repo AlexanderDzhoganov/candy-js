@@ -21,7 +21,7 @@ Renderer.extend(
 Renderer.prototype.extend(
 {
 	
-    init: function()
+    init: function ()
     {
 		this._Canvas = document.getElementById("gl-canvas");
 		GL = this._Canvas.getContext("experimental-webgl");
@@ -33,7 +33,7 @@ Renderer.prototype.extend(
 		GL.enable(GL.CULL_FACE);
     },
 	    
-    beginFrame: function()
+    beginFrame: function ()
     {
 		this.clearFramebuffer(vec4.fromValues(0, 0, 0, 1));
 
@@ -48,18 +48,18 @@ Renderer.prototype.extend(
 		this._ViewProjectionMatrix = this._activeCamera.getViewProjectionMatrix();
     },
 	    
-    setViewport: function()
+    setViewport: function ()
     {
 		GL.viewport(0, 0, this._activeCamera.width, this._activeCamera.height);
     },
 	    
-    setActiveCamera: function(camera)
+    setActiveCamera: function (camera)
     {
 		this._activeCamera = camera;
 		this.setViewport();
     },
 	    
-    setActiveMaterial: function(material)
+    setActiveMaterial: function (material)
     {
 		Shader.SetActiveProgram(material.getProgram());
 
@@ -72,7 +72,7 @@ Renderer.prototype.extend(
 		}
     },
 	    
-    drawIndexedTriangleStrip: function(indicesCount)
+    drawIndexedTriangleStrip: function (indicesCount)
     {
 		if (Shader._ActiveProgram)
 		{
@@ -90,7 +90,7 @@ Renderer.prototype.extend(
 		GL.drawElements(GL.TRIANGLE_STRIP, indicesCount, GL.UNSIGNED_SHORT, 0);
     },
 	    
-    drawIndexedTriangles: function(indicesCount)
+    drawIndexedTriangles: function (indicesCount)
     {
 		if (Shader._ActiveProgram)
 		{
@@ -112,7 +112,7 @@ Renderer.prototype.extend(
 		GL.drawElements(GL.TRIANGLES, indicesCount, GL.UNSIGNED_SHORT, 0);
 	},
 	    
-    clearFramebuffer: function(color)
+    clearFramebuffer: function (color)
     {
 		GL.clearColor(color[0], color[1], color[2], color[3]);
 		GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);

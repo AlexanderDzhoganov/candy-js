@@ -20,7 +20,7 @@ FirstPersonController.extend(
 FirstPersonController.prototype.extend(
 {
 
-    init: function()
+    init: function ()
     {
 		this._Camera = new Camera(Renderer.screenWidth, Renderer.screenHeight, 45.0, 0.1, 100.0);
 		this.position = vec3.fromValues(0, 0.5, -2);
@@ -41,7 +41,7 @@ FirstPersonController.prototype.extend(
 		}.bind(this);
     },
 	    
-    update: function(deltaTime)
+    update: function (deltaTime)
     {
 		var orientation = quat.create();
 		quat.rotateX(orientation, orientation, this.pitch);
@@ -61,7 +61,7 @@ FirstPersonController.prototype.extend(
 		quat.rotateY(this._Camera.orientation, this._Camera.orientation, this.yaw);
     },
 	    
-    handleKeydown: function()
+    handleKeydown: function ()
     {
 		var keyCode = event.keyCode;
 
@@ -83,7 +83,7 @@ FirstPersonController.prototype.extend(
 		}
     },
 
-    handleKeyup: function()
+    handleKeyup: function ()
     {
 		var keyCode = event.keyCode;
 

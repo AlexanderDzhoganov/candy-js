@@ -19,17 +19,17 @@ Camera.extend(
 Camera.prototype.extend(
 {
 
-    getProjectionMatrix: function()
+    getProjectionMatrix: function ()
     {
 	   return this._CreateProjectionMatrix(this.width, this.height, this.fov, this.near, this.far);
     },
 
-    getViewMatrix: function()
+    getViewMatrix: function ()
     {
 	   return this._CreateViewMatrix(this.position, this.orientation);
     },
 
-    getNormalMatrix: function()
+    getNormalMatrix: function ()
     {
     	var viewMatrix = this.getViewMatrix();
     	mat4.invert(viewMatrix, viewMatrix);
@@ -37,21 +37,21 @@ Camera.prototype.extend(
     	return viewMatrix;
     },
 
-    getViewProjectionMatrix: function()
+    getViewProjectionMatrix: function ()
     {
     	var cameraMatrix = mat4.create();
     	mat4.multiply(cameraMatrix, this.getProjectionMatrix(), this.getViewMatrix());
     	return cameraMatrix;
     },
 
-    _CreateProjectionMatrix: function(width, height, fov, near, far)
+    _CreateProjectionMatrix: function (width, height, fov, near, far)
     {
     	var matrix = mat4.create();
     	mat4.perspective(matrix, fov, width / height, near, far);
     	return matrix;
     },
 
-    _CreateViewMatrix: function(position, rotation)
+    _CreateViewMatrix: function (position, rotation)
     {
     	var rotationMatrix = mat4.create();
     	mat4.fromQuat(rotationMatrix, rotation);

@@ -1,4 +1,4 @@
-var Material = function(name)
+var Material = function (name)
 {
     this._Name = name;
     this._Program = null;
