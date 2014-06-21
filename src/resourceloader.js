@@ -1,0 +1,4 @@
+var ResourceLoader = function ()
+{
+
+};

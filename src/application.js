@@ -16,7 +16,7 @@ Application.extend({
 Application.prototype.extend(
 {
 
-	init: function()
+	init: function ()
 	{
 		var vertexSource = Shader.GetSourceFromHTMLElement("vertex-shader"),
 		fragmentSource = Shader.GetSourceFromHTMLElement("fragment-shader"),

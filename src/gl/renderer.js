@@ -1,28 +1,28 @@
 var Renderer = function()
 {
-    this.lightPos = vec3.create();
-    this.lightD = 0.0;
-    this.screenWidth = 0;
-    this.screenHeight = 0;
-    this._Canvas = null;
-    this._activeCamera = null;
-    this._ViewProjectionMatrix = mat4.create();
-    this._ViewMatrix = mat4.create();
-    this._InverseViewMatrix = mat3.create();
-    
-    this.init();
+	this.lightPos = vec3.create();
+	this.lightD = 0.0;
+	this.screenWidth = 0;
+	this.screenHeight = 0;
+	this._Canvas = null;
+	this._activeCamera = null;
+	this._ViewProjectionMatrix = mat4.create();
+	this._ViewMatrix = mat4.create();
+	this._InverseViewMatrix = mat3.create();
+	
+	this.init();
 };
 
 Renderer.extend(
 {
-    
+	
 });
 
 Renderer.prototype.extend(
 {
 	
-    init: function ()
-    {
+	init: function ()
+	{
 		this._Canvas = document.getElementById("gl-canvas");
 		GL = this._Canvas.getContext("experimental-webgl");
 
@@ -31,10 +31,10 @@ Renderer.prototype.extend(
 
 		GL.enable(GL.DEPTH_TEST);
 		GL.enable(GL.CULL_FACE);
-    },
-	    
-    beginFrame: function ()
-    {
+	},
+		
+	beginFrame: function ()
+	{
 		this.clearFramebuffer(vec4.fromValues(0, 0, 0, 1));
 
 		this.lightPos[0] = Math.sin(this.lightD) * 3.0;
@@ -46,37 +46,37 @@ Renderer.prototype.extend(
 		this._ViewMatrix = this._activeCamera.getViewMatrix();
 		this._InverseViewMatrix = this._activeCamera.getNormalMatrix();
 		this._ViewProjectionMatrix = this._activeCamera.getViewProjectionMatrix();
-    },
-	    
-    setViewport: function ()
-    {
+	},
+		
+	setViewport: function ()
+	{
 		GL.viewport(0, 0, this._activeCamera.width, this._activeCamera.height);
-    },
-	    
-    setActiveCamera: function (camera)
-    {
+	},
+		
+	setActiveCamera: function (camera)
+	{
 		this._activeCamera = camera;
 		this.setViewport();
-    },
-	    
-    setActiveMaterial: function (material)
-    {
+	},
+		
+	setActiveMaterial: function (material)
+	{
 		Shader.SetActiveProgram(material.getProgram());
 
 		var textures = material.getTextures();
 
 		for (var i = 0; i < textures.length; i++)
 		{
-		    GL.activeTexture(GL.TEXTURE0 + i);
-		    GL.bindTexture(GL.TEXTURE_2D, textures[i]);
+			GL.activeTexture(GL.TEXTURE0 + i);
+			GL.bindTexture(GL.TEXTURE_2D, textures[i]);
 		}
-    },
-	    
-    drawIndexedTriangleStrip: function (indicesCount)
-    {
+	},
+		
+	drawIndexedTriangleStrip: function (indicesCount)
+	{
 		if (Shader._ActiveProgram)
 		{
-		    Shader.SetUniformMat4("viewProjection", this._ViewProjectionMatrix);
+			Shader.SetUniformMat4("viewProjection", this._ViewProjectionMatrix);
 		}
 
 		GL.enableVertexAttribArray(Shader._ActiveProgram.position);
@@ -88,17 +88,17 @@ Renderer.prototype.extend(
 		GL.vertexAttribPointer(Shader._ActiveProgram.uvs, 2, GL.FLOAT, false, 32, 24);
 
 		GL.drawElements(GL.TRIANGLE_STRIP, indicesCount, GL.UNSIGNED_SHORT, 0);
-    },
-	    
-    drawIndexedTriangles: function (indicesCount)
-    {
+	},
+		
+	drawIndexedTriangles: function (indicesCount)
+	{
 		if (Shader._ActiveProgram)
 		{
-		    Shader.SetUniformMat4("viewProjection", this._ViewProjectionMatrix);
-		    Shader.SetUniformMat4("model", mat4.create());
-		    Shader.SetUniformMat4("view", this._ViewMatrix);
-		    Shader.SetUniformMat4("inverseView", this._InverseViewMatrix);
-		    Shader.SetUniformVec3("lightPosition", this.lightPos)
+			Shader.SetUniformMat4("viewProjection", this._ViewProjectionMatrix);
+			Shader.SetUniformMat4("model", mat4.create());
+			Shader.SetUniformMat4("view", this._ViewMatrix);
+			Shader.SetUniformMat4("inverseView", this._InverseViewMatrix);
+			Shader.SetUniformVec3("lightPosition", this.lightPos)
 		}
 
 		GL.enableVertexAttribArray(Shader._ActiveProgram.position);
@@ -111,11 +111,11 @@ Renderer.prototype.extend(
 
 		GL.drawElements(GL.TRIANGLES, indicesCount, GL.UNSIGNED_SHORT, 0);
 	},
-	    
-    clearFramebuffer: function (color)
-    {
+		
+	clearFramebuffer: function (color)
+	{
 		GL.clearColor(color[0], color[1], color[2], color[3]);
 		GL.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
-    }
+	}
 
 });

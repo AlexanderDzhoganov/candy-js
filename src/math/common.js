@@ -3,11 +3,11 @@
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
 
-  * Redistributions of source code must retain the above copyright notice, this
-    list of conditions and the following disclaimer.
-  * Redistributions in binary form must reproduce the above copyright notice,
-    this list of conditions and the following disclaimer in the documentation 
-    and/or other materials provided with the distribution.
+	* Redistributions of source code must retain the above copyright notice, this
+		list of conditions and the following disclaimer.
+	* Redistributions in binary form must reproduce the above copyright notice,
+		this list of conditions and the following disclaimer in the documentation 
+		and/or other materials provided with the distribution.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
@@ -21,15 +21,15 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 if(!GLMAT_EPSILON) {
-    var GLMAT_EPSILON = 0.000001;
+		var GLMAT_EPSILON = 0.000001;
 }
 
 if(!GLMAT_ARRAY_TYPE) {
-    var GLMAT_ARRAY_TYPE = (typeof Float32Array !== 'undefined') ? Float32Array : Array;
+		var GLMAT_ARRAY_TYPE = (typeof Float32Array !== 'undefined') ? Float32Array : Array;
 }
 
 if(!GLMAT_RANDOM) {
-    var GLMAT_RANDOM = Math.random;
+		var GLMAT_RANDOM = Math.random;
 }
 
 /**
@@ -44,11 +44,11 @@ var glMatrix = {};
  * @param {Type} type Array type, such as Float32Array or Array
  */
 glMatrix.setMatrixArrayType = function(type) {
-    GLMAT_ARRAY_TYPE = type;
+		GLMAT_ARRAY_TYPE = type;
 }
 
 if(typeof(exports) !== 'undefined') {
-    exports.glMatrix = glMatrix;
+		exports.glMatrix = glMatrix;
 }
 
 var degree = Math.PI / 180;
@@ -59,5 +59,5 @@ var degree = Math.PI / 180;
 * @param {Number} Angle in Degrees
 */
 glMatrix.toRadian = function(a){
-     return a * degree;
+		 return a * degree;
 }

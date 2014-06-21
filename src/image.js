@@ -5,14 +5,14 @@ var ImageLoader = function ()
 
 ImageLoader.extend(
 {
-    
+	
 });
 
 ImageLoader.prototype.extend(
 {
 
-    LoadFromURL : function (url, callback)
-    {
+	LoadFromURL : function (url, callback)
+	{
 		var image = new Image();
 
 		image.onload = function()
@@ -21,10 +21,10 @@ ImageLoader.prototype.extend(
 		}
 
 		image.src = url;
-    },
+	},
 
-    GetPixels : function (img)
-    {
+	GetPixels : function (img)
+	{
 		var canvas = document.getElementById("dummy-canvas");
 		canvas.width = img.width;
 		canvas.height = img.height;
@@ -32,6 +32,6 @@ ImageLoader.prototype.extend(
 		context.drawImage(img, 0, 0, img.width, img.height);
 		
 		return context.getImageData(0, 0, canvas.width, canvas.height).data;
-    },
+	},
 
 });
