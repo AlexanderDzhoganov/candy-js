@@ -1,5 +1,9 @@
 var Terrain = function (data, size_x, size_y)
 {
+	var vertexSource = Shader.GetSourceFromHTMLElement("vertex-shader");
+	fragmentSource = Shader.GetSourceFromHTMLElement("fragment-shader");
+	this.program = Shader.CreateProgram(vertexSource, fragmentSource);
+
 	var vertexCount = size_x * size_y;
 	var vertices = new Float32Array(vertexCount * 8);
 
@@ -101,6 +105,7 @@ Terrain.prototype.extend(
 
 	renderSelf: function ()
 	{
+		Shader.ActiveProgram(this.program);
 		GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 		Renderer.drawIndexedTriangleStrip(this.indices.length);

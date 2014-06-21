@@ -7,8 +7,8 @@ document.getElementById('gl-canvas').width = window.innerWidth
 document.getElementById('gl-canvas').height = window.innerHeight
 
 var ResourceLoader = new ResourceLoader({
-	"test image": "test.jpg",
-	"text": "text.txt"
+	//"test image": "test.jpg",
+	//"text": "text.txt"
 }, function( resName, progress, final) {
 	console.log("Resource '" + resName + "' loaded: " + progress + "/" + final)
 }, function ()
