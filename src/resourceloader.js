@@ -131,14 +131,25 @@ ResourceLoader.prototype.extend(
 
 				this.xmlHttp.open("GET", elObj.path, true);
 				this.xmlHttp.send();
+			} else {
+				console.error("Extension not supported for '" + elObj.path + "'");
+				elements.shift();
+				this._updateProgress( elKey, true );
+				this._fetchResources( elements );
 			}
 		} else {
 			this.callback();
 		}
 	},
 
-	_updateProgress: function( resName ) {
+	_updateProgress: function( resName, failed ) {
 		this.progress++;
+
+		if( failed ) {
+			console.log("Resource '" + resName + "' not loaded: " + this.progress + "/" + this.numElements);
+		} else {
+			console.log("Resource '" + resName + "' loaded: " + this.progress + "/" + this.numElements);
+		}
 
 		this.step( resName, this.progress, this.numElements );
 	},
@@ -148,6 +159,6 @@ ResourceLoader.prototype.extend(
 	},
 
 	getContent: function( name ) {
-		return this.resources[name].content;
+		return this.resources[name] ? this.resources[name].content : null;
 	}
 });
