@@ -18,6 +18,38 @@ Object.extend = Object.prototype.extend = function(destination, props)
 	return destination;
 };
 
+Object.prototype.size = function() {
+    var obj = this,
+		size = 0, 
+    	key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+
+    return size;
+};
+
+Object.prototype.forEach = function( func ) {
+	var obj = this,
+		key;
+
+	for( key in obj ) {
+		if (obj.hasOwnProperty(key)) {
+			func.call( null, key, obj[key] );
+		}
+	}
+};
+
+Object.prototype.first = function() {
+	var obj = this;
+
+	for( key in obj ) {
+		if (obj.hasOwnProperty(key)) {
+			return obj[key];
+		}
+	}
+};
+
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
 /* Coding conventions examples
