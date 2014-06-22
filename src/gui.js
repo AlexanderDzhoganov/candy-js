@@ -89,115 +89,70 @@ Gui.prototype.extend(
 
 	_drawWindow: function (wnd, cursorPositionX, cursorPositionY)
 	{
-		var controls = [];
+		wnd._renderSelf(this._context, vec2.fromValues(cursorPositionX, cursorPositionY));
+		wnd.layout.beginLayout(wnd.position, wnd.size);
+
+		var controlSize = vec2.fromValues(0.0, 0.0);
 
 		wnd.drawSelf(
 		{
 
 			beginHorizontalGroup: function ()
 			{
-				controls.push(
-				{
-					type: "beginhorizontal",
-				});
+				wnd.layout.beginHorizontalGroup();
 			},
 
 			endHorizontalGroup: function ()
 			{
-				controls.push(
-				{
-					type: "endhorizontal",
-				});
-			},
-
-			label: function (message, fontSize)
-			{
-				controls.push(
-				{
-					type: "label",
-					message: message,
-					fontFamily: "Verdana",
-					fontSize: fontSize,
-					color: "#EEEEEE",
-				});
-			},
-
-			button: function (label, onClick)
-			{
-				controls.push(
-				{
-					type: "button",
-					label: label,
-					onClick: onClick,
-				});
-			},
-
-			inputbox: function (text, onTextChanged)
-			{
-				controls.push(
-				{
-					type: "inputbox",
-					text: text,
-					onTextChanged: onTextChanged,
-				});
-			},
-
-		});
-
-		wnd._renderSelf(this._context, vec2.fromValues(cursorPositionX, cursorPositionY));
-		wnd.layout.beginLayout(wnd.position, wnd.size);
-
-		for(var i = 0; i < controls.length; i++)
-		{
-			var control = controls[i];
-			var controlSize = vec2.fromValues(0.0);
-
-			if(control.type == "beginhorizontal")
-			{
-				wnd.layout.beginHorizontalGroup();
-				continue;
-			}
-			else if(control.type == "endhorizontal")
-			{
 				wnd.layout.endHorizontalGroup();
-				continue;
-			}
-			else if(control.type == "label")
-			{
-				controlSize = wnd._calculateLabelSize(this._context, control.message, control.fontSize);
-			}
-			else if(control.type == "button")
-			{
-				controlSize = wnd._calculateButtonSize(this._context, control.label);
-			}
+			},
 
-			var rect = wnd.layout.beginControl(controlSize);
-
-			this._context.save();
-			this._context.beginPath();
-			this._context.rect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
-			this._context.clip();
-
-			var hovered = cursorPositionX >= rect.position[0] && cursorPositionX <= rect.position[0] + rect.size[0] && cursorPositionY >= rect.position[1] && cursorPositionY <= rect.position[1] + rect.size[1];
-			var clicked = hovered && this.mouseDown;
-
-			if(control.type == "label")
+			label: function (message)
 			{
-				wnd._drawLabel(this._context, control.message, control.fontSize, control.color, rect.position);
-			}
-			else if(control.type == "button")
+				var fontSize = 16;
+				controlSize = wnd._calculateLabelSize(this._context, message, fontSize);
+				var rect = wnd.layout.beginControl(controlSize);
+
+				this._context.save();
+				this._context.beginPath();
+				this._context.rect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
+				this._context.clip();
+
+				wnd._drawLabel(this._context, message, fontSize, "white", rect.position);
+
+				this._context.restore();
+			}.bind(this),
+
+			button: function (label)
 			{
-				wnd._drawButton(this._context, control.label, rect.position, rect.size, hovered, clicked);
+				controlSize = wnd._calculateButtonSize(this._context, label);
+				var rect = wnd.layout.beginControl(controlSize);
+
+				this._context.save();
+				this._context.beginPath();
+				this._context.rect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
+				this._context.clip();
+
+				var hovered = cursorPositionX >= rect.position[0] && cursorPositionX <= rect.position[0] + rect.size[0] && cursorPositionY >= rect.position[1] && cursorPositionY <= rect.position[1] + rect.size[1];
+				var clicked = hovered && this.mouseDown;
+
+				wnd._drawButton(this._context, label, rect.position, rect.size, hovered, clicked);
+				this._context.restore();
 
 				if(clicked)
 				{
-					control.onClick();
 					this.mouseDown = false;
+					return true;
 				}
-			}
 
-			this._context.restore();
-		}
+				return false;
+			}.bind(this),
+
+			inputbox: function (text, onTextChanged)
+			{
+			},
+
+		});
 
 		wnd.layout.endLayout();
 

@@ -34,32 +34,34 @@ Application.prototype.extend(
 
 		testWindow.drawSelf = function (gui)
 		{
-			gui.label("hello world", 16);
+			gui.label("hello world");
 
 			gui.beginHorizontalGroup();
 
-			gui.label("horizontal group", 16);
+				gui.label("horizontal group");
 
-			gui.button("click me", function()
-			{
-				console.log("clicked");
-			});
+				if(gui.button("click me"))
+				{
+					console.log("click me");				
+				}
 
 			gui.endHorizontalGroup();
 
 			gui.beginHorizontalGroup();
 
-			gui.button("click me too", function()
-			{
-				console.log("clicked 2");
-			});
+				if(gui.button("test"))
+				{
+					console.log("test");				
+				}
 
-			gui.button("blabla", function()
-			{
-				console.log("clicked 2");
-			});
+				if(gui.button("1234"))
+				{
+					console.log("1234");				
+				}
 
 			gui.endHorizontalGroup();
+
+			gui.label("more text");
 		};
 
 		this.Gui.attachWindow(testWindow);
