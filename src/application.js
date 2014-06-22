@@ -20,7 +20,7 @@ Application.prototype.extend(
 	{
 		this._FirstPersonController = new FirstPersonController();
 		this._FirstPersonController.position = vec3.fromValues(-128, -16, -128);
-		
+
 		Renderer.setActiveCamera(this._FirstPersonController._Camera);
 
 		this.sceneGraph = new SceneGraph();
@@ -29,7 +29,10 @@ Application.prototype.extend(
 		var layout = new GuiLayout();
 		var skin = new GuiSkin();
 
-		var testWindow = new GuiWindow(vec2.fromValues(16.0, 16.0), vec2.fromValues(420.0, 100.0), layout, skin);
+		this._FirstPersonControllerConfigWindow = this._FirstPersonController.getConfigWindow();
+		this.Gui.attachWindow(this._FirstPersonControllerConfigWindow);
+
+		var testWindow = new GuiWindow(vec2.fromValues(512.0, 16.0), vec2.fromValues(420.0, 100.0), layout, skin);
 		testWindow.title = "Test Window";
 		testWindow.autoSize = true;
 

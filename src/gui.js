@@ -14,6 +14,8 @@ var Gui = function ()
 	this.mouseDown = false;
 	this.mouseUp = false;
 
+	this.currentDragWindow = null;
+
 	document.onmousedown = function ()
 	{
 		this.mouseDown = true;
@@ -33,16 +35,18 @@ var Gui = function ()
 	this.keyBuffer = "";
 	window.addEventListener("keydown", function(e)
 	{
-		e.preventDefault();
+		if(e.keyCode == 8)
+		{
+			e.preventDefault();
+		}
 	});
 
 	window.addEventListener("keyup", function(e)
-	{
-		e.preventDefault();
-		
+	{		
 		if(e.keyCode == 8)
 		{
 			this.keyBuffer = this.keyBuffer.slice(0, this.keyBuffer.length - 1);
+			e.preventDefault();
 		}
 		else if(e.keyCode == 13)
 		{
@@ -67,6 +71,7 @@ Gui.prototype.extend(
 	attachWindow: function (window)
 	{
 		this.windows.push(window);
+		window.visible = true;
 	},
 
 	detachWindow: function (window)
@@ -84,6 +89,12 @@ Gui.prototype.extend(
 		window.visible = false;
 
 		this._context.clearRect(0, 0, Renderer.screenWidth, Renderer.screenHeight);
+	},
+
+	bringToFront: function (wnd)
+	{
+		this.detachWindow(wnd);
+		this.attachWindow(wnd);
 	},
 
 	renderSelf: function ()
@@ -356,22 +367,35 @@ Gui.prototype.extend(
 			}
 		}
 
-		if(headerHovered && this.mouseDown && !wnd.dragging)
+		var windowHovered = PointRectTest
+		(
+			cursor,
+			wnd.position,
+			wnd.size
+		);
+
+		if(windowHovered && this.mouseDown)
+		{
+			this.bringToFront(wnd);
+		}
+
+		if(headerHovered && this.mouseDown && !wnd.dragging && !this.currentDragWindow)
 		{
 			wnd.dragging = true;
+			this.currentDragWindow = wnd;
 			vec2.subtract(wnd.dragAnchor, wnd.position, vec2.fromValues(cursor[0], cursor[1]));
 		}
-		else if(wnd.dragging && this.mouseDown)
+		else if(wnd.dragging && this.mouseDown && this.currentDragWindow == wnd)
 		{
-			this._context.clearRect(0, 0, Renderer.screenWidth, Renderer.screenHeight);
 			vec2.add(wnd.position, vec2.fromValues(cursor[0], cursor[1]), wnd.dragAnchor);
 
 			wnd.position[0] = Clamp(wnd.position[0], 0.0, Renderer.screenWidth - wnd.size[0]);
 			wnd.position[1] = Clamp(wnd.position[1], 0.0, Renderer.screenHeight - wnd.size[1]);
 		}
-		else
+		else if(this.currentDragWindow == wnd)
 		{
 			wnd.dragging = false;
+			this.currentDragWindow = null;
 		}
 
 		wnd._renderSelf(this._context, cursor, deltaTime);

@@ -4,6 +4,8 @@ var Terrain = function (data, size_x, size_y)
 	fragmentSource = Shader.GetSourceFromHTMLElement("fragment-shader");
 	this.program = Shader.CreateProgram(vertexSource, fragmentSource);
 
+	this.texture = new Texture("grass");
+
 	var vertexCount = size_x * size_y;
 	var vertices = new Float32Array(vertexCount * 8);
 
@@ -36,8 +38,8 @@ var Terrain = function (data, size_x, size_y)
 			vertices[vertexIndex * 8 + 3] = normal[0]; // normal_x
 			vertices[vertexIndex * 8 + 4] = normal[1]; // normal_y
 			vertices[vertexIndex * 8 + 5] = normal[2]; // normal_z
-			vertices[vertexIndex * 8 + 6] = 0; // uv_s	
-			vertices[vertexIndex * 8 + 7] = 0; // uv_t
+			vertices[vertexIndex * 8 + 6] = x % 2; // uv_s	
+			vertices[vertexIndex * 8 + 7] = y % 2; // uv_t
 		}
 	}
 
@@ -106,6 +108,7 @@ Terrain.prototype.extend(
 	renderSelf: function ()
 	{
 		Shader.ActiveProgram(this.program);
+		this.texture.bind();
 		GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 		Renderer.drawIndexedTriangleStrip(this.indices.length);

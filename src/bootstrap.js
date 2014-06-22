@@ -5,6 +5,7 @@ var ResourceLoader = new ResourceLoader(
 	"my_json_file": "testjson.json",
 	"heightmap": "heightmap.png",
 	"cursor": "cursor.png",
+	"grass": "grass.png",
 }, function (resName, progress, final)
 {
 	// update progress bar
