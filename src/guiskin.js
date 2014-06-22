@@ -22,7 +22,14 @@ var GuiSkin = function ()
 		{
 			hovered: "#FFFFFF",
 			normal: "#C7C7C7",
-		}
+		},
+
+		closeButton:
+		{
+			clicked: "#440000",
+			hovered: "#AA0000",
+			normal: "#FF0000",
+		},
 
 	};
 
@@ -78,6 +85,11 @@ var GuiSkin = function ()
 			clicked: "white",
 			hovered: "white",
 			normal: "white",
+		},
+
+		editLine:
+		{
+			normal: "#EEEEEE",
 		},
 
 	};

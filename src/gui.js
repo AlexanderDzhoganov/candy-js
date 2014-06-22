@@ -50,6 +50,34 @@ var Gui = function ()
 	}.bind(this);
 
 	this.previousTime = 0.0;
+	this.activeControlPosition = vec2.fromValues(0.0, 0.0);
+	this.activeControlSize = vec2.fromValues(0.0, 0.0);
+
+	this.keyBuffer = "";
+
+	window.addEventListener("keydown", function(e)
+	{
+		e.preventDefault();
+	});
+
+	window.addEventListener("keyup", function(e)
+	{
+		e.preventDefault();
+		
+		if(e.keyCode == 8)
+		{
+			this.keyBuffer = this.keyBuffer.slice(0, this.keyBuffer.length - 1);
+		}
+		else if(e.keyCode == 13)
+		{
+			this.activeControlPosition = vec2.fromValues(0.0, 0.0);
+			this.activeControlSize = vec2.fromValues(0.0, 0.0);
+		}
+		else
+		{
+			this.keyBuffer += String.fromCharCode(e.which).toLowerCase();
+		}
+	}.bind(this));
 };
 
 Gui.extend(
@@ -75,6 +103,23 @@ Gui.prototype.extend(
 		this.windows.push(window);
 	},
 
+	detachWindow: function (window)
+	{
+		var remove = function (arr, item)
+		{
+		   var i;
+   			while((i = arr.indexOf(item)) !== -1)
+   			{
+ 	    		arr.splice(i, 1);
+   			}
+		}
+
+		remove(this.windows, window);
+		window.visible = false;
+
+		this._context.clearRect(0, 0, Renderer.screenWidth, Renderer.screenHeight);
+	},
+
 	renderSelf: function ()
 	{
 		this._drawCanvas();
@@ -96,7 +141,6 @@ Gui.prototype.extend(
 	{
 		wnd._renderSelf(this._context, vec2.fromValues(cursorPositionX, cursorPositionY), deltaTime);
 		wnd.layout.beginLayout(wnd.position, wnd.size);
-
 		wnd.drawSelf(
 		{
 
@@ -162,10 +206,30 @@ Gui.prototype.extend(
 
 				var hovered = cursorPositionX >= rect.position[0] && cursorPositionX <= rect.position[0] + rect.size[0] && cursorPositionY >= rect.position[1] && cursorPositionY <= rect.position[1] + rect.size[1];
 				var clicked = hovered && this.mouseDown;
+				if(clicked)
+				{
+					this.activeControlPosition = rect.position;
+					this.activeControlSize = rect.size;
+					this.keyBuffer = input;
+				}
 
-				wnd._drawInputBox(this._context, input, rect.position, rect.size, hovered, clicked);
+				var active = this.activeControlPosition[0] == rect.position[0] && this.activeControlPosition[1] == rect.position[1] && this.activeControlSize[0] == rect.size[0] && this.activeControlSize[1] == rect.size[1];
+
+				wnd._drawInputBox(this._context, input, rect.position, rect.size, hovered, clicked, active);
 				this._context.restore();
 
+				if(active)
+				{
+					var newInput = this.keyBuffer;
+
+					if(newInput.length > maxLength)
+					{
+						newInput = newInput.slice(0, maxLength);
+					}
+
+					return newInput;
+				}
+				
 				return input;
 			}.bind(this),
 
@@ -181,8 +245,9 @@ Gui.prototype.extend(
 
 	_drawCanvas: function ()
 	{
-		var cursorPositionX = this._cursor.position[0];
-		var cursorPositionY = Renderer.screenHeight - this._cursor.position[1] - this._cursor.size[1] * 0.5;
+		this._context.clearRect(0, 0, Renderer.screenWidth, Renderer.screenHeight);
+		
+		var cursor = vec2.fromValues(this._cursor.position[0], Renderer.screenHeight - this._cursor.position[1] - this._cursor.size[1] * 0.5);
 
 		var time = (new Date).getTime();
 		var deltaTime = (time - this.previousTime) / 1000.0;
@@ -191,24 +256,47 @@ Gui.prototype.extend(
 		for(var i = 0; i < this.windows.length; i++)
 		{
 			var wnd = this.windows[i];
-			var headerHovered = cursorPositionX >= wnd.position[0] && cursorPositionX <= wnd.position[0] + wnd.size[0] && cursorPositionY >= wnd.position[1] && cursorPositionY <= wnd.position[1] + 16.0;
+			if(!wnd.visible)
+			{
+				continue;
+			}
+
+			var headerHovered =
+				cursor[0] >= wnd.position[0] &&
+				cursor[0] <= wnd.position[0] + wnd.size[0] &&
+				cursor[1] >= wnd.position[1] &&
+				cursor[1] <= wnd.position[1] + wnd.layout.windowHeaderSize;
+
+			var closeButtonHovered =
+				cursor[0] >= wnd.position[0] + wnd.size[0] - wnd.layout.windowCloseButtonSize[0] &&
+				cursor[0] <= wnd.position[0] + wnd.size[0] &&
+				cursor[1] >= wnd.position[1] + wnd.layout.windowCloseButtonSize[1] / 2.0 &&
+				cursor[1] <= wnd.position[1] + wnd.layout.windowCloseButtonSize[1] / 2.0 + wnd.layout.windowCloseButtonSize[1];
+
+			if(closeButtonHovered && this.mouseDown)
+			{
+				if(wnd.onClose)
+				{
+					wnd.onClose();
+				}
+			}
 
 			if(headerHovered && this.mouseDown && !wnd.dragging)
 			{
 				wnd.dragging = true;
-				vec2.subtract(wnd.dragAnchor, wnd.position, vec2.fromValues(cursorPositionX, cursorPositionY));
+				vec2.subtract(wnd.dragAnchor, wnd.position, vec2.fromValues(cursor[0], cursor[1]));
 			}
 			else if(wnd.dragging && this.mouseDown)
 			{
 				this._context.clearRect(0, 0, Renderer.screenWidth, Renderer.screenHeight);
-				vec2.add(wnd.position, vec2.fromValues(cursorPositionX, cursorPositionY), wnd.dragAnchor);
+				vec2.add(wnd.position, vec2.fromValues(cursor[0], cursor[1]), wnd.dragAnchor);
 			}
 			else
 			{
 				wnd.dragging = false;
 			}
 
-			this._drawWindow(deltaTime, wnd, cursorPositionX, cursorPositionY);
+			this._drawWindow(deltaTime, wnd, cursor[0], cursor[1]);
 		}
 			
 	},

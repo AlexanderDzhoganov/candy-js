@@ -33,6 +33,13 @@ Application.prototype.extend(
 		testWindow.title = "test window";
 		testWindow.autoSize = true;
 
+		var testInput = "hello world";
+
+		testWindow.onClose = function()
+		{
+			this.Gui.detachWindow(testWindow);
+		}.bind(this);
+
 		testWindow.drawSelf = function (gui)
 		{
 			gui.label("hello world");
@@ -62,9 +69,13 @@ Application.prototype.extend(
 
 			gui.endHorizontalGroup();
 
-			gui.label("more text");
+			gui.beginHorizontalGroup();
 
-			gui.inputbox("test", 16);
+				gui.label("test input");
+
+				testInput = gui.inputbox(testInput, 32);
+			
+			gui.endHorizontalGroup();
 		};
 
 		this.Gui.attachWindow(testWindow);

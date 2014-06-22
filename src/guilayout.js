@@ -5,6 +5,8 @@ var GuiLayout = function ()
 
 	this.margin = vec2.fromValues(8.0, 8.0);
 	this.windowTopMargin = 24.0;
+	this.windowHeaderSize = 16.0;
+	this.windowCloseButtonSize = vec2.fromValues(12.0, 8.0);
 
 	this._windowPosition = vec2.fromValues(0.0, 0.0);
 	this._windowSize = vec2.fromValues(0.0, 0.0);

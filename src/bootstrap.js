@@ -11,12 +11,12 @@ var ResourceLoader = new ResourceLoader(
 }, function ()
 {
 	console.log("Resources Loaded.");
-	document.getElementById('gl-canvas').width = window.innerWidth
-	document.getElementById('gl-canvas').height = window.innerHeight
-	InputController = new InputController();	
+	document.getElementById('gl-canvas').width = window.innerWidth;
+	document.getElementById('gl-canvas').height = window.innerHeight;
+	//InputController = new InputController();	
 
 	// Tests
-	InputController.add( InputController.keys.A, InputController.modes.DOWN, function() {
+	/*InputController.add( InputController.keys.A, InputController.modes.DOWN, function() {
 		console.log("left");
 	});
 
@@ -38,7 +38,7 @@ var ResourceLoader = new ResourceLoader(
 
 	InputController.remove( InputController.keys.W, InputController.modes.DOWN, function() {
 		console.log("up");
-	});
+	});*/
 
 	Renderer = new Renderer();
 	Shader = new Shader();

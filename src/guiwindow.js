@@ -8,11 +8,15 @@ var GuiWindow = function (position, size, layout, skin)
 
 	this.title = "window";
 	this.autoSize = false;
+	this.onClose = null;
+
+	this.visible = true;
 
 	this.dragging = false;
 	this.dragAnchor = vec2.fromValues(0.0, 0.0);
 
 	this.deltaTime = 0.0;
+	this.time = 0.0;
 };
 
 GuiWindow.extend(
@@ -25,12 +29,24 @@ GuiWindow.prototype.extend(
 
 	_renderSelf: function (context, cursor, deltaTime)
 	{
+		if(!this.visible)
+		{
+			return;
+		}
+
 		this.deltaTime = deltaTime;
+		this.time += deltaTime;
+
 		// draw background
 		context.fillStyle = this.skin.window.backgroundColor;
 		context.fillRect(this.position[0], this.position[1], this.size[0], this.size[1]);
 
-		var headerHovered = cursor[0] >= this.position[0] && cursor[0] <= this.position[0] + this.size[0] && cursor[1] >= this.position[1] && cursor[1] <= this.position[1] + 16.0;
+		var headerHovered = cursor[0] >= this.position[0] && cursor[0] <= this.position[0] + this.size[0] && cursor[1] >= this.position[1] && cursor[1] <= this.position[1] + this.layout.windowHeaderSize;
+		var closeButtonHovered =
+			cursor[0] >= this.position[0] + this.size[0] - this.layout.windowCloseButtonSize[0] &&
+			cursor[0] <= this.position[0] + this.size[0] &&
+			cursor[1] >= this.position[1] + this.layout.windowCloseButtonSize[1] / 2.0 &&
+			cursor[1] <= this.position[1] + this.layout.windowCloseButtonSize[1] / 2.0 + this.layout.windowCloseButtonSize[1];
 
 		// draw header
 		if(headerHovered)
@@ -42,7 +58,7 @@ GuiWindow.prototype.extend(
 			context.fillStyle = this.skin.window.header.normal;
 		}
 
-		context.fillRect(this.position[0], this.position[1], this.size[0], 16.0);
+		context.fillRect(this.position[0], this.position[1], this.size[0], this.layout.windowHeaderSize);
 
 		context.font = this.layout.fontSize + "px " + this.layout.fontFamily;
 
@@ -56,6 +72,26 @@ GuiWindow.prototype.extend(
 		}
 
 		context.fillText(this.title, this.position[0] + 2.0, this.position[1] + 12.0);
+
+		if(this.onClose)
+		{
+			if(closeButtonHovered)
+			{
+				context.fillStyle = this.skin.window.closeButton.hovered;
+			}
+			else
+			{
+				context.fillStyle = this.skin.window.closeButton.normal;
+			}
+
+			context.fillRect
+			(
+				this.position[0] + this.size[0] - this.layout.windowCloseButtonSize[0],
+				this.position[1] + this.layout.windowCloseButtonSize[1] / 2.0,
+				this.layout.windowCloseButtonSize[0],
+				this.layout.windowCloseButtonSize[1]
+			);
+		}
 
 		// draw border
 		if(cursor[0] >= this.position[0] && cursor[0] <= this.position[0] + this.size[0] && cursor[1] >= this.position[1] && cursor[1] <= this.position[1] + this.size[1])
@@ -134,7 +170,7 @@ GuiWindow.prototype.extend(
 		return vec2.fromValues(maxLength * 6 + 32.0, 24.0);
 	},
 
-	_drawInputBox: function (context, input, position, size, hovered, clicked)
+	_drawInputBox: function (context, input, position, size, hovered, clicked, active)
 	{
 		if(clicked)
 		{
@@ -169,8 +205,21 @@ GuiWindow.prototype.extend(
 			context.fillStyle = this.skin.inputbox.text.normal;
 		}
 
+		// text
 		var metrics = context.measureText(input);
 		context.fillText(input, position[0] + this.layout.margin[0], position[1] + 16);
+
+		if(active)
+		{
+			// edit line
+			var lineColor = Math.floor(((this.time % 1.0)) * 255.0);
+			context.strokeStyle = "rgb(" + lineColor + "," + lineColor + "," + lineColor + ")";
+			context.beginPath();
+			context.lineWidth = 1;
+			context.moveTo(position[0] + this.layout.margin[0] * 1.5 + metrics.width, position[1] + 5);
+			context.lineTo(position[0] + this.layout.margin[0] * 1.5 + metrics.width, position[1] + 16 + this.layout.margin[1] - 5);
+			context.stroke();
+		}
 
 		return size;
 	},
