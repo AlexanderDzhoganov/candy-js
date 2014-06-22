@@ -341,11 +341,12 @@ Gui.prototype.extend(
 			vec2.fromValues(wnd.size[0], wnd.layout.windowHeaderSize)
 		);
 
-		var closeButtonHovered =
-			cursor[0] >= wnd.position[0] + wnd.size[0] - wnd.layout.windowCloseButtonSize[0] &&
-			cursor[0] <= wnd.position[0] + wnd.size[0] &&
-			cursor[1] >= wnd.position[1] + wnd.layout.windowCloseButtonSize[1] / 2.0 &&
-			cursor[1] <= wnd.position[1] + wnd.layout.windowCloseButtonSize[1] / 2.0 + wnd.layout.windowCloseButtonSize[1];
+		var closeButtonHovered = PointRectTest
+		(
+			cursor,
+			vec2.fromValues(wnd.position[0] + wnd.size[0] - wnd.layout.windowCloseButtonSize[0] - wnd.layout.margin[0], wnd.position[1]),
+			wnd.layout.windowCloseButtonSize
+		);
 
 		if(closeButtonHovered && this.mouseDown)
 		{
@@ -379,6 +380,7 @@ Gui.prototype.extend(
 
 	_drawCanvas: function ()
 	{
+		this._context.clearRect(0, 0, Renderer.screenWidth, Renderer.screenHeight);
 		var cursor = vec2.fromValues(this._cursor.position[0], Renderer.screenHeight - this._cursor.position[1] - this._cursor.size[1] * 0.5);
 
 		var time = (new Date).getTime();

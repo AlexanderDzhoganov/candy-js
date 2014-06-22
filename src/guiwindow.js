@@ -53,14 +53,10 @@ GuiWindow.prototype.extend(
 			cursor,
 			vec2.fromValues
 			(
-				this.position[0] + this.size[0] - this.layout.windowCloseButtonSize[0],
-				this.position[1] + this.layout.windowCloseButtonSize[1] / 2.0
+				this.position[0] + this.size[0] - this.layout.windowCloseButtonSize[0] - this.layout.margin[0],
+				this.position[1]
 			),
-			vec2.fromValues
-			(
-				this.size[0],
-				this.layout.windowCloseButtonSize[1] / 2.0
-			)
+			this.layout.windowCloseButtonSize
 		);
 
 		// draw header
@@ -101,8 +97,8 @@ GuiWindow.prototype.extend(
 
 			context.fillRect
 			(
-				this.position[0] + this.size[0] - this.layout.windowCloseButtonSize[0],
-				this.position[1] + this.layout.windowCloseButtonSize[1] / 2.0,
+				this.position[0] + this.size[0] - this.layout.windowCloseButtonSize[0] - this.layout.margin[0],
+				this.position[1],
 				this.layout.windowCloseButtonSize[0],
 				this.layout.windowCloseButtonSize[1]
 			);

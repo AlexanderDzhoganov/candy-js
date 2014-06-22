@@ -1,6 +1,6 @@
 var PointRectTest = function (point, position, size)
 {
-	if(point[0] >= position[0] && point[0] <= position[0] + size[0] && point[1] >= position[1] && point[1] <= position[1] + size[1])
+	if(point[0] > position[0] && point[0] < position[0] + size[0] && point[1] > position[1] && point[1] < position[1] + size[1])
 	{
 		return true;
 	}
