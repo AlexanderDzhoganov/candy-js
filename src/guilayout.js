@@ -1,5 +1,8 @@
 var GuiLayout = function ()
 {
+	this.fontFamily = "Verdana";
+	this.fontSize = 12;
+
 	this.margin = vec2.fromValues(8.0, 8.0);
 	this.windowTopMargin = 24.0;
 
@@ -68,8 +71,8 @@ GuiLayout.prototype.extend(
 
 			if(this._currentPosition[0] + rect.size[0] >= this._windowSize[0] - this.margin[0])
 			{
-				currentY += horizontalLargestHeight + this.margin[1];
-				currentX = this.margin[0];
+				this._currentPosition[1] += this._horizontalLargestHeight + this.margin[1];
+				this._currentPosition[0] = this.margin[0];
 
 				vec2.add(rect.position, this._windowPosition, this._currentPosition);
 			}

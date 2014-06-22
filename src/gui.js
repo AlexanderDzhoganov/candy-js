@@ -35,16 +35,21 @@ var Gui = function ()
 	this._cursor = new Cursor("cursor");
 
 	this.mouseDown = false;
+	this.mouseUp = false;
 
 	document.onmousedown = function ()
 	{
 		this.mouseDown = true;
+		this.mouseUp = false;
 	}.bind(this);
 
 	document.onmouseup = function ()
 	{
 		this.mouseDown = false;
+		this.mouseUp = true;
 	}.bind(this);
+
+	this.previousTime = 0.0;
 };
 
 Gui.extend(
@@ -87,12 +92,10 @@ Gui.prototype.extend(
 		return mat4.create();
 	},
 
-	_drawWindow: function (wnd, cursorPositionX, cursorPositionY)
+	_drawWindow: function (deltaTime, wnd, cursorPositionX, cursorPositionY)
 	{
-		wnd._renderSelf(this._context, vec2.fromValues(cursorPositionX, cursorPositionY));
+		wnd._renderSelf(this._context, vec2.fromValues(cursorPositionX, cursorPositionY), deltaTime);
 		wnd.layout.beginLayout(wnd.position, wnd.size);
-
-		var controlSize = vec2.fromValues(0.0, 0.0);
 
 		wnd.drawSelf(
 		{
@@ -100,17 +103,16 @@ Gui.prototype.extend(
 			beginHorizontalGroup: function ()
 			{
 				wnd.layout.beginHorizontalGroup();
-			},
+			}.bind(this),
 
 			endHorizontalGroup: function ()
 			{
 				wnd.layout.endHorizontalGroup();
-			},
+			}.bind(this),
 
 			label: function (message)
 			{
-				var fontSize = 16;
-				controlSize = wnd._calculateLabelSize(this._context, message, fontSize);
+				var controlSize = wnd._calculateLabelSize(this._context, message);
 				var rect = wnd.layout.beginControl(controlSize);
 
 				this._context.save();
@@ -118,14 +120,14 @@ Gui.prototype.extend(
 				this._context.rect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
 				this._context.clip();
 
-				wnd._drawLabel(this._context, message, fontSize, "white", rect.position);
+				wnd._drawLabel(this._context, message, "white", rect.position);
 
 				this._context.restore();
 			}.bind(this),
 
 			button: function (label)
 			{
-				controlSize = wnd._calculateButtonSize(this._context, label);
+				var controlSize = wnd._calculateButtonSize(this._context, label);
 				var rect = wnd.layout.beginControl(controlSize);
 
 				this._context.save();
@@ -148,9 +150,24 @@ Gui.prototype.extend(
 				return false;
 			}.bind(this),
 
-			inputbox: function (text, onTextChanged)
+			inputbox: function (input, maxLength)
 			{
-			},
+				var controlSize = wnd._calculateInputBoxSize(this._context, maxLength);
+				var rect = wnd.layout.beginControl(controlSize);
+
+				this._context.save();
+				this._context.beginPath();
+				this._context.rect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
+				this._context.clip();
+
+				var hovered = cursorPositionX >= rect.position[0] && cursorPositionX <= rect.position[0] + rect.size[0] && cursorPositionY >= rect.position[1] && cursorPositionY <= rect.position[1] + rect.size[1];
+				var clicked = hovered && this.mouseDown;
+
+				wnd._drawInputBox(this._context, input, rect.position, rect.size, hovered, clicked);
+				this._context.restore();
+
+				return input;
+			}.bind(this),
 
 		});
 
@@ -166,6 +183,10 @@ Gui.prototype.extend(
 	{
 		var cursorPositionX = this._cursor.position[0];
 		var cursorPositionY = Renderer.screenHeight - this._cursor.position[1] - this._cursor.size[1] * 0.5;
+
+		var time = (new Date).getTime();
+		var deltaTime = (time - this.previousTime) / 1000.0;
+		this.previousTime = time;
 
 		for(var i = 0; i < this.windows.length; i++)
 		{
@@ -187,7 +208,7 @@ Gui.prototype.extend(
 				wnd.dragging = false;
 			}
 
-			this._drawWindow(wnd, cursorPositionX, cursorPositionY);
+			this._drawWindow(deltaTime, wnd, cursorPositionX, cursorPositionY);
 		}
 			
 	},

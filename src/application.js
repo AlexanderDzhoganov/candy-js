@@ -26,9 +26,10 @@ Application.prototype.extend(
 		this.sceneGraph = new SceneGraph();
 
 		this.Gui = new Gui();
-		var testLayout = new GuiLayout();
+		var layout = new GuiLayout();
+		var skin = new GuiSkin();
 
-		var testWindow = new GuiWindow(vec2.fromValues(16.0, 16.0), vec2.fromValues(320.0, 160.0), "#222222", testLayout);
+		var testWindow = new GuiWindow(vec2.fromValues(16.0, 16.0), vec2.fromValues(320.0, 160.0), layout, skin);
 		testWindow.title = "test window";
 		testWindow.autoSize = true;
 
@@ -62,6 +63,8 @@ Application.prototype.extend(
 			gui.endHorizontalGroup();
 
 			gui.label("more text");
+
+			gui.inputbox("test", 16);
 		};
 
 		this.Gui.attachWindow(testWindow);
