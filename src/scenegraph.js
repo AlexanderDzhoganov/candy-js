@@ -68,12 +68,23 @@ SceneGraph.prototype.extend(
 		GL.enable(GL.BLEND); 
 		GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
 
+		var list = [];
 		for (var i = 0; i < this._SceneNodes.length; i++)
 		{	
 			if(this._SceneNodes[i].renderingLayer == RENDERING_LAYER.GUI)
 			{
-				this._SceneNodes[i]._Render(modelMatrix);
+				list.push(this._SceneNodes[i]);
 			}
+		}
+
+		list.sort(function(a, b)
+		{
+			return a.zOrder - b.zOrder;
+		});
+
+		for( var i = 0; i < list.length; i++)
+		{
+			list[i]._Render(modelMatrix);
 		}
 	},
 		

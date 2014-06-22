@@ -26,11 +26,40 @@ Application.prototype.extend(
 		this.sceneGraph = new SceneGraph();
 
 		this.Gui = new Gui();
-		var testWindow = new GuiWindow(vec2.fromValues(128.0, 128.0), vec4.fromValues(1, 1, 1, 1));
-		
+		var testLayout = new GuiLayout();
+
+		var testWindow = new GuiWindow(vec2.fromValues(16.0, 16.0), vec2.fromValues(320.0, 160.0), "#222222", testLayout);
+		testWindow.title = "test window";
+		testWindow.autoSize = true;
+
 		testWindow.drawSelf = function (gui)
 		{
-			gui.label("hello world", "Georgia 26px");
+			gui.label("hello world", 16);
+
+			gui.beginHorizontalGroup();
+
+			gui.label("horizontal group", 16);
+
+			gui.button("click me", function()
+			{
+				console.log("clicked");
+			});
+
+			gui.endHorizontalGroup();
+
+			gui.beginHorizontalGroup();
+
+			gui.button("click me too", function()
+			{
+				console.log("clicked 2");
+			});
+
+			gui.button("blabla", function()
+			{
+				console.log("clicked 2");
+			});
+
+			gui.endHorizontalGroup();
 		};
 
 		this.Gui.attachWindow(testWindow);

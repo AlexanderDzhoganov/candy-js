@@ -2,33 +2,39 @@ var InputController = function()
 {
 	this.disableExternalKeyEvents = false;
 
-	this.listeners = {
+	this.listeners = 
+	{
 		"press": {},
 		"down": {},
 		"up": {}
 	};
 
-	this.listenersOnce = {
+	this.listenersOnce =
+	{
 		"press": {},
 		"down": {},
 		"up": {}
 	};
 
-	window.addEventListener("keydown", function( e ) {
+	window.addEventListener("keydown", function(e)
+	{
 		var keyCode = e.keyCode;
 
-		if( this.disableExternalKeyEvents ) {
+		if (this.disableExternalKeyEvents) {
 			e.preventDefault();
 		}
 
-		if( this.listeners.down[keyCode] ) {
-			this.listeners.down[keyCode].forEach(function( func ) {
+		if (this.listeners.down[keyCode])
+		{
+			this.listeners.down[keyCode].forEach(function(func) {
 				func();
 			});
 		}
 
-		if( this.listenersOnce.down[keyCode] ) {
-			this.listenersOnce.down[keyCode].forEach(function( func ) {
+		if (this.listenersOnce.down[keyCode])
+		{
+			this.listenersOnce.down[keyCode].forEach(function(func)
+			{
 				func();
 			});
 
@@ -36,21 +42,27 @@ var InputController = function()
 		}
 	}.bind(this), true);
 
-	window.addEventListener("keyup", function( e ) {
+	window.addEventListener("keyup", function (e)
+	{
 		var keyCode = e.keyCode;
 
-		if( this.disableExternalKeyEvents ) {
+		if (this.disableExternalKeyEvents)
+		{
 			e.preventDefault();
 		}
 
-		if( this.listeners.up[keyCode] ) {
-			this.listeners.up[keyCode].forEach(function( func ) {
+		if (this.listeners.up[keyCode])
+		{
+			this.listeners.up[keyCode].forEach(function(func)
+			{
 				func();
 			});
 		}
 
-		if( this.listenersOnce.up[keyCode] ) {
-			this.listenersOnce.up[keyCode].forEach(function( func ) {
+		if(this.listenersOnce.up[keyCode])
+		{
+			this.listenersOnce.up[keyCode].forEach(function(func)
+			{
 				func();
 			});
 
@@ -156,73 +168,99 @@ InputController.extend(
 
 InputController.prototype.extend(
 {
-	add: function( key, mode, listenerFunc )
+	add: function(key, mode, listenerFunc)
 	{
-		if( !key ) {
+		if(!key)
+		{
 			console.error("Invalid key");
 			return;
 		}
 
-		if( typeof listenerFunc != "function" ) {
+		if(typeof listenerFunc != "function")
+		{
 			console.error("Listener is not a function");
 			return;
 		}
 
-		if( mode === "down" || mode === "up") {
-			if( !this.listeners[mode][key] ) {
+		if(mode === "down" || mode === "up")
+		{
+			if(!this.listeners[mode][key])
+			{
 				this.listeners[mode][key] = [listenerFunc];
-			} else {
+			}
+			else
+			{
 				this.listeners[mode][key].push(listenerFunc);
 			}
-		} else {
+		}
+		else
+		{
 			console.error("No such key event mode: " + mode);
 		}
 	},
 
-	once: function( key, mode, listenerFunc ){
-		if( !key ) {
+	once: function(key, mode, listenerFunc)
+	{
+		if(!key)
+		{
 			console.error("Invalid key");
 			return;
 		}
 
-		if( typeof listenerFunc != "function" ) {
+		if(typeof listenerFunc != "function")
+		{
 			console.error("Listener is not a function");
 			return;
 		}
 
-		if( mode === "down" || mode === "up") {
-			if( !this.listenersOnce[mode][key] ) {
+		if(mode === "down" || mode === "up")
+		{
+			if(!this.listenersOnce[mode][key])
+			{
 				this.listenersOnce[mode][key] = [listenerFunc];
-			} else {
+			}
+			else
+			{
 				this.listenersOnce[mode][key].push(listenerFunc);
 			}
-		} else {
+		}
+		else 
+		{
 			console.error("No such key event mode: " + mode);
 		}
 	},
 
-	remove: function( key, mode, listenerFunc ) {
-		if( !key ) {
+	remove: function(key, mode, listenerFunc)
+	{
+		if(!key)
+		{
 			console.error("Invalid key");
 			return;
 		}
 
-		if( typeof listenerFunc != "function" ) {
+		if(typeof listenerFunc != "function")
+		{
 			console.error("Listener is not a function");
 			return;
 		}
 
-		if( this.listeners[mode][key] ) {
-			this.listeners[mode][key].forEach(function( func, ind ) {
-				if( func.toString() == listenerFunc.toString() ) {
+		if(this.listeners[mode][key])
+		{
+			this.listeners[mode][key].forEach(function(func, ind)
+			{
+				if(func.toString() == listenerFunc.toString())
+				{
 					this.listeners[mode][key].splice( ind, 1 );
 				}
 			}.bind(this));
 		}
 
-		if( this.listenersOnce[mode][key] ) {
-			this.listenersOnce[mode][key].forEach(function( func, ind ) {
-				if( func.toString() == listenerFunc.toString() ) {
+		if(this.listenersOnce[mode][key])
+		{
+			this.listenersOnce[mode][key].forEach(function(func, ind)
+			{
+				if(func.toString() == listenerFunc.toString())
+				{
 					this.listenersOnce[mode][key].splice( ind, 1 );
 				}
 			}.bind(this));

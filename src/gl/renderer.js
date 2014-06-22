@@ -96,6 +96,29 @@ Renderer.prototype.extend(
 
 		GL.drawElements(GL.TRIANGLE_STRIP, indicesCount, GL.UNSIGNED_SHORT, 0);
 	},
+
+	drawTriangles: function (count)
+	{
+		if(Shader._ActiveProgram.position != undefined)
+		{
+			GL.enableVertexAttribArray(Shader._ActiveProgram.position);
+			GL.vertexAttribPointer(Shader._ActiveProgram.position, 3, GL.FLOAT, false, 32, 0);
+		}
+
+		if(Shader._ActiveProgram.normal != undefined)
+		{
+			GL.enableVertexAttribArray(Shader._ActiveProgram.normal);
+			GL.vertexAttribPointer(Shader._ActiveProgram.normal, 3, GL.FLOAT, false, 32, 12);
+		}
+
+		if(Shader._ActiveProgram.uvs != undefined)
+		{
+			GL.enableVertexAttribArray(Shader._ActiveProgram.uvs);
+			GL.vertexAttribPointer(Shader._ActiveProgram.uvs, 2, GL.FLOAT, false, 32, 24);
+		}
+
+		GL.drawArrays(GL.TRIANGLES, 0, count);
+	},
 		
 	drawIndexedTriangles: function (indicesCount)
 	{
