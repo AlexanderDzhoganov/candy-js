@@ -29,8 +29,8 @@ Application.prototype.extend(
 		var layout = new GuiLayout();
 		var skin = new GuiSkin();
 
-		var testWindow = new GuiWindow(vec2.fromValues(16.0, 16.0), vec2.fromValues(320.0, 160.0), layout, skin);
-		testWindow.title = "test window";
+		var testWindow = new GuiWindow(vec2.fromValues(16.0, 16.0), vec2.fromValues(420.0, 100.0), layout, skin);
+		testWindow.title = "Test Window";
 		testWindow.autoSize = true;
 
 		var testInput = "hello world";
@@ -75,6 +75,12 @@ Application.prototype.extend(
 
 				testInput = gui.inputbox(testInput, 32);
 			
+			gui.endHorizontalGroup();
+
+			gui.beginHorizontalGroup();
+			gui.label("image");
+			gui.image("heightmap");
+
 			gui.endHorizontalGroup();
 		};
 

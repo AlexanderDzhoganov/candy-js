@@ -94,5 +94,17 @@ var GuiSkin = function ()
 
 	};
 
+	this.image =
+	{
+
+		border:
+		{
+			clicked: "#FFFFFF",
+			hovered: "#FFFFFF",
+			normal: "#FFFFFF",
+		},
+		
+	};
+
 
 };

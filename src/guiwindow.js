@@ -41,12 +41,27 @@ GuiWindow.prototype.extend(
 		context.fillStyle = this.skin.window.backgroundColor;
 		context.fillRect(this.position[0], this.position[1], this.size[0], this.size[1]);
 
-		var headerHovered = cursor[0] >= this.position[0] && cursor[0] <= this.position[0] + this.size[0] && cursor[1] >= this.position[1] && cursor[1] <= this.position[1] + this.layout.windowHeaderSize;
-		var closeButtonHovered =
-			cursor[0] >= this.position[0] + this.size[0] - this.layout.windowCloseButtonSize[0] &&
-			cursor[0] <= this.position[0] + this.size[0] &&
-			cursor[1] >= this.position[1] + this.layout.windowCloseButtonSize[1] / 2.0 &&
-			cursor[1] <= this.position[1] + this.layout.windowCloseButtonSize[1] / 2.0 + this.layout.windowCloseButtonSize[1];
+		var headerHovered = PointRectTest
+		(
+			cursor,
+			this.position,
+			vec2.fromValues(this.size[0], this.layout.windowHeaderSize)
+		);
+
+		var closeButtonHovered = PointRectTest
+		(
+			cursor,
+			vec2.fromValues
+			(
+				this.position[0] + this.size[0] - this.layout.windowCloseButtonSize[0],
+				this.position[1] + this.layout.windowCloseButtonSize[1] / 2.0
+			),
+			vec2.fromValues
+			(
+				this.size[0],
+				this.layout.windowCloseButtonSize[1] / 2.0
+			)
+		);
 
 		// draw header
 		if(headerHovered)
@@ -71,7 +86,7 @@ GuiWindow.prototype.extend(
 			context.fillStyle = this.skin.window.headerText.normal;
 		}
 
-		context.fillText(this.title, this.position[0] + 2.0, this.position[1] + 12.0);
+		context.fillText(this.title, this.position[0] + 2.0, this.position[1] + this.layout.windowHeaderSize / 2.0 + this.layout.fontSize / 2.0);
 
 		if(this.onClose)
 		{
@@ -222,6 +237,20 @@ GuiWindow.prototype.extend(
 		}
 
 		return size;
+	},
+
+	_calculateImageSize: function (context, image)
+	{
+		return vec2.fromValues(image.width, image.height);
+	},
+
+	_drawImage: function (context, image, position, size)
+	{
+		context.strokeStyle = this.skin.image.border.normal;
+		context.lineWidth = this.skin.inputbox.borderThickness;
+		context.drawImage(image, position[0], position[1]);
+		context.strokeRect(position[0], position[1], size[0], size[1]);
+		return vec2.fromValues(image.width, image.height);
 	},
 
 });
