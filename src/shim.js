@@ -8,6 +8,21 @@ var PointRectTest = function (point, position, size)
 	return false;
 }
 
+var Clamp = function (x, min, max)
+{
+	if(x < min)
+	{
+		x = min;
+	}
+
+	if(x > max)
+	{
+		x = max;
+	}
+
+	return x;
+}
+
 // Automatic eXtend of object and override of existing ones
 Object.extend = Object.prototype.extend = function(destination, props) 
 {
