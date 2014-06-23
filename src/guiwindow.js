@@ -27,6 +27,29 @@ GuiWindow.extend(
 GuiWindow.prototype.extend(
 {
 
+	_getStyle: function (context, style, position, size)
+	{
+		var fillStyle = null;
+
+		if(typeof style == 'string')
+		{
+			fillStyle = style;
+		}
+		else
+		{
+			fillStyle = context.createLinearGradient(position[0], position[1], position[0], position[1] + size[1]);
+
+			var step = 1.0 / style.length;
+
+			for(var i = 0; i < style.length; i++)
+			{
+				fillStyle.addColorStop(i * step, style[i]);
+			}
+		}
+
+		return fillStyle;
+	},
+
 	_renderSelf: function (context, cursor, deltaTime, headerHovered, closeButtonHovered)
 	{
 		if(!this.visible)
@@ -44,11 +67,11 @@ GuiWindow.prototype.extend(
 		// draw header
 		if(headerHovered)
 		{
-			context.fillStyle = this.skin.window.header.hovered;
+			context.fillStyle = this._getStyle(context, this.skin.window.header.hovered, this.position, vec2.fromValues(this.size[0], this.layout.windowHeaderSize));
 		}
 		else
 		{
-			context.fillStyle = this.skin.window.header.normal;
+			context.fillStyle = this._getStyle(context, this.skin.window.header.normal, this.position, vec2.fromValues(this.size[0], this.layout.windowHeaderSize));
 		}
 
 		context.fillRect(this.position[0], this.position[1], this.size[0], this.layout.windowHeaderSize);
@@ -122,18 +145,19 @@ GuiWindow.prototype.extend(
 	{ 
 		if(clicked)
 		{
-			context.fillStyle = this.skin.button.background.clicked;
-			context.strokeStyle = this.skin.button.border.clicked;
+			context.fillStyle = this._getStyle(context, this.skin.button.background.clicked, position, size);
+			context.strokeStyle = this._getStyle(context, this.skin.button.background.clicked, position, size);
+
 		}
 		else if(hovered)
 		{
-			context.fillStyle = this.skin.button.background.hovered;
-			context.strokeStyle = this.skin.button.border.hovered;
+			context.fillStyle = this._getStyle(context, this.skin.button.background.hovered, position, size);
+			context.strokeStyle = this._getStyle(context, this.skin.button.background.hovered, position, size);
 		}
 		else
 		{
-			context.fillStyle = this.skin.button.background.normal;
-			context.strokeStyle = this.skin.button.border.normal;
+			context.fillStyle = this._getStyle(context, this.skin.button.background.normal, position, size);
+			context.strokeStyle = this._getStyle(context, this.skin.button.border.normal, position, size);
 		}
 
 		context.fillRect(position[0], position[1], size[0], size[1]);
@@ -142,15 +166,15 @@ GuiWindow.prototype.extend(
 
 		if(clicked)
 		{
-			context.fillStyle = this.skin.button.text.clicked;
+			context.fillStyle = this._getStyle(context, this.skin.button.text.clicked, position, size);
 		}
 		else if(hovered)
 		{
-			context.fillStyle = this.skin.button.text.hovered;
+			context.fillStyle = this._getStyle(context, this.skin.button.text.hovered, position, size);
 		}
 		else
 		{
-			context.fillStyle = this.skin.button.text.normal;
+			context.fillStyle = this._getStyle(context, this.skin.button.text.normal, position, size);
 		}
 
 		var metrics = context.measureText(label);

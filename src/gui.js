@@ -121,7 +121,7 @@ Gui.prototype.extend(
 
 	_beginControl: function (wnd)
 	{
-		var rect = wnd.layout.beginControl();
+		var rect = wnd.layout.beginControl(wnd);
 
 		this._context.save();
 		this._context.beginPath();
@@ -170,7 +170,7 @@ Gui.prototype.extend(
 
 			endHorizontalGroup: function ()
 			{
-				wnd.layout.endHorizontalGroup();
+				wnd.layout.endHorizontalGroup(wnd);
 			}.bind(this),
 
 			label: function (message)
@@ -221,7 +221,7 @@ Gui.prototype.extend(
 
 			endHorizontalGroup: function ()
 			{
-				wnd.layout.endHorizontalGroup();
+				wnd.layout.endHorizontalGroup(wnd);
 			}.bind(this),
 
 			label: function (message)

@@ -9,7 +9,7 @@ var GuiSkin = function ()
 		header:
 		{
 			hovered: "#FFFFFF",
-			normal: "#C7C7C7",
+			normal: ["#E7E7E7", "#C7C7C7", "#E7E7E7"],
 		},
 
 		headerText:
@@ -40,7 +40,7 @@ var GuiSkin = function ()
 		{
 			clicked: "#000000",
 			hovered: "#777777",
-			normal: "#333333",
+			normal: ["#333333", "#555555", "#333333"],
 		},
 
 		border:

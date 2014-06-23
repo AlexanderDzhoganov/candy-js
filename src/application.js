@@ -43,6 +43,8 @@ Application.prototype.extend(
 			this.Gui.detachWindow(testWindow);
 		}.bind(this);
 
+		var testClicked = false;
+
 		testWindow.drawSelf = function (gui)
 		{
 			gui.label("hello world");
@@ -51,8 +53,14 @@ Application.prototype.extend(
 
 				gui.label("horizontal group");
 
+				if(testClicked && gui.button("click me too"))
+				{
+					testClicked = false;
+				}
+
 				if(gui.button("click me"))
 				{
+					testClicked = true;
 					console.log("click me");				
 				}
 
