@@ -14,7 +14,7 @@ var Gui = function ()
 	this.mouseDown = false;
 	this.mouseUp = false;
 
-	this.currentDragWindow = null;
+	this.activeWindow = null;
 
 	document.onmousedown = function ()
 	{
@@ -93,6 +93,11 @@ Gui.prototype.extend(
 
 	bringToFront: function (wnd)
 	{
+		if(wnd == this.windows[this.windows.length - 1])
+		{
+			return;
+		}
+
 		this.detachWindow(wnd);
 		this.attachWindow(wnd);
 	},
@@ -114,19 +119,62 @@ Gui.prototype.extend(
 		return mat4.create();
 	},
 
-	_beginControl: function (wnd, controlSize)
+	_beginLayout: function (wnd)
 	{
+		this.controlId = 0;
+		wnd.layout.beginLayout(wnd.position, wnd.size, this.horizontalGroupHeights);
+	},
+
+	_endLayout: function (wnd)
+	{
+		wnd.layout.endLayout();
+
+		if(wnd.autoSize)
+		{
+			wnd.size = wnd.layout.getAutoSizeWindowSize();
+		}
+	},
+
+	_beginControl: function (wnd)
+	{
+		var controlSize = this.controlSizes[this.controlId];
 		var rect = wnd.layout.beginControl(controlSize);
+
 		this._context.save();
 		this._context.beginPath();
 		this._context.rect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
 		this._context.clip();
-		return rect;
+
+		var hovered = PointRectTest(this.cursorPosition, rect.position, rect.size);
+		var clicked = hovered && this.mouseDown;
+
+		if(clicked)
+		{
+			this.activeControlPosition = rect.position;
+			this.activeControlSize = rect.size;
+			this.mouseDown = false;
+		}
+
+		var active =
+			this.activeControlPosition[0] == rect.position[0] &&
+			this.activeControlPosition[1] == rect.position[1] &&
+			this.activeControlSize[0] == rect.size[0] &&
+			this.activeControlSize[1] == rect.size[1];
+
+		return {
+			rect: rect,
+			hovered: hovered,
+			clicked: clicked,
+			active: active,
+		};
 	},
 
 	_endControl: function ()
 	{
+		var id = this.controlId;
 		this._context.restore();
+		this.controlId++;
+		return id;
 	},
 
 	_calculateControlSizes: function (wnd)
@@ -211,12 +259,10 @@ Gui.prototype.extend(
 		});
 	},
 
-	_drawControls: function (deltaTime, wnd, cursorPosition)
+	_drawControls: function (wnd, deltaTime)
 	{
 		this._calculateControlSizes(wnd);
-
-		wnd.layout.beginLayout(wnd.position, wnd.size, this.horizontalGroupHeights);
-		var controlId = 0;
+		this._beginLayout(wnd);
 
 		wnd.drawSelf(
 		{
@@ -233,27 +279,19 @@ Gui.prototype.extend(
 
 			label: function (message)
 			{
-				var rect = this._beginControl(wnd, this.controlSizes[controlId]);
-				wnd._drawLabel(this._context, message, "white", rect.position);
+				var control = this._beginControl(wnd);
+				wnd._drawLabel(this._context, message, "white", control.rect.position);
 				this._endControl();
-				controlId++;
 			}.bind(this),
 
 			button: function (label)
 			{
-				var rect = this._beginControl(wnd, this.controlSizes[controlId]);
-
-				var hovered = PointRectTest(cursorPosition, rect.position, rect.size);
-				var clicked = hovered && this.mouseDown;
-
-				wnd._drawButton(this._context, label, rect.position, rect.size, hovered, clicked);
+				var control = this._beginControl(wnd);
+				wnd._drawButton(this._context, label, control.rect.position, control.rect.size, control.hovered, control.clicked);
 				this._endControl();
 
-				controlId++;
-
-				if(clicked)
+				if(control.clicked)
 				{
-					this.mouseDown = false;
 					return true;
 				}
 
@@ -262,29 +300,17 @@ Gui.prototype.extend(
 
 			inputbox: function (input, maxLength)
 			{
-				var rect = this._beginControl(wnd, this.controlSizes[controlId]);
+				var control = this._beginControl(wnd);
 
-				var hovered = PointRectTest(cursorPosition, rect.position, rect.size);
-				var clicked = hovered && this.mouseDown;
-				if(clicked)
+				if(control.clicked)
 				{
-					this.activeControlPosition = rect.position;
-					this.activeControlSize = rect.size;
 					this.keyBuffer = input;
 				}
 
-				var active =
-					this.activeControlPosition[0] == rect.position[0] &&
-					this.activeControlPosition[1] == rect.position[1] &&
-					this.activeControlSize[0] == rect.size[0] &&
-					this.activeControlSize[1] == rect.size[1];
-
-				wnd._drawInputBox(this._context, input, rect.position, rect.size, hovered, clicked, active);
+				wnd._drawInputBox(this._context, input, control.rect.position, control.rect.size, control.hovered, control.clicked, control.active);
 				this._endControl();
 
-				controlId++;
-
-				if(active)
+				if(control.active)
 				{
 					var newInput = this.keyBuffer;
 
@@ -295,66 +321,48 @@ Gui.prototype.extend(
 
 					return newInput;
 				}
-				
+
 				return input;
 			}.bind(this),
 
 			textbox: function (input, rows, cols, readonly)
 			{
-				var rect = this._beginControl(wnd, this.controlSizes[controlId]);
+				var control = this._beginControl(wnd);
 
-				var hovered = PointRectTest(cursorPosition, rect.position, rect.size);
-				var clicked = hovered && this.mouseDown;
-
-				if(clicked)
+				if(control.active)
 				{
-					this.activeControlPosition = rect.position;
-					this.activeControlSize = rect.size;
 					this.keyBuffer = input;
 				}
 
-				var active =
-					this.activeControlPosition[0] == rect.position[0] &&
-					this.activeControlPosition[1] == rect.position[1] &&
-					this.activeControlSize[0] == rect.size[0] &&
-					this.activeControlSize[1] == rect.size[1];
-
-				wnd._drawTextBox(this._context, input, rows, cols, rect.position, rect.size, hovererd, clicked, active);
+				wnd._drawTextBox(this._context, input, rows, cols, control.rect.position, control.rect.size, control.hovererd, control.clicked, active);
 				this._endControl();
-				controlId++;
 			}.bind(this),
 
 			image: function (resourceName)
 			{
-				var rect = this._beginControl(wnd, this.controlSizes[controlId]);
+				var control = this._beginControl(wnd);
 				var image = ResourceLoader.getContent(resourceName);
-				wnd._drawImage(this._context, image, rect.position, rect.size);
+				wnd._drawImage(this._context, image, control.rect.position, control.rect.size);
 				this._endControl();
-				controlId++;
 			}.bind(this),
 
 		});
 
-		wnd.layout.endLayout();
-
-		if(wnd.autoSize)
-		{
-			wnd.size = wnd.layout.getAutoSizeWindowSize();
-		}
+		this._endLayout(wnd);
 	},
 
-	_drawWindow: function (wnd, cursor, deltaTime)
+	_drawWindow: function (wnd, deltaTime)
 	{
 		var headerHovered = PointRectTest
 		(
-			cursor,
+			this.cursorPosition,
 			wnd.position,
 			vec2.fromValues(wnd.size[0], wnd.layout.windowHeaderSize)
 		);
 
 		var closeButtonHovered = PointRectTest
 		(
-			cursor,
+			this.cursorPosition,
 			vec2.fromValues(wnd.position[0] + wnd.size[0] - wnd.layout.windowCloseButtonSize[0] - wnd.layout.margin[0], wnd.position[1]),
 			wnd.layout.windowCloseButtonSize
 		);
@@ -367,49 +375,42 @@ Gui.prototype.extend(
 			}
 		}
 
-		var windowHovered = PointRectTest
-		(
-			cursor,
-			wnd.position,
-			wnd.size
-		);
-
-		if(windowHovered && this.mouseDown)
+		if(this.activeWindow == wnd && this.mouseDown)
 		{
 			this.bringToFront(wnd);
 		}
 
-		if(headerHovered && this.mouseDown && !wnd.dragging && !this.currentDragWindow)
+		if(this.activeWindow == wnd && headerHovered && this.mouseDown && !wnd.dragging)
 		{
 			wnd.dragging = true;
-			this.currentDragWindow = wnd;
-			vec2.subtract(wnd.dragAnchor, wnd.position, vec2.fromValues(cursor[0], cursor[1]));
+			vec2.subtract(wnd.dragAnchor, wnd.position, this.cursorPosition);
 		}
-		else if(wnd.dragging && this.mouseDown && this.currentDragWindow == wnd)
+		else if(wnd.dragging && this.mouseDown)
 		{
-			vec2.add(wnd.position, vec2.fromValues(cursor[0], cursor[1]), wnd.dragAnchor);
-
+			vec2.add(wnd.position, this.cursorPosition, wnd.dragAnchor);
 			wnd.position[0] = Clamp(wnd.position[0], 0.0, Renderer.screenWidth - wnd.size[0]);
 			wnd.position[1] = Clamp(wnd.position[1], 0.0, Renderer.screenHeight - wnd.size[1]);
 		}
-		else if(this.currentDragWindow == wnd)
+		else
 		{
 			wnd.dragging = false;
-			this.currentDragWindow = null;
 		}
 
-		wnd._renderSelf(this._context, cursor, deltaTime);
-		this._drawControls(deltaTime, wnd, cursor);
+		wnd._renderSelf(this._context, this.cursorPosition, deltaTime);
+
+		this._drawControls(wnd, deltaTime);
 	},
 
 	_drawCanvas: function ()
 	{
 		this._context.clearRect(0, 0, Renderer.screenWidth, Renderer.screenHeight);
-		var cursor = vec2.fromValues(this._cursor.position[0], Renderer.screenHeight - this._cursor.position[1] - this._cursor.size[1] * 0.5);
+		this.cursorPosition = vec2.fromValues(this._cursor.position[0], Renderer.screenHeight - this._cursor.position[1] - this._cursor.size[1] * 0.5);
 
 		var time = (new Date).getTime();
 		var deltaTime = (time - this.previousTime) / 1000.0;
 		this.previousTime = time;
+
+		this.activeWindow = null;
 
 		for(var i = 0; i < this.windows.length; i++)
 		{
@@ -419,7 +420,28 @@ Gui.prototype.extend(
 				continue;
 			}
 
-			this._drawWindow(wnd, cursor, deltaTime);
+			var mouseOver = PointRectTest
+			(
+				this.cursorPosition,
+				wnd.position,
+				wnd.size
+			);
+
+			if(mouseOver)
+			{
+				this.activeWindow = wnd;
+			}
+		}
+
+		for(var i = 0; i < this.windows.length; i++)
+		{
+			var wnd = this.windows[i];
+			if(!wnd.visible)
+			{
+				continue;
+			}
+
+			this._drawWindow(wnd, deltaTime);
 		}
 	},
 

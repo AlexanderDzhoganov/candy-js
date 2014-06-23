@@ -15,6 +15,9 @@ var GuiLayout = function ()
 
 	this._horizontal = false;
 	this._horizontalLargestHeight = 0;
+
+	this.controlSizes = [];
+	this.controlId = [];
 };
 
 GuiLayout.extend(
@@ -24,6 +27,15 @@ GuiLayout.extend(
 
 GuiLayout.prototype.extend(
 {
+	beginPrepareLayout: function ()
+	{
+
+	},
+
+	endPrepareLayout: function ()
+	{
+
+	},
 
 	beginLayout: function (windowPosition, windowSize, horizontalGroupHeights)
 	{

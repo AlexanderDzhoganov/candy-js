@@ -109,7 +109,7 @@ Application.prototype.extend(
 
 		this.terrain = new Terrain(data, size_x, size_y);
 		this.terrain.uploadVertexData();
-		this.sceneGraph.insert(this.terrain);
+		//this.sceneGraph.insert(this.terrain);
 	},
 
 	update : function(deltaTime)
