@@ -98,15 +98,21 @@ ResourceLoader.prototype.extend(
 
 	_fetchResources: function(elements)
 	{
-		var elKey = elements[0];
+		var elementKey = elements[0];
 
-		if(elKey)
+		if(elementKey)
 		{
-			var elObj = this.resources[elKey];
-			this.resources[elKey].name = elKey;
-			this.resources[elKey].type = elObj.type;
+			var elementObject = this.resources[elementKey];
+			this.resources[elementKey].name = elementKey;
 
-			if(elObj.type == "image")
+			this.resources[elementKey].toString = function ()
+			{
+				return this.name;
+			};
+
+			this.resources[elementKey].type = elementObject.type;
+
+			if(elementObject.type == "image")
 			{
 				var img = new Image();
 
@@ -114,66 +120,66 @@ ResourceLoader.prototype.extend(
 				{
 					elements.shift();
 
-					this.resources[elKey].content = img;
-					this._updateProgress( elKey );
+					this.resources[elementKey].content = img;
+					this._updateProgress( elementKey );
 					this._fetchResources( elements );
 				}.bind(this);
 
-				img.src = elObj.path;
+				img.src = elementObject.path;
 			}
-			else if(elObj.type == "text")
+			else if(elementObject.type == "text")
 			{
 				this.xmlHttp.onreadystatechange = function ()
 				{
 					if (this.xmlHttp.readyState == 4 && this.xmlHttp.status == 200)
 					{
-						this.resources[elKey].content = this.xmlHttp.responseText;
+						this.resources[elementKey].content = this.xmlHttp.responseText;
 						elements.shift();
-						this._updateProgress(elKey);
+						this._updateProgress(elementKey);
 						this._fetchResources(elements);
 					}
 				}.bind(this);
 
-				this.xmlHttp.open("GET", elObj.path, true);
+				this.xmlHttp.open("GET", elementObject.path, true);
 				this.xmlHttp.send();
 			}
-			else if (elObj.type == "json")
+			else if (elementObject.type == "json")
 			{
 				this.xmlHttp.onreadystatechange = function()
 				{
 					if (this.xmlHttp.readyState == 4 && this.xmlHttp.status == 200)
 					{
-						this.resources[elKey].content = JSON.parse(this.xmlHttp.responseText);
+						this.resources[elementKey].content = JSON.parse(this.xmlHttp.responseText);
 						elements.shift();
-						this._updateProgress( elKey );
+						this._updateProgress( elementKey );
 						this._fetchResources( elements );
 					}
 				}.bind(this);
 
-				this.xmlHttp.open("GET", elObj.path, true);
+				this.xmlHttp.open("GET", elementObject.path, true);
 				this.xmlHttp.send();
 			}
-			else if (elObj.type == "uint8array")
+			else if (elementObject.type == "uint8array")
 			{
 				this.xmlHttp.onreadystatechange = function()
 				{
 					if (this.xmlHttp.readyState == 4 && this.xmlHttp.status == 200)
 					{
-						this.resources[elKey].content = new Uint8Array(this.xmlHttp.responseText);
+						this.resources[elementKey].content = new Uint8Array(this.xmlHttp.responseText);
 						elements.shift();
-						this._updateProgress( elKey );
+						this._updateProgress( elementKey );
 						this._fetchResources( elements );
 					}
 				}.bind(this);
 
-				this.xmlHttp.open("GET", elObj.path, true);
+				this.xmlHttp.open("GET", elementObject.path, true);
 				this.xmlHttp.send();
 			}
 			else
 			{
-				console.error("Extension not supported for '" + elObj.path + "'");
+				console.error("Extension not supported for '" + elementObject.path + "'");
 				elements.shift();
-				this._updateProgress(elKey, true);
+				this._updateProgress(elementKey, true);
 				this._fetchResources(elements);
 			}
 		}

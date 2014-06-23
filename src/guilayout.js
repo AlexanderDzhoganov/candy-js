@@ -100,6 +100,8 @@ GuiLayout.prototype.extend(
 			wnd.size[1] = this._currentPosition[1] + this.margin[1];
 		}
 
+		wnd.minimumSize[1] = this._currentPosition[1] + this.margin[1];
+
 		// mark end of horizontal group
 		this._horizontal = false;
 		this._horizontalGroupHeights.push(this._horizontalGroupMaxHeight);
@@ -166,12 +168,14 @@ GuiLayout.prototype.extend(
 		{
 			// move cursor
 			this._currentPosition[1] += rect.size[1] + this.margin[1];
+			wnd.minimumSize[1] = this._currentPosition[1] + this.margin[1];
 		}
 
 		// resize window to fit controls
 		if(this._currentPosition[1] >= wnd.size[1] - this.margin[1] && wnd.autoSize)
 		{
 			wnd.size[1] = this._currentPosition[1] + this.margin[1];
+			wnd.minimumSize[1] = this._currentPosition[1] + this.margin[1];
 		}
 
 		this._controlId++;

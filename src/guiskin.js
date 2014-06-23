@@ -151,9 +151,9 @@ var GuiSkin = function ()
 
 		checkmark:
 		{
-			clicked: "#FFFFFF",
-			hovered: "#FFFFFF",
-			normal: "#AA0000",
+			clicked: "#EEEEEE",
+			hovered: "#EEEEEE",
+			normal: "#FFFFFF",
 		},
 
 	};

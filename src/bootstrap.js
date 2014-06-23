@@ -1,6 +1,6 @@
 var ResourceLoader = new ResourceLoader(
 {
-	"test image": "resources/images/test.jpg",
+	"test_image": "resources/images/test.jpg",
 	"text": "text.txt",
 	"my_json_file": "testjson.json",
 	"heightmap": "heightmap.png",

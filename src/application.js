@@ -148,7 +148,7 @@ Application.prototype.extend(
 
 		this.terrain = new Terrain(data, size_x, size_y);
 		this.terrain.uploadVertexData();
-		//this.sceneGraph.insert(this.terrain);
+		this.sceneGraph.insert(this.terrain);
 	},
 
 	update: function(deltaTime)
@@ -204,24 +204,35 @@ Application.prototype.extend(
 		resourceViewer.autoSize = true;
 
 		var resources = ResourceLoader.getResources();
-		var resourceNames = [];
-		var selectedResource = null;
+		var resourceArray = [];
 
 		for(var key in resources)
 		{
-			if(resources[key].type == "image")
+			if(resources[key].type == 'image')
 			{
-				resourceNames.push(key);
+				resourceArray.push(resources[key]);
 			}
 		}
+
+		var selectedResource = null;
 
 		resourceViewer.drawSelf = function (gui)
 		{
 			gui.beginHorizontalGroup();
 
-			selectedResource = gui.listbox(resourceNames, 140, 240, selectedResource);
+			selectedResource = gui.listbox(resourceArray, 140, 240, selectedResource);
 			
-			gui.image(resourceNames[selectedResource], 240, 240);
+			if(selectedResource != undefined)
+			{
+				if(resourceArray[selectedResource])
+				{
+					gui.image(resourceArray[selectedResource].name, 240, 240);
+				}
+			}
+			else
+			{
+				gui.image("notfound", 240, 240);
+			}
 
 			gui.endHorizontalGroup();
 		}.bind(this);

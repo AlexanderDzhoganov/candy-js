@@ -93,8 +93,6 @@ Gui.prototype.extend(
 
 		remove(this.windows, window);
 		window.visible = false;
-
-		this._context.clearRect(0, 0, Renderer.screenWidth, Renderer.screenHeight);
 	},
 
 	bringToFront: function (wnd)
@@ -144,6 +142,12 @@ Gui.prototype.extend(
 
 		var hovered = PointRectTest(this.cursorPosition, rect.position, rect.size) && this._activeWindow == wnd;
 		var clicked = hovered && this._mouseDown;
+
+		if(wnd._resizing || wnd._dragging)
+		{
+			hovered = false;
+			clicked = false;
+		}
 
 		if (clicked)
 		{
@@ -365,7 +369,6 @@ Gui.prototype.extend(
 			listbox: function (items, width, height, selectedIndex)
 			{
 				var control = this._beginControl(wnd);
-
 				var hoveredItem = null;
 
 				if(control.hovered)
@@ -378,7 +381,7 @@ Gui.prototype.extend(
 
 						if(selectedIndex >= items.length)
 						{
-							selectedIndex = null;
+							selectedIndex = null; 
 						}
 					}
 
@@ -415,7 +418,7 @@ Gui.prototype.extend(
 			wnd.layout.windowCloseButtonSize
 		);
 
-		var resizeButtonHovered = this._activeWindow == wnd && PointRectTest
+		var resizeButtonHovered = this._activeWindow == wnd && wnd.resizable && PointRectTest
 		(
 			this.cursorPosition,
 			vec2.fromValues(wnd.position[0] + wnd.size[0] - wnd.layout.margin[0], wnd.position[1] + wnd.size[1] - wnd.layout.margin[0]),
@@ -465,6 +468,16 @@ Gui.prototype.extend(
 			var size = vec2.create();
 			vec2.subtract(size, corner, wnd.position);
 			wnd.size = size;
+
+			console.log(wnd.minimumSize[1]);
+			if(wnd.size[0] < wnd.minimumSize[0])
+			{
+				wnd.size[0] = wnd.minimumSize[0];
+			}
+			if(wnd.size[1] < wnd.minimumSize[1])
+			{
+				wnd.size[1] = wnd.minimumSize[1];
+			}
 		}
 		else
 		{
@@ -485,6 +498,7 @@ Gui.prototype.extend(
 	_drawCanvas: function ()
 	{
 		this._context.clearRect(0, 0, Renderer.screenWidth, Renderer.screenHeight);
+
 		this.cursorPosition = vec2.fromValues(this._cursor.position[0], Renderer.screenHeight - this._cursor.position[1] - this._cursor.size[1] * 0.5);
 
 		var time = (new Date).getTime();

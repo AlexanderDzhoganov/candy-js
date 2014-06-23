@@ -14,6 +14,8 @@ var GuiWindow = function (position, size, layout, skin)
 	this.resizable = false;
 	this.drawTitlebar = true;
 
+	this.minimumSize = vec2.fromValues(128.0, 16.0);
+
 	this.drawSelf = function (gui) { gui.label("!!! implement drawSelf for this window !!!"); };
 	this.onClose = null;
 
@@ -304,6 +306,17 @@ GuiWindow.prototype.extend(
 			}
 
 			this._drawRect(context, this.skin.listbox.itemBackground[itemState], itemRect);
+
+			var label = null;
+
+			if(items[i].toString)
+			{
+				label = items[i].toString();
+			}
+			else
+			{
+				label = items[i];
+			}
 
 			this._drawText(context, items[i], this.skin.listbox.itemText[itemState], vec2.fromValues(itemRect.position[0] + 4.0, itemRect.position[1] + this.layout.fontSize));
 		}
