@@ -191,7 +191,7 @@ GuiWindow.prototype.extend(
 		return vec2.fromValues(maxLength * 6 + 32.0, 24.0);
 	},
 
-	_drawInputBox: function (context, input, rect, state, active)
+	_drawInputBox: function (context, input, rect, state, active, caretIndex)
 	{
 		var textPosition = vec2.fromValues(rect.position[0] + this.layout.margin[0], rect.position[1] + 16);
 
@@ -207,15 +207,43 @@ GuiWindow.prototype.extend(
 		var metrics = context.measureText(input);
 		if (active)
 		{
+			var caretMetrics = context.measureText(input.slice(0, caretIndex));
 			// edit line
 			var lineColor = Math.floor(((this.time % 1.0)) * 255.0);
 			context.strokeStyle = "rgb(" + lineColor + "," + lineColor + "," + lineColor + ")";
 			context.beginPath();
 			context.lineWidth = 1;
 			context.translate(0.5, 0.5); // we do anti-antialiasing so our line is pretty
-			context.moveTo(rect.position[0] + this.layout.margin[0] * 1.5 + metrics.width, rect.position[1] + 5);
-			context.lineTo(rect.position[0] + this.layout.margin[0] * 1.5 + metrics.width, rect.position[1] + 16 + this.layout.margin[1] - 5);
+			context.moveTo(rect.position[0] + this.layout.margin[0] + caretMetrics.width, rect.position[1] + 5);
+			context.lineTo(rect.position[0] + this.layout.margin[0] + caretMetrics.width, rect.position[1] + 16 + this.layout.margin[1] - 5);
 			context.stroke();
+		}
+	},
+
+	// Textbox
+	_calculateTextBoxSize: function (context, rows, cols)
+	{
+		return vec2.fromValues(rows * 4.0, cols * this.layout.fontSize);
+	},
+
+	_drawTextBox: function (context, input, rows, cols, control, active)
+	{
+		var rect = control.rect;
+		var state = control.state;
+
+		// background
+		this._drawRect(context, this.skin.textbox.background[state], rect);
+
+		// border
+		this._strokeRect(context, this.skin.textbox.border[state], rect, this.skin.button.borderThickness);
+
+		var lines = input.split("\n");
+
+		for(var i = 0; i < lines.length; i++)
+		{
+			var line = lines[i];
+			var y = 16.0 + i * (this.layout.fontSize + 2.0);
+			this._drawText(context, line, this.skin.textbox.text[state], vec2.fromValues(rect.position[0] + this.layout.margin[0], rect.position[1] + this.layout.margin[1] + y));
 		}
 	},
 

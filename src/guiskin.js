@@ -113,6 +113,39 @@ var GuiSkin = function ()
 
 	};
 
+	this.textbox =
+	{
+
+		background:
+		{
+			clicked: "#000000",
+			hovered: "#111111",
+			normal: "#000000",
+		},
+
+		border:
+		{
+			clicked: "#FFFFFF",
+			hovered: "#FFFFFF",
+			normal: "#FFFFFF",
+		},
+
+		borderThickness: 1,
+
+		text:
+		{
+			clicked: "#AAAAAA",
+			hovered: "#AAAAAA",
+			normal: "#AAAAAA",
+		},
+
+		editLine:
+		{
+			normal: "#EEEEEE",
+		},
+
+	};
+
 	this.image =
 	{
 

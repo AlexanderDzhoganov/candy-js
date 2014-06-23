@@ -28,7 +28,6 @@ Application.prototype.extend(
 
 		//Gui.debugLayout = true;
 
-		var layout = new GuiLayout();
 		var skin = new GuiSkin();
 
 		this._FirstPersonControllerConfigWindow = this._FirstPersonController.getConfigWindow();
@@ -36,7 +35,20 @@ Application.prototype.extend(
 
 		this._openResourceViewer();
 
-		var testWindow = new GuiWindow(vec2.fromValues(512.0, 16.0), vec2.fromValues(420.0, 100.0), layout, skin);
+		var testTextBoxWindow = new GuiWindow(vec2.fromValues(512, 256), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
+		testTextBoxWindow.title = "TextBox test";
+		testTextBoxWindow.autoSize = true;
+		testTextBoxWindow.drawTitlebar = true;
+		testTextBoxWindow.resizable = true;
+
+		testTextBoxWindow.drawSelf = function (gui)
+		{
+			gui.textbox("hello world,\nthis is some multiline text\n123456", 64, 16, false);
+		};
+
+		testTextBoxWindow.show();
+
+		var testWindow = new GuiWindow(vec2.fromValues(512.0, 16.0), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
 		testWindow.title = "Test Window";
 		testWindow.autoSize = true;
 		testWindow.drawTitlebar = true;
@@ -129,6 +141,8 @@ Application.prototype.extend(
 		}.bind(this);
 
 		testWindow.show();
+
+		Gui.bringToFront(testTextBoxWindow);
 
 		// initialize terrain
 		var heightmap = ResourceLoader.getContent("heightmap");

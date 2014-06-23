@@ -24,6 +24,7 @@ var Gui = function ()
 	this._mouseUp = false;
 
 	this._keyBuffer = "";
+	this._caretIndex = 0;
 
 	document.body.onclick = document.body.requestPointerLock || document.body.mozRequestPointerLock || document.body.webkitRequestPointerLock;
 
@@ -49,19 +50,46 @@ var Gui = function ()
 
 	window.addEventListener("keyup", function(e)
 	{		
-		if (e.keyCode == 8)
+		if (e.keyCode == 8) // backspace
 		{
-			this._keyBuffer = this._keyBuffer.slice(0, this._keyBuffer.length - 1);
+			this._keyBuffer = this._keyBuffer.slice(0, this._caretIndex - 1) + this._keyBuffer.slice(this._caretIndex, this._keyBuffer.length);
+
+			if(this._keyBuffer.length > 0)
+			{
+				this._caretIndex--;
+			}
+			
 			e.preventDefault();
 		}
-		else if (e.keyCode == 13)
+		else if (e.keyCode == 13) // enter
 		{
 			this._activeControlPosition = vec2.fromValues(0.0, 0.0);
 			this._activeControlSize = vec2.fromValues(0.0, 0.0);
 		}
+		else if (e.keyCode == 37) // left
+		{
+			this._caretIndex--;
+			if(this._caretIndex < 0)
+			{
+				this._caretIndex = 0;
+			}
+		}
+		else if (e.keyCode == 39) // right
+		{
+			this._caretIndex++;
+		}
+		else if (e.keyCode == 38) // up
+		{
+
+		}
+		else if (e.keyCode == 40) // down
+		{
+
+		}
 		else
 		{
-			this._keyBuffer += String.fromCharCode(e.which).toLowerCase();
+			this._keyBuffer = this._keyBuffer.slice(0, this._caretIndex) + String.fromCharCode(e.which).toLowerCase() + this._keyBuffer.slice(this._caretIndex, this._keyBuffer.length);
+			this._caretIndex++;
 		}
 	}.bind(this));
 };
@@ -310,9 +338,16 @@ Gui.prototype.extend(
 				if (control.clicked)
 				{
 					this._keyBuffer = input;
+					this._caretIndex = input.length;
 				}
 
-				wnd._drawInputBox(this._context, input, control.rect, control.state, control.active);
+				if(this._caretIndex > input.length + 1)
+				{
+					this._caretIndex = input.length + 1;
+				}
+
+				wnd._drawInputBox(this._context, input, control.rect, control.state, control.active, this._caretIndex);
+
 				this._endControl(wnd);
 
 				if (control.active)
@@ -339,7 +374,7 @@ Gui.prototype.extend(
 					this._keyBuffer = input;
 				}
 
-				wnd._drawTextBox(this._context, input, rows, cols, control.rect, control.state, control.active);
+				wnd._drawTextBox(this._context, input, rows, cols, control, control.active, this._caretIndex);
 
 				this._endControl(wnd);
 			}.bind(this),
