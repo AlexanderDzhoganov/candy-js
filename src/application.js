@@ -34,42 +34,7 @@ Application.prototype.extend(
 		this._FirstPersonControllerConfigWindow = this._FirstPersonController.getConfigWindow();
 		this._FirstPersonControllerConfigWindow.show();
 
-		var resourceViewer = new GuiWindow(vec2.fromValues(16, 128), vec2.fromValues(410, 100.0), layout, skin);
-		resourceViewer.title = "Resource viewer";
-		resourceViewer.autoSize = true;
-
-		var resources = ResourceLoader.getResources();
-		var resourceNames = [];
-		var selectedResource = null;
-
-		for(var key in resources)
-		{
-			if(resources[key].type == "image")
-			{
-				resourceNames.push(key);
-			}
-		}
-
-		resourceViewer.drawSelf = function (gui)
-		{
-			gui.beginHorizontalGroup();
-
-			selectedResource = gui.listbox(resourceNames, 140, 240, selectedResource);
-
-			if(selectedResource != undefined)
-			{
-				gui.image(resourceNames[selectedResource], 240, 240);
-				//gui.image(selectedResource, 128, 128);
-			}
-			else
-			{
-				gui.image("", 240, 240);
-			}
-
-			gui.endHorizontalGroup();
-		}.bind(this);
-
-		resourceViewer.show();
+		this._openResourceViewer();
 
 		var testWindow = new GuiWindow(vec2.fromValues(512.0, 16.0), vec2.fromValues(420.0, 100.0), layout, skin);
 		testWindow.title = "Test Window";
@@ -183,17 +148,17 @@ Application.prototype.extend(
 		//this.sceneGraph.insert(this.terrain);
 	},
 
-	update : function(deltaTime)
+	update: function(deltaTime)
 	{
 		this._FirstPersonController.update(deltaTime);
 	},
 
-	render : function()
+	render: function()
 	{
 		this.sceneGraph.render();
 	},
 
-	run : function (tickRate)
+	run: function (tickRate)
 	{
 		var timeUntilNextTick = 1.0 / tickRate,
 		previousTime = 0.0;
@@ -222,11 +187,49 @@ Application.prototype.extend(
 		window.requestAnimationFrame(doFrame);
 	},
 
-	stop : function()
+	stop: function()
 	{
 		this.doStop = true;
 	},
 
 	doStop: false,
+
+	_openResourceViewer: function ()
+	{
+		var resourceViewer = new GuiWindow(vec2.fromValues(16, 128), vec2.fromValues(410, 100.0), new GuiLayout(), new GuiSkin());
+		resourceViewer.title = "Resource viewer";
+		resourceViewer.autoSize = true;
+
+		var resources = ResourceLoader.getResources();
+		var resourceNames = [];
+		var selectedResource = null;
+
+		for(var key in resources)
+		{
+			if(resources[key].type == "image")
+			{
+				resourceNames.push(key);
+			}
+		}
+
+		resourceViewer.drawSelf = function (gui)
+		{
+			gui.beginHorizontalGroup();
+
+			selectedResource = gui.listbox(resourceNames, 140, 240, selectedResource);
+			
+			gui.image(resourceNames[selectedResource], 240, 240);
+
+			gui.endHorizontalGroup();
+		}.bind(this);
+
+		resourceViewer.onClose = function ()
+		{
+			resourceViewer.close();
+			resourceViewer.visible = false;
+		}.bind(this);
+
+		resourceViewer.show();
+	},
 
 });
