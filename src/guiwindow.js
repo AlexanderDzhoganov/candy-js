@@ -1,24 +1,30 @@
 var GuiWindow = function (position, size, layout, skin)
 {
+	// public
+
 	this.position = position;
 	this.size = size;
 
 	this.layout = layout;
 	this.skin = skin;
 
+	this.visible = true;
 	this.title = "window";
 	this.autoSize = false;
+	this.resizable = false;
+	this.drawTitlebar = true;
 
 	this.drawSelf = function (gui) { gui.label("!!! implement drawSelf for this window !!!"); };
 	this.onClose = null;
 
-	this.drawTitlebar = true;
+	// private
+	this._attached = false;
 
-	this.visible = true;
-	this.attached = false;
+	this._dragging = false;
+	this._dragAnchor = vec2.fromValues(0.0, 0.0);
 
-	this.dragging = false;
-	this.dragAnchor = vec2.fromValues(0.0, 0.0);
+	this._resizing = false;
+	this._resizeAnchor = vec2.fromValues(0.0, 0.0);
 
 	this.deltaTime = 0.0;
 	this.time = 0.0;
@@ -36,10 +42,10 @@ GuiWindow.prototype.extend(
 	{
 		this.visible = true;
 
-		if(!this.attached)
+		if(!this._attached)
 		{
 			Gui.attachWindow(this);
-			this.attached = true;
+			this._attached = true;
 		}
 	},
 
@@ -50,14 +56,14 @@ GuiWindow.prototype.extend(
 
 	close: function ()
 	{
-		if(this.attached)
+		if(this._attached)
 		{
 			Gui.detachWindow(this);
-			this.attached = false;
+			this._attached = false;
 		}
 	},
 
-	_renderSelf: function (context, cursor, deltaTime, windowHovered, headerHovered, closeButtonHovered)
+	_renderSelf: function (context, cursor, deltaTime, windowHovered, headerHovered, closeButtonHovered, resizeHovered)
 	{
 		this.deltaTime = deltaTime;
 		this.time += deltaTime;
@@ -103,6 +109,22 @@ GuiWindow.prototype.extend(
 			}
 		}
 
+		if(this.resizable)
+		{
+			var v0 = vec2.fromValues(this.position[0] + this.size[0] - this.layout.margin[0], this.position[1] + this.size[1]);
+			var v1 = vec2.fromValues(this.position[0] + this.size[0], this.position[1] + this.size[1]);
+			var v2 = vec2.fromValues(this.position[0] + this.size[0], this.position[1] + this.size[1] - this.layout.margin[0]);
+
+			if(resizeHovered)
+			{
+				this._drawTriangle(context, this.skin.window.resizeButton.hovered, v0, v1, v2);
+			}
+			else
+			{
+				this._drawTriangle(context, this.skin.window.resizeButton.normal, v0, v1, v2);
+			}
+		}
+
 		// draw border
 		if (windowHovered)
 		{
@@ -122,7 +144,7 @@ GuiWindow.prototype.extend(
 
 	_drawHorizontalSeparator: function (context, rect)
 	{
-		var lineY = rect.position[1] + rect.size[1] * 0.5;
+		var lineY = rect.position[1] + rect.size[1] * 0.5 - this.layout.margin[1] * 0.25;
 		this._drawLine(context, this.skin.horizontalSeparator.lineColor.normal, this.layout.margin[0] + rect.position[0], lineY, rect.position[0] + rect.size[0] - this.layout.margin[0] * 2.0, lineY);
 	},
 
@@ -318,6 +340,18 @@ GuiWindow.prototype.extend(
 		context.moveTo(x0, y0);
 		context.lineTo(x1, y1);
 		context.stroke();
+	},
+
+	_drawTriangle: function (context, style, a, b, c)
+	{
+		context.fillStyle = this._getStyle(context, style, vec2.fromValues(a[0], a[1]), vec2.fromValues(c[0], c[1]));
+
+		context.beginPath();
+		context.moveTo(a[0], a[1]);
+		context.lineTo(b[0], b[1]);
+		context.lineTo(c[0], c[1]);
+		context.closePath();
+		context.fill();
 	},
 
 	_drawRect: function (context, style, rect)

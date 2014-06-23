@@ -31,6 +31,13 @@ var GuiSkin = function ()
 			normal: "#FF0000",
 		},
 
+		resizeButton:
+		{
+			clicked: "#440000",
+			hovered: "#AA0000",
+			normal: "#FF0000",
+		},
+
 	};
 
 	this.horizontalSeparator =

@@ -40,6 +40,7 @@ Application.prototype.extend(
 		testWindow.title = "Test Window";
 		testWindow.autoSize = true;
 		testWindow.drawTitlebar = true;
+		testWindow.resizable = true;
 
 		var testInput = "hello world";
 
@@ -62,18 +63,18 @@ Application.prototype.extend(
 
 			gui.beginHorizontalGroup();
 
-				gui.label("horizontal group");
+			gui.label("horizontal group");
 
-				if(testClicked && gui.button("click me too"))
-				{
-					testClicked = false;
-				}
+			if(testClicked && gui.button("click me too"))
+			{
+				testClicked = false;
+			}
 
-				if(gui.button("click me"))
-				{
-					testClicked = true;
-					console.log("click me");				
-				}
+			if(gui.button("click me"))
+			{
+				testClicked = true;
+				console.log("click me");				
+			}
 
 			gui.endHorizontalGroup();
 
@@ -81,23 +82,23 @@ Application.prototype.extend(
 
 			gui.beginHorizontalGroup();
 
-				if(gui.button("test"))
-				{
-					console.log("test");				
-				}
+			if(gui.button("test"))
+			{
+				console.log("test");				
+			}
 
-				if(gui.button("1234"))
-				{
-					console.log("1234");				
-				}
+			if(gui.button("1234"))
+			{
+				console.log("1234");				
+			}
 
 			gui.endHorizontalGroup();
 
 			gui.beginHorizontalGroup();
 
-				gui.label("test input");
+			gui.label("test input");
 
-				testInput = gui.inputbox(testInput, 32);
+			testInput = gui.inputbox(testInput, 32);
 			
 			gui.endHorizontalGroup();
 

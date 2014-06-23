@@ -1,5 +1,6 @@
 var GuiLayout = function ()
 {
+	// public
 	this.fontFamily = "Verdana";
 	this.fontSize = 12;
 
@@ -10,6 +11,7 @@ var GuiLayout = function ()
 
 	this.horizontalSeparatorMargin = 8.0;
 
+	// private
 	this._currentPosition = vec2.fromValues(0.0, 0.0);
 
 	this._controlSizes = [];
