@@ -24,15 +24,52 @@ Application.prototype.extend(
 		Renderer.setActiveCamera(this._FirstPersonController._Camera);
 
 		this.sceneGraph = new SceneGraph();
+		this.sceneGraph.insert(Gui);
 
-		this.Gui = new Gui();
-		//this.Gui.debugLayout = true;
+		//Gui.debugLayout = true;
 
 		var layout = new GuiLayout();
 		var skin = new GuiSkin();
 
 		this._FirstPersonControllerConfigWindow = this._FirstPersonController.getConfigWindow();
-		this.Gui.attachWindow(this._FirstPersonControllerConfigWindow);
+		this._FirstPersonControllerConfigWindow.show();
+
+		var resourceViewer = new GuiWindow(vec2.fromValues(16, 128), vec2.fromValues(410, 100.0), layout, skin);
+		resourceViewer.title = "Resource viewer";
+		resourceViewer.autoSize = true;
+
+		var resources = ResourceLoader.getResources();
+		var resourceNames = [];
+		var selectedResource = null;
+
+		for(var key in resources)
+		{
+			if(resources[key].type == "image")
+			{
+				resourceNames.push(key);
+			}
+		}
+
+		resourceViewer.drawSelf = function (gui)
+		{
+			gui.beginHorizontalGroup();
+
+			selectedResource = gui.listbox(resourceNames, 140, 240, selectedResource);
+
+			if(selectedResource != undefined)
+			{
+				gui.image(resourceNames[selectedResource], 240, 240);
+				//gui.image(selectedResource, 128, 128);
+			}
+			else
+			{
+				gui.image("", 240, 240);
+			}
+
+			gui.endHorizontalGroup();
+		}.bind(this);
+
+		resourceViewer.show();
 
 		var testWindow = new GuiWindow(vec2.fromValues(512.0, 16.0), vec2.fromValues(420.0, 100.0), layout, skin);
 		testWindow.title = "Test Window";
@@ -43,7 +80,7 @@ Application.prototype.extend(
 
 		testWindow.onClose = function()
 		{
-			this.Gui.detachWindow(testWindow);
+			testWindow.close();
 		}.bind(this);
 
 		var testClicked = false;
@@ -99,7 +136,7 @@ Application.prototype.extend(
 
 			gui.beginHorizontalGroup();
 			gui.label("image");
-			gui.image("heightmap");
+			gui.image("heightmap", 64, 64);
 			gui.endHorizontalGroup();
 
 			gui.beginHorizontalGroup();
@@ -119,13 +156,11 @@ Application.prototype.extend(
 			testChecked3 = gui.checkbox(testChecked3);
 			gui.endHorizontalGroup();
 
-			testListboxSelectedIndex = gui.listbox(testListboxItems, 140, 160, testListboxSelectedIndex);
+			testListboxSelectedIndex = gui.listbox(testListboxItems, 140, 140, testListboxSelectedIndex);
 
 		}.bind(this);
 
-		this.Gui.attachWindow(testWindow);
-
-		this.sceneGraph.insert(this.Gui);
+		testWindow.show();
 
 		// initialize terrain
 		var heightmap = ResourceLoader.getContent("heightmap");

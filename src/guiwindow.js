@@ -8,11 +8,14 @@ var GuiWindow = function (position, size, layout, skin)
 
 	this.title = "window";
 	this.autoSize = false;
+
+	this.drawSelf = function (gui) { gui.label("!!! implement drawSelf for this window !!!"); };
 	this.onClose = null;
 
 	this.drawTitlebar = true;
 
 	this.visible = true;
+	this.attached = false;
 
 	this.dragging = false;
 	this.dragAnchor = vec2.fromValues(0.0, 0.0);
@@ -28,6 +31,31 @@ GuiWindow.extend(
 
 GuiWindow.prototype.extend(
 {
+
+	show: function ()
+	{
+		this.visible = true;
+
+		if(!this.attached)
+		{
+			Gui.attachWindow(this);
+			this.attached = true;
+		}
+	},
+
+	hide: function ()
+	{
+		this.visible = false;
+	},
+
+	close: function ()
+	{
+		if(this.attached)
+		{
+			Gui.detachWindow(this);
+			this.attached = false;
+		}
+	},
 
 	_renderSelf: function (context, cursor, deltaTime, windowHovered, headerHovered, closeButtonHovered)
 	{
@@ -156,19 +184,37 @@ GuiWindow.prototype.extend(
 	},
 
 	// Image
-	_calculateImageSize: function (context, image)
+	_calculateImageSize: function (context, image, width, height)
 	{
+		if(width && height)
+		{
+			return vec2.fromValues(width, height);
+		}
+
+		if(!image)
+		{
+			return vec2.fromValues(128.0, 128.0);
+		}
+
 		return vec2.fromValues(image.width, image.height);
 	},
 
 	_drawImage: function (context, image, rect)
 	{
-		// draw image
-		context.drawImage(image, rect.position[0], rect.position[1]);
+		if(image)
+		{
+			// draw image
+			context.drawImage(image, 0, 0, image.width, image.height, rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
+		}
+		else
+		{
+			this._drawRect(context, this.skin.image.notFoundBackground.normal, rect);
+			this._drawText(context, "Image not found", this.skin.button.text.normal, vec2.fromValues(rect.position[0], rect.position[1] + this.layout.fontSize));
+		}
 
 		// draw border
 		context.strokeStyle = this.skin.image.border.normal;
-		context.lineWidth = this.skin.inputbox.borderThickness;
+		context.lineWidth = this.skin.image.borderThickness;
 		context.strokeRect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
 	},
 

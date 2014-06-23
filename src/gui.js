@@ -22,6 +22,8 @@ var Gui = function ()
 	this.mouseDown = false;
 	this.mouseUp = false;
 
+	document.body.onclick = document.body.requestPointerLock || document.body.mozRequestPointerLock || document.body.webkitRequestPointerLock;
+
 	document.onmousedown = function ()
 	{
 		this.mouseDown = true;
@@ -227,9 +229,9 @@ Gui.prototype.extend(
 				return input;
 			}.bind(this),
 
-			image: function (resourceName)
+			image: function (resourceName, width, height)
 			{
-				wnd.layout.prepareControl(wnd._calculateImageSize(this._context, ResourceLoader.getContent(resourceName)));
+				wnd.layout.prepareControl(wnd._calculateImageSize(this._context, ResourceLoader.getContent(resourceName), width, height));
 			}.bind(this),
 
 			checkbox: function (checked)
@@ -324,7 +326,7 @@ Gui.prototype.extend(
 				this._endControl(wnd);
 			}.bind(this),
 
-			image: function (resourceName)
+			image: function (resourceName, width, height)
 			{
 				var control = this._beginControl(wnd);
 				var image = ResourceLoader.getContent(resourceName);

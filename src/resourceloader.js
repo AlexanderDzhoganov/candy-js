@@ -1,7 +1,7 @@
 var ResourceLoader = function(resources, step, callback)
 {
-	this.step = typeof(step) === "function" ? step : function() {};
-	this.callback = typeof(callback) === "function" ? callback : function() {};
+	this.step = typeof(step) === "function" ? step : function () {};
+	this.callback = typeof(callback) === "function" ? callback : function () {};
 
 	this.resources = {};
 
@@ -40,7 +40,7 @@ ResourceLoader.prototype.extend(
 		}
 	},
 
-	_loadResources: function(resources)
+	_loadResources: function (resources)
 	{
 		var length = resources.size(),
 			filename,
@@ -52,7 +52,8 @@ ResourceLoader.prototype.extend(
 	   		filename = res.split("/");
 	   		ext = res.split(".");
 
-			this.resources[key] = {
+			this.resources[key] = 
+			{
 				"filename": filename[filename.length - 1],
 				"path": res,
 				"type": this._getFileType( ext[ext.length - 1] ),
@@ -102,6 +103,8 @@ ResourceLoader.prototype.extend(
 		if(elKey)
 		{
 			var elObj = this.resources[elKey];
+			this.resources[elKey].name = elKey;
+			this.resources[elKey].type = elObj.type;
 
 			if(elObj.type == "image")
 			{
@@ -204,6 +207,11 @@ ResourceLoader.prototype.extend(
 	getContent: function(name)
 	{
 		return this.resources[name] ? this.resources[name].content : null;
+	},
+
+	getResources: function()
+	{
+		return this.resources;
 	}
 
 });

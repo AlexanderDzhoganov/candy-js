@@ -43,6 +43,7 @@ var ResourceLoader = new ResourceLoader(
 
 	Renderer = new Renderer();
 	Shader = new Shader();
+	Gui = new Gui();
 	Application = new Application();
 	Application.run(60);
 });

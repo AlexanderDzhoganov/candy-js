@@ -31,14 +31,14 @@ FirstPersonController.prototype.extend(
 
 		document.body.onclick = document.body.requestPointerLock || document.body.mozRequestPointerLock || document.body.webkitRequestPointerLock;
 
-		document.onmousemove = function(e)
+		/*document.onmousemove = function(e)
 		{
 			var dx = e.movementX || e.mozMovementX || e.webkitMovementX || 0;
 			var dy = e.movementY || e.mozMovementY || e.webkitMovementY || 0;
 
 			this.yaw += dx * 0.001;
 			this.pitch += dy * 0.001;
-		}.bind(this);
+		}.bind(this);*/
 	},
 		
 	update: function (deltaTime)

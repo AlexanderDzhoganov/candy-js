@@ -103,6 +103,11 @@ var GuiSkin = function ()
 			hovered: "#FFFFFF",
 			normal: "#FFFFFF",
 		},
+
+		notFoundBackground:
+		{
+			normal: "#AA0000",
+		},
 		
 	};
 
