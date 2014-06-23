@@ -8,6 +8,8 @@ var GuiLayout = function ()
 	this.windowHeaderSize = 20.0;
 	this.windowCloseButtonSize = vec2.fromValues(12.0, 8.0);
 
+	this.horizontalSeparatorMargin = 8.0;
+
 	this._currentPosition = vec2.fromValues(0.0, 0.0);
 
 	this._controlSizes = [];

@@ -77,6 +77,8 @@ Application.prototype.extend(
 
 			gui.endHorizontalGroup();
 
+			gui.horizontalSeparator();
+
 			gui.beginHorizontalGroup();
 
 				if(gui.button("test"))
@@ -225,7 +227,6 @@ Application.prototype.extend(
 
 		resourceViewer.onClose = function ()
 		{
-			resourceViewer.close();
 			resourceViewer.visible = false;
 		}.bind(this);
 

@@ -33,6 +33,18 @@ var GuiSkin = function ()
 
 	};
 
+	this.horizontalSeparator =
+	{
+
+		lineColor:
+		{
+			normal: "#777777",
+		},
+
+		lineWidth: 1,
+
+	};
+
 	this.button =
 	{
 

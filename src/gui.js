@@ -206,6 +206,11 @@ Gui.prototype.extend(
 				wnd.layout.endHorizontalGroup(wnd);
 			}.bind(this),
 
+			horizontalSeparator: function ()
+			{
+				wnd.layout.prepareControl(wnd._calculateHorizontalSeparatorSize(this._context));
+			}.bind(this),
+
 			label: function (message)
 			{
 				wnd.layout.prepareControl(wnd._calculateLabelSize(this._context, message));
@@ -262,6 +267,13 @@ Gui.prototype.extend(
 			endHorizontalGroup: function ()
 			{
 				wnd.layout.endHorizontalGroup(wnd);
+			}.bind(this),
+
+			horizontalSeparator: function ()
+			{
+				var control = this._beginControl(wnd);
+				wnd._drawHorizontalSeparator(this._context, control.rect);
+				this._endControl(wnd);
 			}.bind(this),
 
 			label: function (message)

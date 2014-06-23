@@ -114,6 +114,18 @@ GuiWindow.prototype.extend(
 		}
 	},
 
+	// Horizontal separator
+	_calculateHorizontalSeparatorSize: function (context)
+	{
+		return vec2.fromValues(this.size[0] - this.layout.margin[0] * 2.0, this.layout.horizontalSeparatorMargin * 2.0);
+	},
+
+	_drawHorizontalSeparator: function (context, rect)
+	{
+		var lineY = rect.position[1] + rect.size[1] * 0.5;
+		this._drawLine(context, this.skin.horizontalSeparator.lineColor.normal, this.layout.margin[0] + rect.position[0], lineY, rect.position[0] + rect.size[0] - this.layout.margin[0] * 2.0, lineY);
+	},
+
 	// Label
 	_calculateLabelSize: function (context, message)
 	{
@@ -295,6 +307,17 @@ GuiWindow.prototype.extend(
 		}
 
 		return fillStyle;
+	},
+
+	_drawLine: function (context, style, x0, y0, x1, y1, width)
+	{
+		context.strokeStyle = this._getStyle(context, style, vec2.fromValues(x0, y0), vec2.fromValues(x1, y1));
+		context.beginPath();
+		context.lineWidth = width;
+		context.translate(0.5, 0.5); // we do anti-antialiasing so our line is pretty
+		context.moveTo(x0, y0);
+		context.lineTo(x1, y1);
+		context.stroke();
 	},
 
 	_drawRect: function (context, style, rect)
