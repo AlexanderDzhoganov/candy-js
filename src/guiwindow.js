@@ -29,11 +29,6 @@ GuiWindow.prototype.extend(
 
 	_renderSelf: function (context, cursor, deltaTime, windowHovered, headerHovered, closeButtonHovered)
 	{
-		if(!this.visible)
-		{
-			return;
-		}
-
 		this.deltaTime = deltaTime;
 		this.time += deltaTime;
 		context.font = this.layout.fontSize + "px " + this.layout.fontFamily;
@@ -45,7 +40,7 @@ GuiWindow.prototype.extend(
 		var headerTextPosition = vec2.fromValues(this.position[0] + 2.0, this.position[1] + this.layout.windowHeaderSize / 2.0 + this.layout.fontSize / 2.0);
 
 		// draw header
-		if(headerHovered)
+		if (headerHovered)
 		{
 			this._drawRect(context, this.skin.window.header.hovered, headerRect);
 			this._drawText(context, this.title, this.skin.window.headerText.hovered, headerTextPosition);
@@ -58,7 +53,7 @@ GuiWindow.prototype.extend(
 		}
 
 		// draw close button
-		if(this.onClose)
+		if (this.onClose)
 		{
 			var closeButtonRect =
 			{
@@ -76,7 +71,7 @@ GuiWindow.prototype.extend(
 		}
 
 		// draw border
-		if(windowHovered)
+		if (windowHovered)
 		{
 			this._strokeRect(context, this.skin.window.border.hovered, { position: this.position, size: this.size }, 1);
 		}
@@ -140,7 +135,7 @@ GuiWindow.prototype.extend(
 		this._drawText(context, input, this.skin.inputbox.text[state], textPosition);
 
 		var metrics = context.measureText(input);
-		if(active)
+		if (active)
 		{
 			// edit line
 			var lineColor = Math.floor(((this.time % 1.0)) * 255.0);
@@ -176,7 +171,7 @@ GuiWindow.prototype.extend(
 	{
 		var fillStyle = null;
 
-		if(typeof style == 'string')
+		if (typeof style == 'string')
 		{
 			fillStyle = style;
 		}
@@ -185,7 +180,7 @@ GuiWindow.prototype.extend(
 			fillStyle = context.createLinearGradient(position[0], position[1], position[0], position[1] + size[1]);
 
 			var step = 1.0 / style.length;
-			for(var i = 0; i < style.length; i++)
+			for (var i = 0; i < style.length; i++)
 			{
 				fillStyle.addColorStop(i * step, style[i]);
 			}

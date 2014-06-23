@@ -35,7 +35,7 @@ var Gui = function ()
 	this.keyBuffer = "";
 	window.addEventListener("keydown", function(e)
 	{
-		if(e.keyCode == 8)
+		if (e.keyCode == 8)
 		{
 			e.preventDefault();
 		}
@@ -43,12 +43,12 @@ var Gui = function ()
 
 	window.addEventListener("keyup", function(e)
 	{		
-		if(e.keyCode == 8)
+		if (e.keyCode == 8)
 		{
 			this.keyBuffer = this.keyBuffer.slice(0, this.keyBuffer.length - 1);
 			e.preventDefault();
 		}
-		else if(e.keyCode == 13)
+		else if (e.keyCode == 13)
 		{
 			this.activeControlPosition = vec2.fromValues(0.0, 0.0);
 			this.activeControlSize = vec2.fromValues(0.0, 0.0);
@@ -78,11 +78,11 @@ Gui.prototype.extend(
 	{
 		var remove = function (arr, item)
 		{
-		   var i;
-   			while((i = arr.indexOf(item)) !== -1)
-   			{
- 	    		arr.splice(i, 1);
-   			}
+			var i;
+			while ((i = arr.indexOf(item)) !== -1)
+			{
+				arr.splice(i, 1);
+			}
 		}
 
 		remove(this.windows, window);
@@ -93,7 +93,7 @@ Gui.prototype.extend(
 
 	bringToFront: function (wnd)
 	{
-		if(wnd == this.windows[this.windows.length - 1])
+		if (wnd == this.windows[this.windows.length - 1])
 		{
 			return;
 		}
@@ -131,7 +131,7 @@ Gui.prototype.extend(
 		var hovered = PointRectTest(this.cursorPosition, rect.position, rect.size) && this.activeWindow == wnd;
 		var clicked = hovered && this.mouseDown;
 
-		if(clicked)
+		if (clicked)
 		{
 			this.activeControlPosition = rect.position;
 			this.activeControlSize = rect.size;
@@ -140,12 +140,12 @@ Gui.prototype.extend(
 
 		var state = "normal";
 
-		if(hovered)
+		if (hovered)
 		{
 			state = "hovered";
 		}
 
-		if(clicked)
+		if (clicked)
 		{
 			state = "clicked";
 		}
@@ -328,25 +328,25 @@ Gui.prototype.extend(
 			wnd.layout.windowCloseButtonSize
 		);
 
-		if(closeButtonHovered && this.mouseDown)
+		if (closeButtonHovered && this.mouseDown)
 		{
-			if(wnd.onClose)
+			if (wnd.onClose)
 			{
 				wnd.onClose();
 			}
 		}
 
-		if(this.activeWindow == wnd && this.mouseDown)
+		if (this.activeWindow == wnd && this.mouseDown)
 		{
 			this.bringToFront(wnd);
 		}
 
-		if(this.activeWindow == wnd && headerHovered && this.mouseDown && !wnd.dragging)
+		if (this.activeWindow == wnd && headerHovered && this.mouseDown && !wnd.dragging)
 		{
 			wnd.dragging = true;
 			vec2.subtract(wnd.dragAnchor, wnd.position, this.cursorPosition);
 		}
-		else if(this.activeWindow == wnd && wnd.dragging && this.mouseDown)
+		else if (this.activeWindow == wnd && wnd.dragging && this.mouseDown)
 		{
 			vec2.add(wnd.position, this.cursorPosition, wnd.dragAnchor);
 			wnd.position[0] = Clamp(wnd.position[0], 0.0, Renderer.screenWidth - wnd.size[0]);
@@ -379,28 +379,21 @@ Gui.prototype.extend(
 
 		this.activeWindow = null;
 
-		for(var i = 0; i < this.windows.length; i++)
+		for (var i = 0; i < this.windows.length; i++)
 		{
 			var wnd = this.windows[i];
-			if(!wnd.visible)
+			if (!wnd.visible)
 			{
 				continue;
 			}
 
-			if(wnd.dragging)
+			if (wnd.dragging)
 			{
 				this.activeWindow = wnd;
 				break;
 			}
 
-			var mouseOver = PointRectTest
-			(
-				this.cursorPosition,
-				wnd.position,
-				wnd.size
-			);
-
-			if(mouseOver)
+			if (PointRectTest(this.cursorPosition, wnd.position, wnd.size))
 			{
 				this.activeWindow = wnd;
 			}
