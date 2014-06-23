@@ -106,5 +106,67 @@ var GuiSkin = function ()
 		
 	};
 
+	this.checkbox =
+	{
+
+		background:
+		{
+			clicked: "#000000",
+			hovered: "#777777",
+			normal: "#333333",
+		},
+
+		border:
+		{
+			clicked: "#FFFFFF",
+			hovered: "#FFFFFF",
+			normal: "#FFFFFF",
+		},
+
+		borderThickness: 1,
+
+		checkmark:
+		{
+			clicked: "#FFFFFF",
+			hovered: "#FFFFFF",
+			normal: "#AA0000",
+		},
+
+	};
+
+	this.listbox =
+	{
+
+		background:
+		{
+			clicked: "#222222",
+			hovered: "#222222",
+			normal: "#222222",
+		},
+
+		border:
+		{
+			clicked: "#FFFFFF",
+			hovered: "#FFFFFF",
+			normal: "#FFFFFF",
+		},
+
+		borderThickness: 1,
+
+		itemBackground:
+		{
+			selected: "#E7E7E7",
+			hovered: "#444444",
+			normal: "#222222",
+		},
+
+		itemText:
+		{
+			selected: "#000000",
+			hovered: "#CCCCCC",
+			normal: "#CCCCCC",
+		},
+
+	};
 
 };

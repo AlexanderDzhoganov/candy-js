@@ -26,6 +26,8 @@ Application.prototype.extend(
 		this.sceneGraph = new SceneGraph();
 
 		this.Gui = new Gui();
+		//this.Gui.debugLayout = true;
+
 		var layout = new GuiLayout();
 		var skin = new GuiSkin();
 
@@ -45,6 +47,12 @@ Application.prototype.extend(
 		}.bind(this);
 
 		var testClicked = false;
+		var testChecked1 = false;
+		var testChecked2 = false;
+		var testChecked3 = false;
+
+		var testListboxItems = [ "apple", "orange", "banana" ];
+		var testListboxSelectedIndex = null;
 
 		testWindow.drawSelf = function (gui)
 		{
@@ -98,7 +106,22 @@ Application.prototype.extend(
 			gui.label("cursor");
 			gui.image("cursor");
 			gui.endHorizontalGroup();
-		};
+
+			gui.beginHorizontalGroup();
+			gui.label("checkbox");
+			testChecked1 = gui.checkbox(testChecked1);
+			gui.endHorizontalGroup();
+
+			gui.beginHorizontalGroup();
+			gui.label("checkbox2");
+			testChecked2 = gui.checkbox(testChecked2);
+			gui.label("checkbox3");
+			testChecked3 = gui.checkbox(testChecked3);
+			gui.endHorizontalGroup();
+
+			testListboxSelectedIndex = gui.listbox(testListboxItems, 140, 160, testListboxSelectedIndex);
+
+		}.bind(this);
 
 		this.Gui.attachWindow(testWindow);
 

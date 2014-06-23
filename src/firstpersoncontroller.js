@@ -73,6 +73,8 @@ FirstPersonController.prototype.extend(
 			//this.Gui.detachWindow(testWindow);
 		}.bind(this);
 
+		config.drawTitlebar = false;
+
 		config.drawSelf = function (gui)
 		{
 			gui.label("position: " + this.position[0].toFixed(2) + ", " + this.position[1].toFixed(2) + ", " + this.position[2].toFixed(2));

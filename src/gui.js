@@ -15,6 +15,8 @@ var Gui = function ()
 
 	this.previousTime = 0.0;
 
+	this.debugLayout = false;
+
 	this._mousePosition = vec2.create();
 	this._cursor = new Cursor("cursor");
 	this.mouseDown = false;
@@ -123,10 +125,18 @@ Gui.prototype.extend(
 	{
 		var rect = wnd.layout.beginControl(wnd);
 
+		if(this.debugLayout)
+		{
+			this.debugLayoutLastRect = rect;
+		}
+
 		this._context.save();
 		this._context.beginPath();
 		this._context.rect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
 		this._context.clip();
+
+		var relativeMousePosition = vec2.create();
+		vec2.subtract(relativeMousePosition, this.cursorPosition, rect.position);
 
 		var hovered = PointRectTest(this.cursorPosition, rect.position, rect.size) && this.activeWindow == wnd;
 		var clicked = hovered && this.mouseDown;
@@ -158,6 +168,7 @@ Gui.prototype.extend(
 
 		return {
 			rect: rect,
+			relativeMousePosition: relativeMousePosition,
 			hovered: hovered,
 			clicked: clicked,
 			active: active,
@@ -169,6 +180,13 @@ Gui.prototype.extend(
 	{
 		wnd.layout.endControl();
 		this._context.restore();
+
+		if(this.debugLayout)
+		{
+			var rect = this.debugLayoutLastRect;
+			this._context.strokeStyle = 'green';
+			this._context.strokeRect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
+		}
 	},
 
 	_calculateControlSizes: function (wnd)
@@ -214,9 +232,16 @@ Gui.prototype.extend(
 				wnd.layout.prepareControl(wnd._calculateImageSize(this._context, ResourceLoader.getContent(resourceName)));
 			}.bind(this),
 
-			checkbox: function (state)
+			checkbox: function (checked)
 			{
 				wnd.layout.prepareControl(wnd._calculateCheckBoxSize(this._context));
+				return checked;
+			}.bind(this),
+
+			listbox: function (items, width, height, selectedIndex)
+			{
+				wnd.layout.prepareControl(wnd._calculateListBoxSize(this._context, width, height));
+				return selectedIndex;
 			}.bind(this),
 
 		});
@@ -250,7 +275,7 @@ Gui.prototype.extend(
 				wnd._drawButton(this._context, label, control.rect, control.state);
 				this._endControl(wnd);
 
-				if(control.clicked)
+				if (control.clicked)
 				{
 					return true;
 				}
@@ -262,7 +287,7 @@ Gui.prototype.extend(
 			{
 				var control = this._beginControl(wnd);
 
-				if(control.clicked)
+				if (control.clicked)
 				{
 					this.keyBuffer = input;
 				}
@@ -270,7 +295,7 @@ Gui.prototype.extend(
 				wnd._drawInputBox(this._context, input, control.rect, control.state, control.active);
 				this._endControl(wnd);
 
-				if(control.active)
+				if (control.active)
 				{
 					var newInput = this.keyBuffer;
 
@@ -289,7 +314,7 @@ Gui.prototype.extend(
 			{
 				var control = this._beginControl(wnd);
 
-				if(control.active)
+				if (control.active)
 				{
 					this.keyBuffer = input;
 				}
@@ -305,6 +330,52 @@ Gui.prototype.extend(
 				var image = ResourceLoader.getContent(resourceName);
 				wnd._drawImage(this._context, image, control.rect);
 				this._endControl(wnd);
+			}.bind(this),
+
+			checkbox: function (checked)
+			{
+				var control = this._beginControl(wnd);
+				wnd._drawCheckBox(this._context, checked, control.rect, control.state);
+				this._endControl(wnd);
+
+				if (control.clicked)
+				{
+					return !checked;
+				}
+
+				return checked;
+			}.bind(this),
+
+			listbox: function (items, width, height, selectedIndex)
+			{
+				var control = this._beginControl(wnd);
+
+				var hoveredItem = null;
+
+				if(control.hovered)
+				{
+					hoveredItem = Math.floor((control.relativeMousePosition[1] - 8.0) / wnd.layout.fontSize);
+
+					if(control.clicked)
+					{
+						selectedIndex = hoveredItem;
+
+						if(selectedIndex >= items.length)
+						{
+							selectedIndex = null;
+						}
+					}
+
+					if(hoveredItem >= items.length)
+					{
+						hoveredItem = null;
+					}
+				}
+
+				wnd._drawListBox(this._context, items, selectedIndex, hoveredItem, control);
+				this._endControl(wnd);
+
+				return selectedIndex;
 			}.bind(this),
 
 		});

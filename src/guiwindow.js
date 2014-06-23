@@ -86,6 +86,7 @@ GuiWindow.prototype.extend(
 		}
 	},
 
+	// Label
 	_calculateLabelSize: function (context, message)
 	{
 		var metrics = context.measureText(message);
@@ -95,9 +96,10 @@ GuiWindow.prototype.extend(
 	_drawLabel: function (context, message, color, position)
 	{
 		context.fillStyle = color;
-		context.fillText(message, position[0], position[1] + this.layout.fontSize);
+		context.fillText(message, position[0] + 2.0, position[1] + this.layout.fontSize);
 	},
 
+	// Button
 	_calculateButtonSize: function (context, label)
 	{
 		var metrics = context.measureText(label);
@@ -117,10 +119,9 @@ GuiWindow.prototype.extend(
 
 		// text
 		this._drawText(context, label, this.skin.button.text[state], textPosition);
-
-		return size;
 	},
 
+	// InputBox
 	_calculateInputBoxSize: function (context, maxLength)
 	{
 		return vec2.fromValues(maxLength * 6 + 32.0, 24.0);
@@ -151,10 +152,9 @@ GuiWindow.prototype.extend(
 			context.lineTo(rect.position[0] + this.layout.margin[0] * 1.5 + metrics.width, rect.position[1] + 16 + this.layout.margin[1] - 5);
 			context.stroke();
 		}
-
-		return size;
 	},
 
+	// Image
 	_calculateImageSize: function (context, image)
 	{
 		return vec2.fromValues(image.width, image.height);
@@ -169,7 +169,63 @@ GuiWindow.prototype.extend(
 		context.strokeStyle = this.skin.image.border.normal;
 		context.lineWidth = this.skin.inputbox.borderThickness;
 		context.strokeRect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
-		return vec2.fromValues(image.width, image.height);
+	},
+
+	// Checkbox
+	_calculateCheckBoxSize: function (context)
+	{
+		return vec2.fromValues(16.0, 16.0);
+	},
+
+	_drawCheckBox: function (context, checked, rect, state)
+	{
+		// background
+		this._drawRect(context, this.skin.checkbox.background[state], rect);
+
+		// border
+		this._strokeRect(context, this.skin.checkbox.border[state], rect, this.skin.button.borderThickness);
+
+		if(checked)
+		{
+			this._drawRect(context, this.skin.checkbox.checkmark[state], { position: vec2.fromValues(rect.position[0] + 4.0, rect.position[1] + 4.0), size: vec2.fromValues(8.0, 8.0)});
+		}
+	},
+
+	// Listbox
+	_calculateListBoxSize: function (context, width, height)
+	{
+		return vec2.fromValues(width, height);
+	},
+
+	_drawListBox: function (context, items, selectedIndex, hoveredIndex, control)
+	{
+		// background
+		this._drawRect(context, this.skin.listbox.background[control.state], control.rect);
+
+		// border
+		this._strokeRect(context, this.skin.listbox.border[control.state], control.rect, this.skin.button.borderThickness);
+
+		var step = this.layout.fontSize + 4.0;
+		for(var i = 0; i < items.length; i++)
+		{
+			var y = i * step;
+			var itemRect = { position: vec2.fromValues(control.rect.position[0] + 1.0, control.rect.position[1] + y + 1.0), size: vec2.fromValues(control.rect.size[0] - 2.0, this.layout.fontSize + 4.0)};
+
+			var itemState = "normal";
+			if(hoveredIndex == i)
+			{
+				itemState = "hovered";
+			}
+
+			if(selectedIndex == i)
+			{
+				itemState = "selected";
+			}
+
+			this._drawRect(context, this.skin.listbox.itemBackground[itemState], itemRect);
+
+			this._drawText(context, items[i], this.skin.listbox.itemText[itemState], vec2.fromValues(itemRect.position[0] + 4.0, itemRect.position[1] + this.layout.fontSize));
+		}
 	},
 
 	_getStyle: function (context, style, position, size)
