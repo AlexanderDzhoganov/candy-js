@@ -16,8 +16,12 @@ var GuiLayout = function ()
 	this._horizontal = false;
 	this._horizontalLargestHeight = 0;
 
-	this.controlSizes = [];
-	this.controlId = [];
+	this._controlSizes = [];
+	this._controlId = 0;
+	this._horizontalGroupHeights = [];
+	this._inHorizontalGroup = false;
+	this._horizontalGroupMaxHeight = 0.0;
+	this._prepareLayout = false;
 };
 
 GuiLayout.extend(
@@ -29,31 +33,40 @@ GuiLayout.prototype.extend(
 {
 	beginPrepareLayout: function ()
 	{
-
+		this._controlId = 0;
+		this._controlSizes = [];
+		this._horizontalGroupHeights = [];
+		this._inHorizontalGroup = false;
+		this._horizontalGroupMaxHeight = 0.0;
+		this._prepareLayout = true;
 	},
 
 	endPrepareLayout: function ()
 	{
-
+		this._prepareLayout = false;
 	},
 
-	beginLayout: function (windowPosition, windowSize, horizontalGroupHeights)
+	beginLayout: function (wnd)
 	{
-		this._windowPosition = windowPosition;
-		this._windowSize = windowSize;
+		this._controlId = 0;
+		this._windowPosition = wnd.position;
+		this._windowSize = wnd.size;
 		this._currentPosition = vec2.fromValues(this.margin[0], this.windowTopMargin + this.windowHeaderSize);
-		this._horizontalGroupHeights = horizontalGroupHeights;
 		this._horizontalGroupId = 0;
 	},
 
-	endLayout: function ()
+	endLayout: function (wnd)
 	{
-
+		if(wnd.autoSize)
+		{
+			wnd.size = this.getAutoSizeWindowSize();
+		}
 	},
 
 	beginHorizontalGroup: function ()
 	{
 		this._horizontal = true;
+		this._horizontalGroupMaxHeight = 0.0;
 	},
 
 	endHorizontalGroup: function ()
@@ -68,15 +81,29 @@ GuiLayout.prototype.extend(
 
 		this._horizontalLargestHeight = 0;
 		this._horizontal = false;
+
+		this._horizontalGroupHeights.push(this._horizontalGroupMaxHeight);
 		this._horizontalGroupId++;
 	},
 
-	beginControl: function (controlSize)
+	prepareControl: function (controlSize)
 	{
+		if(this._prepareLayout)
+		{
+			this._controlSizes.push(controlSize);
+			this._addToHorizontalGroup(controlSize[1]);
+			this._controlId++;
+		}
+	},
+
+	beginControl: function ()
+	{
+		var controlSize = this._controlSizes[this._controlId];
+
 		var rect =
 		{
 			position: vec2.create(),
-			size: controlSize,
+			size: this._controlSizes[this._controlId],
 		};
 
 		vec2.add(rect.position, this._windowPosition, this._currentPosition);
@@ -118,12 +145,30 @@ GuiLayout.prototype.extend(
 			this._windowSize[1] = this._currentPosition[1] + this.margin[1];
 		}
 
+		this._controlId++;
+
 		return rect;
+	},
+
+	endControl: function ()
+	{
+		this.controlId++;
 	},
 
 	getAutoSizeWindowSize: function ()
 	{
 		return this._windowSize;
 	},
+
+	_addToHorizontalGroup: function (controlHeight)
+	{
+		if(this.inHorizontalGroup)
+		{
+			if(controlHeight > this.horizontalGroupMaxHeight)
+			{
+				this.horizontalGroupMaxHeight = controlHeight;
+			}
+		}
+	}
 
 });

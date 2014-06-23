@@ -27,7 +27,7 @@ GuiWindow.extend(
 GuiWindow.prototype.extend(
 {
 
-	_renderSelf: function (context, cursor, deltaTime)
+	_renderSelf: function (context, cursor, deltaTime, headerHovered, closeButtonHovered)
 	{
 		if(!this.visible)
 		{
@@ -40,24 +40,6 @@ GuiWindow.prototype.extend(
 		// draw background
 		context.fillStyle = this.skin.window.backgroundColor;
 		context.fillRect(this.position[0], this.position[1], this.size[0], this.size[1]);
-
-		var headerHovered = PointRectTest
-		(
-			cursor,
-			this.position,
-			vec2.fromValues(this.size[0], this.layout.windowHeaderSize)
-		);
-
-		var closeButtonHovered = PointRectTest
-		(
-			cursor,
-			vec2.fromValues
-			(
-				this.position[0] + this.size[0] - this.layout.windowCloseButtonSize[0] - this.layout.margin[0],
-				this.position[1]
-			),
-			this.layout.windowCloseButtonSize
-		);
 
 		// draw header
 		if(headerHovered)

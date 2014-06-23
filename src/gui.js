@@ -119,33 +119,16 @@ Gui.prototype.extend(
 		return mat4.create();
 	},
 
-	_beginLayout: function (wnd)
-	{
-		this.controlId = 0;
-		wnd.layout.beginLayout(wnd.position, wnd.size, this.horizontalGroupHeights);
-	},
-
-	_endLayout: function (wnd)
-	{
-		wnd.layout.endLayout();
-
-		if(wnd.autoSize)
-		{
-			wnd.size = wnd.layout.getAutoSizeWindowSize();
-		}
-	},
-
 	_beginControl: function (wnd)
 	{
-		var controlSize = this.controlSizes[this.controlId];
-		var rect = wnd.layout.beginControl(controlSize);
+		var rect = wnd.layout.beginControl();
 
 		this._context.save();
 		this._context.beginPath();
 		this._context.rect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
 		this._context.clip();
 
-		var hovered = PointRectTest(this.cursorPosition, rect.position, rect.size);
+		var hovered = PointRectTest(this.cursorPosition, rect.position, rect.size) && this.activeWindow == wnd;
 		var clicked = hovered && this.mouseDown;
 
 		if(clicked)
@@ -169,91 +152,58 @@ Gui.prototype.extend(
 		};
 	},
 
-	_endControl: function ()
+	_endControl: function (wnd)
 	{
-		var id = this.controlId;
+		wnd.layout.endControl();
 		this._context.restore();
-		this.controlId++;
-		return id;
 	},
 
 	_calculateControlSizes: function (wnd)
 	{
-		this.controlSizes = [];
-		this.horizontalGroupHeights = [];
-		var inHorizontalGroup = false;
-		var horizontalGroupMaxHeight = 0.0;
-
-		var addToHorizontalGroup = function (controlHeight)
-		{
-			if(inHorizontalGroup)
-			{
-				if(controlHeight > horizontalGroupMaxHeight)
-				{
-					horizontalGroupMaxHeight = controlHeight;
-				}
-			}
-		}
-
 		wnd.drawSelf(
 		{
 
 			beginHorizontalGroup: function ()
 			{
-				inHorizontalGroup = true;
-				horizontalGroupMaxHeight = 0.0;
+				wnd.layout.beginHorizontalGroup();
 			}.bind(this),
 
 			endHorizontalGroup: function ()
 			{
-				this.horizontalGroupHeights.push(horizontalGroupMaxHeight);
-				inHorizontalGroup = false;
+				wnd.layout.endHorizontalGroup();
 			}.bind(this),
 
 			label: function (message)
 			{
-				var controlSize = wnd._calculateLabelSize(this._context, message);
-				this.controlSizes.push(controlSize);
-				addToHorizontalGroup(controlSize[1]);
+				wnd.layout.prepareControl(wnd._calculateLabelSize(this._context, message));
 			}.bind(this),
 
 			button: function (label)
 			{
-				var controlSize = wnd._calculateButtonSize(this._context, label);
-				this.controlSizes.push(controlSize);
-				addToHorizontalGroup(controlSize[1]);
+				wnd.layout.prepareControl(wnd._calculateButtonSize(this._context, label));
 				return false;
 			}.bind(this),
 
 			inputbox: function (input, maxLength)
 			{
-				var controlSize = wnd._calculateInputBoxSize(this._context, maxLength);
-				this.controlSizes.push(controlSize);
-				addToHorizontalGroup(controlSize[1]);
+				wnd.layout.prepareControl(wnd._calculateInputBoxSize(this._context, maxLength));
 				return input;
 			}.bind(this),
 
 			textbox: function (input, rows, cols, readonly)
 			{
-				var controlSize = wnd._calculateTextBoxSize(this._context, rows, cols);
-				this.controlSizes.push(controlSize);
-				addToHorizontalGroup(controlSize[1]);
+				wnd.layout.prepareControl(wnd._calculateTextBoxSize(this._context, rows, cols));
 				return input;
 			}.bind(this),
 
 			image: function (resourceName)
 			{
-				var image = ResourceLoader.getContent(resourceName);
-				var controlSize = wnd._calculateImageSize(this._context, image);
-				this.controlSizes.push(controlSize);
-				addToHorizontalGroup(controlSize[1]);
+				wnd.layout.prepareControl(wnd._calculateImageSize(this._context, ResourceLoader.getContent(resourceName)));
 			}.bind(this),
 
 			checkbox: function (state)
 			{
-				var controlSize = wnd._calculateCheckBoxSize(this._context);
-				this.controlSizes.push(controlSize);
-				addToHorizontalGroup(controlSize[1]);
+				wnd.layout.prepareControl(wnd._calculateCheckBoxSize(this._context));
 			}.bind(this),
 
 		});
@@ -261,9 +211,6 @@ Gui.prototype.extend(
 
 	_drawControls: function (wnd, deltaTime)
 	{
-		this._calculateControlSizes(wnd);
-		this._beginLayout(wnd);
-
 		wnd.drawSelf(
 		{
 
@@ -281,14 +228,14 @@ Gui.prototype.extend(
 			{
 				var control = this._beginControl(wnd);
 				wnd._drawLabel(this._context, message, "white", control.rect.position);
-				this._endControl();
+				this._endControl(wnd);
 			}.bind(this),
 
 			button: function (label)
 			{
 				var control = this._beginControl(wnd);
 				wnd._drawButton(this._context, label, control.rect.position, control.rect.size, control.hovered, control.clicked);
-				this._endControl();
+				this._endControl(wnd);
 
 				if(control.clicked)
 				{
@@ -308,7 +255,7 @@ Gui.prototype.extend(
 				}
 
 				wnd._drawInputBox(this._context, input, control.rect.position, control.rect.size, control.hovered, control.clicked, control.active);
-				this._endControl();
+				this._endControl(wnd);
 
 				if(control.active)
 				{
@@ -334,8 +281,9 @@ Gui.prototype.extend(
 					this.keyBuffer = input;
 				}
 
-				wnd._drawTextBox(this._context, input, rows, cols, control.rect.position, control.rect.size, control.hovererd, control.clicked, active);
-				this._endControl();
+				wnd._drawTextBox(this._context, input, rows, cols, control.rect.position, control.rect.size, control.hovererd, control.clicked, control.active);
+
+				this._endControl(wnd);
 			}.bind(this),
 
 			image: function (resourceName)
@@ -343,24 +291,22 @@ Gui.prototype.extend(
 				var control = this._beginControl(wnd);
 				var image = ResourceLoader.getContent(resourceName);
 				wnd._drawImage(this._context, image, control.rect.position, control.rect.size);
-				this._endControl();
+				this._endControl(wnd);
 			}.bind(this),
 
 		});
-
-		this._endLayout(wnd);
 	},
 
 	_drawWindow: function (wnd, deltaTime)
 	{
-		var headerHovered = PointRectTest
+		var headerHovered = this.activeWindow == wnd && PointRectTest
 		(
 			this.cursorPosition,
 			wnd.position,
 			vec2.fromValues(wnd.size[0], wnd.layout.windowHeaderSize)
 		);
 
-		var closeButtonHovered = PointRectTest
+		var closeButtonHovered = this.activeWindow == wnd && PointRectTest
 		(
 			this.cursorPosition,
 			vec2.fromValues(wnd.position[0] + wnd.size[0] - wnd.layout.windowCloseButtonSize[0] - wnd.layout.margin[0], wnd.position[1]),
@@ -385,7 +331,7 @@ Gui.prototype.extend(
 			wnd.dragging = true;
 			vec2.subtract(wnd.dragAnchor, wnd.position, this.cursorPosition);
 		}
-		else if(wnd.dragging && this.mouseDown)
+		else if(this.activeWindow == wnd && wnd.dragging && this.mouseDown)
 		{
 			vec2.add(wnd.position, this.cursorPosition, wnd.dragAnchor);
 			wnd.position[0] = Clamp(wnd.position[0], 0.0, Renderer.screenWidth - wnd.size[0]);
@@ -396,9 +342,15 @@ Gui.prototype.extend(
 			wnd.dragging = false;
 		}
 
-		wnd._renderSelf(this._context, this.cursorPosition, deltaTime);
+		wnd._renderSelf(this._context, this.cursorPosition, deltaTime, headerHovered, closeButtonHovered);
 
+		wnd.layout.beginPrepareLayout();
+		this._calculateControlSizes(wnd);
+		wnd.layout.endPrepareLayout();
+
+		wnd.layout.beginLayout(wnd);
 		this._drawControls(wnd, deltaTime);
+		wnd.layout.endLayout(wnd);
 	},
 
 	_drawCanvas: function ()
@@ -418,6 +370,12 @@ Gui.prototype.extend(
 			if(!wnd.visible)
 			{
 				continue;
+			}
+
+			if(wnd.dragging)
+			{
+				this.activeWindow = wnd;
+				break;
 			}
 
 			var mouseOver = PointRectTest
