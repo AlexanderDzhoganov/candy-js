@@ -27,30 +27,7 @@ GuiWindow.extend(
 GuiWindow.prototype.extend(
 {
 
-	_getStyle: function (context, style, position, size)
-	{
-		var fillStyle = null;
-
-		if(typeof style == 'string')
-		{
-			fillStyle = style;
-		}
-		else
-		{
-			fillStyle = context.createLinearGradient(position[0], position[1], position[0], position[1] + size[1]);
-
-			var step = 1.0 / style.length;
-
-			for(var i = 0; i < style.length; i++)
-			{
-				fillStyle.addColorStop(i * step, style[i]);
-			}
-		}
-
-		return fillStyle;
-	},
-
-	_renderSelf: function (context, cursor, deltaTime, headerHovered, closeButtonHovered)
+	_renderSelf: function (context, cursor, deltaTime, windowHovered, headerHovered, closeButtonHovered)
 	{
 		if(!this.visible)
 		{
@@ -59,68 +36,54 @@ GuiWindow.prototype.extend(
 
 		this.deltaTime = deltaTime;
 		this.time += deltaTime;
+		context.font = this.layout.fontSize + "px " + this.layout.fontFamily;
 
 		// draw background
-		context.fillStyle = this.skin.window.backgroundColor;
-		context.fillRect(this.position[0], this.position[1], this.size[0], this.size[1]);
+		this._drawRect(context, this.skin.window.backgroundColor, { position: this.position, size: this.size });
+
+		var headerRect = { position: this.position, size: vec2.fromValues(this.size[0], this.layout.windowHeaderSize) };
+		var headerTextPosition = vec2.fromValues(this.position[0] + 2.0, this.position[1] + this.layout.windowHeaderSize / 2.0 + this.layout.fontSize / 2.0);
 
 		// draw header
 		if(headerHovered)
 		{
-			context.fillStyle = this._getStyle(context, this.skin.window.header.hovered, this.position, vec2.fromValues(this.size[0], this.layout.windowHeaderSize));
+			this._drawRect(context, this.skin.window.header.hovered, headerRect);
+			this._drawText(context, this.title, this.skin.window.headerText.hovered, headerTextPosition);
 		}
 		else
 		{
-			context.fillStyle = this._getStyle(context, this.skin.window.header.normal, this.position, vec2.fromValues(this.size[0], this.layout.windowHeaderSize));
+			this._drawRect(context, this.skin.window.header.normal, headerRect);
+			this._drawText(context, this.title, this.skin.window.headerText.normal, headerTextPosition);
+
 		}
 
-		context.fillRect(this.position[0], this.position[1], this.size[0], this.layout.windowHeaderSize);
-
-		context.font = this.layout.fontSize + "px " + this.layout.fontFamily;
-
-		if(headerHovered)
-		{
-			context.fillStyle = this.skin.window.headerText.hovered;
-		}
-		else
-		{
-			context.fillStyle = this.skin.window.headerText.normal;
-		}
-
-		context.fillText(this.title, this.position[0] + 2.0, this.position[1] + this.layout.windowHeaderSize / 2.0 + this.layout.fontSize / 2.0);
-
+		// draw close button
 		if(this.onClose)
 		{
+			var closeButtonRect =
+			{
+				position: vec2.fromValues(this.position[0] + this.size[0] - this.layout.windowCloseButtonSize[0] - this.layout.margin[0], this.position[1]),
+				size: this.layout.windowCloseButtonSize };
+
 			if(closeButtonHovered)
 			{
-				context.fillStyle = this.skin.window.closeButton.hovered;
+				this._drawRect(context, this.skin.window.closeButton.hovered, closeButtonRect);
 			}
 			else
 			{
-				context.fillStyle = this.skin.window.closeButton.normal;
+				this._drawRect(context, this.skin.window.closeButton.normal, closeButtonRect);
 			}
-
-			context.fillRect
-			(
-				this.position[0] + this.size[0] - this.layout.windowCloseButtonSize[0] - this.layout.margin[0],
-				this.position[1],
-				this.layout.windowCloseButtonSize[0],
-				this.layout.windowCloseButtonSize[1]
-			);
 		}
 
 		// draw border
-		if(cursor[0] >= this.position[0] && cursor[0] <= this.position[0] + this.size[0] && cursor[1] >= this.position[1] && cursor[1] <= this.position[1] + this.size[1])
+		if(windowHovered)
 		{
-			context.strokeStyle = this.skin.window.header.hovered;
+			this._strokeRect(context, this.skin.window.border.hovered, { position: this.position, size: this.size }, 1);
 		}
 		else
 		{
-			context.strokeStyle = this.skin.window.header.normal;
+			this._strokeRect(context, this.skin.window.border.normal, { position: this.position, size: this.size }, 1);
 		}
-
-		context.lineWidth = 1;
-		context.strokeRect(this.position[0], this.position[1], this.size[0], this.size[1]);
 	},
 
 	_calculateLabelSize: function (context, message)
@@ -141,44 +104,20 @@ GuiWindow.prototype.extend(
 		return vec2.fromValues(metrics.width + 32.0, 24.0);
 	},
 
-	_drawButton: function (context, label, position, size, hovered, clicked)
+	_drawButton: function (context, label, rect, state)
 	{ 
-		if(clicked)
-		{
-			context.fillStyle = this._getStyle(context, this.skin.button.background.clicked, position, size);
-			context.strokeStyle = this._getStyle(context, this.skin.button.background.clicked, position, size);
-
-		}
-		else if(hovered)
-		{
-			context.fillStyle = this._getStyle(context, this.skin.button.background.hovered, position, size);
-			context.strokeStyle = this._getStyle(context, this.skin.button.background.hovered, position, size);
-		}
-		else
-		{
-			context.fillStyle = this._getStyle(context, this.skin.button.background.normal, position, size);
-			context.strokeStyle = this._getStyle(context, this.skin.button.border.normal, position, size);
-		}
-
-		context.fillRect(position[0], position[1], size[0], size[1]);
-		context.lineWidth = this.skin.button.borderThickness;
-		context.strokeRect(position[0], position[1], size[0], size[1]);
-
-		if(clicked)
-		{
-			context.fillStyle = this._getStyle(context, this.skin.button.text.clicked, position, size);
-		}
-		else if(hovered)
-		{
-			context.fillStyle = this._getStyle(context, this.skin.button.text.hovered, position, size);
-		}
-		else
-		{
-			context.fillStyle = this._getStyle(context, this.skin.button.text.normal, position, size);
-		}
-
 		var metrics = context.measureText(label);
-		context.fillText(label, position[0] + (size[0] - metrics.width) / 2, position[1] + 16);
+		var textPosition = vec2.fromValues(rect.position[0] + (rect.size[0] - metrics.width) / 2, rect.position[1] + 16);
+
+		// background
+		this._drawRect(context, this.skin.button.background[state], rect);
+
+		// border
+		this._strokeRect(context, this.skin.button.border[state], rect, this.skin.button.borderThickness);
+
+		// text
+		this._drawText(context, label, this.skin.button.text[state], textPosition);
+
 		return size;
 	},
 
@@ -187,45 +126,20 @@ GuiWindow.prototype.extend(
 		return vec2.fromValues(maxLength * 6 + 32.0, 24.0);
 	},
 
-	_drawInputBox: function (context, input, position, size, hovered, clicked, active)
+	_drawInputBox: function (context, input, rect, state, active)
 	{
-		if(clicked)
-		{
-			context.fillStyle = this.skin.inputbox.background.clicked;
-			context.strokeStyle = this.skin.inputbox.border.clicked;
-		}
-		else if(hovered)
-		{
-			context.fillStyle = this.skin.inputbox.background.hovered;
-			context.strokeStyle = this.skin.inputbox.border.hovered;
-		}
-		else
-		{
-			context.fillStyle = this.skin.inputbox.background.normal;
-			context.strokeStyle = this.skin.inputbox.border.normal;
-		}
+		var textPosition = vec2.fromValues(rect.position[0] + this.layout.margin[0], rect.position[1] + 16);
 
-		context.fillRect(position[0], position[1], size[0], size[1]);
-		context.lineWidth = this.skin.inputbox.borderThickness;
-		context.strokeRect(position[0], position[1], size[0], size[1]);
+		// background
+		this._drawRect(context, this.skin.inputbox.background[state], rect);
 
-		if(clicked)
-		{
-			context.fillStyle = this.skin.inputbox.text.clicked;
-		}
-		else if(hovered)
-		{
-			context.fillStyle = this.skin.inputbox.text.hovered;
-		}
-		else
-		{
-			context.fillStyle = this.skin.inputbox.text.normal;
-		}
+		// border
+		this._strokeRect(context, this.skin.inputbox.border[state], rect, this.skin.button.borderThickness);
 
 		// text
-		var metrics = context.measureText(input);
-		context.fillText(input, position[0] + this.layout.margin[0], position[1] + 16);
+		this._drawText(context, input, this.skin.inputbox.text[state], textPosition);
 
+		var metrics = context.measureText(input);
 		if(active)
 		{
 			// edit line
@@ -233,8 +147,8 @@ GuiWindow.prototype.extend(
 			context.strokeStyle = "rgb(" + lineColor + "," + lineColor + "," + lineColor + ")";
 			context.beginPath();
 			context.lineWidth = 1;
-			context.moveTo(position[0] + this.layout.margin[0] * 1.5 + metrics.width, position[1] + 5);
-			context.lineTo(position[0] + this.layout.margin[0] * 1.5 + metrics.width, position[1] + 16 + this.layout.margin[1] - 5);
+			context.moveTo(rect.position[0] + this.layout.margin[0] * 1.5 + metrics.width, rect.position[1] + 5);
+			context.lineTo(rect.position[0] + this.layout.margin[0] * 1.5 + metrics.width, rect.position[1] + 16 + this.layout.margin[1] - 5);
 			context.stroke();
 		}
 
@@ -246,13 +160,57 @@ GuiWindow.prototype.extend(
 		return vec2.fromValues(image.width, image.height);
 	},
 
-	_drawImage: function (context, image, position, size)
+	_drawImage: function (context, image, rect)
 	{
+		// draw image
+		context.drawImage(image, rect.position[0], rect.position[1]);
+
+		// draw border
 		context.strokeStyle = this.skin.image.border.normal;
 		context.lineWidth = this.skin.inputbox.borderThickness;
-		context.drawImage(image, position[0], position[1]);
-		context.strokeRect(position[0], position[1], size[0], size[1]);
+		context.strokeRect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
 		return vec2.fromValues(image.width, image.height);
+	},
+
+	_getStyle: function (context, style, position, size)
+	{
+		var fillStyle = null;
+
+		if(typeof style == 'string')
+		{
+			fillStyle = style;
+		}
+		else
+		{
+			fillStyle = context.createLinearGradient(position[0], position[1], position[0], position[1] + size[1]);
+
+			var step = 1.0 / style.length;
+			for(var i = 0; i < style.length; i++)
+			{
+				fillStyle.addColorStop(i * step, style[i]);
+			}
+		}
+
+		return fillStyle;
+	},
+
+	_drawRect: function (context, style, rect)
+	{
+		context.fillStyle = this._getStyle(context, style, rect.position, rect.size);
+		context.fillRect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
+	},
+
+	_strokeRect: function (context, style, rect, lineWidth)
+	{
+		context.lineWidth = lineWidth;
+		context.strokeStyle = this._getStyle(context, style, rect.position, rect.size);
+		context.strokeRect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
+	},
+
+	_drawText: function (context, text, style, position)
+	{
+		context.fillStyle = this._getStyle(context, style, position, vec2.fromValues(position[0], this.layout.fontSize));
+		context.fillText(text, position[0], position[1]);
 	},
 
 });
