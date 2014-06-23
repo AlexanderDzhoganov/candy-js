@@ -41,10 +41,12 @@ Application.prototype.extend(
 		testTextBoxWindow.drawTitlebar = true;
 		testTextBoxWindow.resizable = true;
 
+		var multiLineText = "hello world,\nthis is some multiline text\n123456";
+
 		testTextBoxWindow.drawSelf = function (gui)
 		{
-			gui.textbox("hello world,\nthis is some multiline text\n123456", 64, 16, false);
-		};
+			multiLineText = gui.textbox(multiLineText, 64, 16, false);
+		}.bind(this);
 
 		testTextBoxWindow.show();
 

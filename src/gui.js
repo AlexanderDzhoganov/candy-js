@@ -25,6 +25,7 @@ var Gui = function ()
 
 	this._keyBuffer = "";
 	this._caretIndex = 0;
+	this._caretLineIndex = 0;
 
 	document.body.onclick = document.body.requestPointerLock || document.body.mozRequestPointerLock || document.body.webkitRequestPointerLock;
 
@@ -52,13 +53,34 @@ var Gui = function ()
 	{		
 		if (e.keyCode == 8) // backspace
 		{
-			this._keyBuffer = this._keyBuffer.slice(0, this._caretIndex - 1) + this._keyBuffer.slice(this._caretIndex, this._keyBuffer.length);
-
-			if(this._keyBuffer.length > 0)
+			if(this._keyBuffer.indexOf('\n') != -1)
 			{
-				this._caretIndex--;
+				var lines = this._keyBuffer.split('\n');
+				var line = lines[this._caretLineIndex];
+				line = line.slice(0, this._caretIndex - 1) + line.slice(this._caretIndex, line.length);
+				lines[this._caretLineIndex] = line;
+
+				this._keyBuffer = "";
+				for(var i = 0; i < lines.length; i++)
+				{
+					this._keyBuffer += lines[i] + '\n';
+				}
+
+				if(this._keyBuffer.length > 0)
+				{
+					this._caretIndex--;
+				}
 			}
-			
+			else
+			{
+				this._keyBuffer = this._keyBuffer.slice(0, this._caretIndex - 1) + this._keyBuffer.slice(this._caretIndex, this._keyBuffer.length);
+
+				if(this._keyBuffer.length > 0)
+				{
+					this._caretIndex--;
+				}
+			}
+
 			e.preventDefault();
 		}
 		else if (e.keyCode == 13) // enter
@@ -68,28 +90,92 @@ var Gui = function ()
 		}
 		else if (e.keyCode == 37) // left
 		{
-			this._caretIndex--;
-			if(this._caretIndex < 0)
+			if(this._keyBuffer.indexOf('\n') != -1)
 			{
-				this._caretIndex = 0;
+				this._caretIndex--;
+				if(this._caretIndex < 0)
+				{
+					var lines = this._keyBuffer.split('\n');
+					if(this._caretLineIndex > 0)
+					{
+						this._caretIndex = lines[this._caretLineIndex].length + 1;
+						this._caretLineIndex--;
+					}
+				}
 			}
+			else
+			{
+				this._caretIndex--;
+
+				if(this._caretIndex < 0)
+				{
+					this._caretIndex = 0;
+				}
+			}			
 		}
 		else if (e.keyCode == 39) // right
 		{
-			this._caretIndex++;
+			if(this._keyBuffer.indexOf('\n') != -1)
+			{
+				this._caretIndex++;
+				var lines = this._keyBuffer.split('\n');
+
+				if(this._caretIndex > lines[this._caretLineIndex].length)
+				{
+					this._caretIndex = lines[this._caretLineIndex].length;
+
+					if(this._caretLineIndex < lines.length)
+					{
+						this._caretLineIndex++;
+						this._caretIndex = 0;
+					}
+				}
+			}
+			else
+			{
+				this._caretIndex++;
+			}
 		}
 		else if (e.keyCode == 38) // up
 		{
-
+			this._caretLineIndex--;
+			if(this._caretLineIndex < 0)
+			{
+				this._caretLineIndex = 0;
+			}
 		}
 		else if (e.keyCode == 40) // down
 		{
+			this._caretLineIndex++;
 
+			var numNewLines = this._keyBuffer.match(/\n/g).length;
+			if(this._caretLineIndex > numNewLines)
+			{
+				this._caretLineIndex = numNewLines;
+			}
 		}
 		else
 		{
-			this._keyBuffer = this._keyBuffer.slice(0, this._caretIndex) + String.fromCharCode(e.which).toLowerCase() + this._keyBuffer.slice(this._caretIndex, this._keyBuffer.length);
-			this._caretIndex++;
+			if(this._keyBuffer.indexOf('\n') != -1)
+			{
+				var lines = this._keyBuffer.split('\n');
+				var line = lines[this._caretLineIndex];
+				line = line.slice(0, this._caretIndex) + String.fromCharCode(e.which).toLowerCase() + line.slice(this._caretIndex, line.length);
+				lines[this._caretLineIndex] = line;
+
+				this._keyBuffer = "";
+				for(var i = 0; i < lines.length; i++)
+				{
+					this._keyBuffer += lines[i] + '\n';
+				}
+
+				this._caretIndex++;
+			}
+			else
+			{
+				this._keyBuffer = this._keyBuffer.slice(0, this._caretIndex) + String.fromCharCode(e.which).toLowerCase() + this._keyBuffer.slice(this._caretIndex, this._keyBuffer.length);
+				this._caretIndex++;
+			}
 		}
 	}.bind(this));
 };
@@ -369,14 +455,22 @@ Gui.prototype.extend(
 			{
 				var control = this._beginControl(wnd);
 
-				if (control.active)
+				if (control.clicked)
 				{
 					this._keyBuffer = input;
+					this._caretIndex = 0;
 				}
 
-				wnd._drawTextBox(this._context, input, rows, cols, control, control.active, this._caretIndex);
-
+				wnd._drawTextBox(this._context, input, rows, cols, control, this._caretIndex, this._caretLineIndex);
 				this._endControl(wnd);
+
+				if(control.active)
+				{
+					var newInput = this._keyBuffer;
+					return newInput;
+				}
+
+				return input;
 			}.bind(this),
 
 			image: function (resourceName, width, height)

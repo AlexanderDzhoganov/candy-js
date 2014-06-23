@@ -226,7 +226,7 @@ GuiWindow.prototype.extend(
 		return vec2.fromValues(rows * 4.0, cols * this.layout.fontSize);
 	},
 
-	_drawTextBox: function (context, input, rows, cols, control, active)
+	_drawTextBox: function (context, input, rows, cols, control, caretIndex, caretLineIndex)
 	{
 		var rect = control.rect;
 		var state = control.state;
@@ -239,11 +239,28 @@ GuiWindow.prototype.extend(
 
 		var lines = input.split("\n");
 
+		context.translate(0.5, 0.5); // we do anti-antialiasing so our line is pretty
+
 		for(var i = 0; i < lines.length; i++)
 		{
 			var line = lines[i];
 			var y = 16.0 + i * (this.layout.fontSize + 2.0);
 			this._drawText(context, line, this.skin.textbox.text[state], vec2.fromValues(rect.position[0] + this.layout.margin[0], rect.position[1] + this.layout.margin[1] + y));
+
+			if (control.active && i == caretLineIndex)
+			{
+				var caretMetrics = context.measureText(line.slice(0, caretIndex));
+				var caretY = (this.layout.fontSize + 2.0) * i;
+
+				// edit line
+				var lineColor = Math.floor(((this.time % 1.0)) * 255.0);
+				context.strokeStyle = "rgb(" + lineColor + "," + lineColor + "," + lineColor + ")";
+				context.beginPath();
+				context.lineWidth = 1;
+				context.moveTo(rect.position[0] + this.layout.margin[0] + caretMetrics.width, rect.position[1] + this.layout.margin[1] + 4.0 + caretY);
+				context.lineTo(rect.position[0] + this.layout.margin[0] + caretMetrics.width, rect.position[1] + this.layout.fontSize + 4.0 + this.layout.margin[1] + caretY);
+				context.stroke();
+			}
 		}
 	},
 
