@@ -148,6 +148,7 @@ GuiWindow.prototype.extend(
 			context.strokeStyle = "rgb(" + lineColor + "," + lineColor + "," + lineColor + ")";
 			context.beginPath();
 			context.lineWidth = 1;
+			context.translate(0.5, 0.5); // we do anti-antialiasing so our line is pretty
 			context.moveTo(rect.position[0] + this.layout.margin[0] * 1.5 + metrics.width, rect.position[1] + 5);
 			context.lineTo(rect.position[0] + this.layout.margin[0] * 1.5 + metrics.width, rect.position[1] + 16 + this.layout.margin[1] - 5);
 			context.stroke();
