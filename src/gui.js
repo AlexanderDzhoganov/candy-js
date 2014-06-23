@@ -314,7 +314,7 @@ Gui.prototype.extend(
 	{
 		var windowHovered = this.activeWindow == wnd;
 
-		var headerHovered = this.activeWindow == wnd && PointRectTest
+		var headerHovered = this.activeWindow == wnd && wnd.drawTitlebar && PointRectTest
 		(
 			this.cursorPosition,
 			wnd.position,

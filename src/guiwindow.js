@@ -10,6 +10,8 @@ var GuiWindow = function (position, size, layout, skin)
 	this.autoSize = false;
 	this.onClose = null;
 
+	this.drawTitlebar = true;
+
 	this.visible = true;
 
 	this.dragging = false;
@@ -36,24 +38,27 @@ GuiWindow.prototype.extend(
 		// draw background
 		this._drawRect(context, this.skin.window.backgroundColor, { position: this.position, size: this.size });
 
-		var headerRect = { position: this.position, size: vec2.fromValues(this.size[0], this.layout.windowHeaderSize) };
-		var headerTextPosition = vec2.fromValues(this.position[0] + 2.0, this.position[1] + this.layout.windowHeaderSize / 2.0 + this.layout.fontSize / 2.0);
-
-		// draw header
-		if (headerHovered)
+		if(this.drawTitlebar)
 		{
-			this._drawRect(context, this.skin.window.header.hovered, headerRect);
-			this._drawText(context, this.title, this.skin.window.headerText.hovered, headerTextPosition);
-		}
-		else
-		{
-			this._drawRect(context, this.skin.window.header.normal, headerRect);
-			this._drawText(context, this.title, this.skin.window.headerText.normal, headerTextPosition);
+			var headerRect = { position: this.position, size: vec2.fromValues(this.size[0], this.layout.windowHeaderSize) };
+			var headerTextPosition = vec2.fromValues(this.position[0] + 2.0, this.position[1] + this.layout.windowHeaderSize / 2.0 + this.layout.fontSize / 2.0);
 
+			// draw header
+			if (headerHovered)
+			{
+				this._drawRect(context, this.skin.window.header.hovered, headerRect);
+				this._drawText(context, this.title, this.skin.window.headerText.hovered, headerTextPosition);
+			}
+			else
+			{
+				this._drawRect(context, this.skin.window.header.normal, headerRect);
+				this._drawText(context, this.title, this.skin.window.headerText.normal, headerTextPosition);
+
+			}
 		}
 
 		// draw close button
-		if (this.onClose)
+		if (this.onClose && this.drawTitlebar)
 		{
 			var closeButtonRect =
 			{

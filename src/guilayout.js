@@ -52,7 +52,7 @@ GuiLayout.prototype.extend(
 		this._prepareLayout = false;
 	},
 
-	beginLayout: function ()
+	beginLayout: function (wnd)
 	{
 		// reset control id
 		this._controlId = 0;
@@ -66,6 +66,11 @@ GuiLayout.prototype.extend(
 
 		// reset cursor
 		this._currentPosition = vec2.fromValues(this.margin[0], this.windowTopMargin + this.windowHeaderSize);
+
+		if(!wnd.drawTitlebar)
+		{
+			this._currentPosition[1] = this.windowTopMargin;
+		}
 	},
 
 	endLayout: function ()
@@ -135,7 +140,7 @@ GuiLayout.prototype.extend(
 				this._currentPosition[1] += this._horizontalGroupMaxHeight + this.margin[1];
 				this._currentPosition[0] = this.margin[0];
 
-				vec2.add(rect.position, this._windowPosition, this._currentPosition);
+				vec2.add(rect.position, wnd.position, this._currentPosition);
 			}
 
 			// increase horizontal group size if control is larger
