@@ -1,8 +1,9 @@
-var Material = function (name)
+var Material = function (vertexSource, fragmentSource, textureName)
 {
-	this._Name = name;
-	this._Program = null;
-	this._Textures = [];
+	var vertexSource = vertexSource;//
+	fragmentSource = fragmentSource; //Shader.GetSourceFromHTMLElement("fragment-shader");
+	this.program = Shader.CreateProgram(vertexSource, fragmentSource);
+	this.texture = new Texture(textureName);
 };
 
 Material.extend(
@@ -13,19 +14,4 @@ Material.extend(
 Material.prototype.extend(
 {
 
-	getName: function()
-	{
-		return this._Name;
-	},
-
-	getProgram: function()
-	{
-		return this._Program;
-	},
-
-	getTextures: function()
-	{
-		return this._Textures;
-	}
-	
 });
