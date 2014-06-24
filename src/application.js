@@ -161,13 +161,18 @@ Application.prototype.extend(
 			}
 		}
 
-		var vertSource = Shader.GetSourceFromHTMLElement("vertex-shader");
-		var fragSource = Shader.GetSourceFromHTMLElement("fragment-shader");
+		var vertSource = ResourceLoader.getContent("terrain_vertex");
+		var fragSource = ResourceLoader.getContent("terrain_fragment");
+		var program = Shader.CreateProgram(vertSource, fragSource);
+
+		var material = new Material("TerrainMaterial");
+		material.setProgram(program);
+		material.addTexture(new Texture("grass"));
 
 		var terrainGameObject = new GameObject("terrain01");
 		terrainGameObject.addComponent(new TerrainMeshProvider(data, size_x, size_y));
 		terrainGameObject.addComponent(new MeshRenderer());
-		terrainGameObject.getComponent("renderer").material = new Material(vertSource, fragSource, "grass");
+		terrainGameObject.getComponent("renderer").material = material;
 
 		this.sceneGraph.insert(terrainGameObject);
 	},

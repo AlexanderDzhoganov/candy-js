@@ -6,6 +6,8 @@ var ResourceLoader = new ResourceLoader(
 	"heightmap": "heightmap.png",
 	"cursor": "cursor.png",
 	"grass": "grass.png",
+	"terrain_vertex": "shaders/terrain.vs",
+	"terrain_fragment": "shaders/terrain.fs",
 }, function (resName, progress, final)
 {
 	// update progress bar
