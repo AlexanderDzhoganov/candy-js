@@ -336,6 +336,7 @@ GuiControl.prototype.extend(
 				control.resourceName = resourceName;
 				control.width = width;
 				control.height = height;
+				control.image = ResourceLoader.getContent(resourceName);
 
 				this.controlList.push(['image', control]);
 				this._endControl(wnd);
