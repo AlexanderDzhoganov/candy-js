@@ -373,12 +373,11 @@ GuiControl.prototype.extend(
 				control.width = width;
 				control.height = height;
 				control.selectedIndex = selectedIndex;
-				this.controlList.push(['listbox', control]);
 				var hoveredItem = null;
 
 				if(control.hovered)
 				{
-					hoveredItem = Math.floor((control.relativeMousePosition[1] - 8.0) / wnd.layout.fontSize);
+					hoveredItem = Math.floor(control.relativeMousePosition[1] / ptsToPixels(wnd.layout.fontSize));
 
 					if(control.clicked)
 					{
@@ -394,7 +393,11 @@ GuiControl.prototype.extend(
 					{
 						hoveredItem = null;
 					}
+
+					control.hoveredItem = hoveredItem;
 				}
+
+				this.controlList.push(['listbox', control]);
 
 				this._endControl(wnd);
 
@@ -464,164 +467,5 @@ GuiControl.prototype.extend(
 			}
 		}
 	},
-
-	/*	
-
-		wnd.drawSelf(
-		{
-
-			beginHorizontalGroup: function ()
-			{
-				wnd.layout.beginHorizontalGroup();
-			}.bind(this),
-
-			endHorizontalGroup: function ()
-			{
-				wnd.layout.endHorizontalGroup(wnd);
-			}.bind(this),
-
-			horizontalSeparator: function ()
-			{
-				var control = this._beginControl(wnd);
-				GuiRenderer.drawHorizontalSeparator(this._context, wnd, control.rect);
-				this._endControl(wnd);
-			}.bind(this),
-
-			label: function (message)
-			{
-				var control = this._beginControl(wnd);
-				
-				this._endControl(wnd);
-			}.bind(this),
-
-			button: function (label)
-			{
-				var control = this._beginControl(wnd);
-				
-				this._endControl(wnd);
-
-				if (control.clicked)
-				{
-					return true;
-				}
-
-				return false;
-			}.bind(this),
-
-			inputbox: function (input, maxLength)
-			{
-				var control = this._beginControl(wnd);
-				
-				if (control.clicked)
-				{
-					var caretIndex = 0;
-
-					this._input.setKeyBuffer(input);
-					caretIndex = GuiRenderer.calculateInputBoxCaretIndex(this._context, wnd, input, control);
-
-					if(caretIndex > input.length + 1)
-					{
-						caretIndex = input.length + 1;
-					}
-
-					this._input.setCaretIndex(caretIndex);
-					control.caret[0] = caretIndex;
-				}
-
-
-				this._endControl(wnd);
-
-				if (control.active)
-				{
-					var newInput = this._input.getKeyBuffer();
-
-					if(newInput.length > maxLength)
-					{
-						newInput = newInput.slice(0, maxLength);
-					}
-
-					return newInput;
-				}
-
-				return input;
-			}.bind(this),
-
-			textbox: function (input, rows, cols, readonly)
-			{
-				var control = this._beginControl(wnd);
-
-				if (control.clicked)
-				{
-					this._input.setKeyBuffer(input);
-					control.caret = GuiRenderer.calculateTextBoxCaretIndex(this._context, wnd, input, rows, cols, control);
-					this._input.setCaret(control.caret);
-				}
-
-				this._endControl(wnd);
-
-				if(control.active)
-				{
-					var newInput = this._input.getKeyBuffer();
-					return newInput;
-				}
-
-				return input;
-			}.bind(this),
-
-			image: function (resourceName, width, height)
-			{
-				var control = this._beginControl(wnd);
-				var image = ResourceLoader.getContent(resourceName);
-				
-				this._endControl(wnd);
-			}.bind(this),
-
-			checkbox: function (checked)
-			{
-				var control = this._beginControl(wnd);
-				this._endControl(wnd);
-
-				if (control.clicked)
-				{
-					return !checked;
-				}
-
-				return checked;
-			}.bind(this),
-
-			listbox: function (items, width, height, selectedIndex)
-			{
-				var control = this._beginControl(wnd);
-				var hoveredItem = null;
-
-				if(control.hovered)
-				{
-					hoveredItem = Math.floor(control.relativeMousePosition[1] / ptsToPixels(wnd.layout.fontSize));
-					
-					if(control.clicked)
-					{
-						selectedIndex = hoveredItem;
-
-						if(selectedIndex < 0 || selectedIndex >= items.length)
-						{
-							selectedIndex = null; 
-						}
-					}
-
-					if(hoveredItem < 0 || 	hoveredItem >= items.length)
-					{
-						hoveredItem = null;
-					}
-				}
-
-				this._endControl(wnd);
-
-				return selectedIndex;
-			}.bind(this),
-
-		});
-
-		wnd.layout.endLayout(wnd);
-	},*/
 
 });
