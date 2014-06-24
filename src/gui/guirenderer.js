@@ -173,7 +173,7 @@ var GuiRenderer =
 			context.strokeStyle = "rgb(" + lineColor + "," + lineColor + "," + lineColor + ")";
 			context.beginPath();
 			context.lineWidth = 1;
-			context.translate(0.5, 0.5); // we do anti-antialiasing so our line is pretty
+			//context.translate(0.5, 0.5); // we do anti-antialiasing so our line is pretty
 			context.moveTo(control.rect.position[0] + wnd.layout.margin[0] + caretMetrics.width, control.rect.position[1] + 5);
 			context.lineTo(control.rect.position[0] + wnd.layout.margin[0] + caretMetrics.width, control.rect.position[1] + 16 + wnd.layout.margin[1] - 5);
 			context.stroke();
@@ -230,7 +230,7 @@ var GuiRenderer =
 
 		var lines = input.split("\n");
 
-		context.translate(0.5, 0.5); // we do anti-antialiasing so our line is pretty
+	//	context.translate(0.5, 0.5); // we do anti-antialiasing so our line is pretty
 
 		for(var i = 0; i < lines.length; i++)
 		{
@@ -392,7 +392,7 @@ var GuiRenderer =
 		context.strokeStyle = this._getStyle(context, style, vec2.fromValues(x0, y0), vec2.fromValues(x1, y1));
 		context.beginPath();
 		context.lineWidth = width;
-		context.translate(0.5, 0.5); // we do anti-antialiasing so our line is pretty
+		//context.translate(0.5, 0.5); // we do anti-antialiasing so our line is pretty
 		context.moveTo(x0, y0);
 		context.lineTo(x1, y1);
 		context.stroke();
