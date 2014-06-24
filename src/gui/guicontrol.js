@@ -258,6 +258,7 @@ GuiControl.prototype.extend(
 
 				if (control.clicked)
 				{
+					this._input.setMultiline( false );
 					this._input.setKeyBuffer(input.toString(), maxLength);
 					var caretIndex = GuiRenderer.calculateInputBoxCaretIndex(this._context, wnd, this._input.getKeyBuffer(), control);
 
@@ -322,8 +323,10 @@ GuiControl.prototype.extend(
 				control.readonly = readonly;
 				this.controlList.push(['textbox', control]);
 
+
 				if (control.clicked)
 				{
+					this._input.setMultiline( true );
 					this._input.setKeyBuffer(input);
 					control.caret = GuiRenderer.calculateTextBoxCaretIndex(this._context, wnd, input, rows, cols, control);
 					this._input.setCaret(control.caret);

@@ -6,6 +6,7 @@ var GuiInput = function ()
 	this._mouseUp = false;
 	this._keyBuffer = "";
 	this._keyBufferMaxLength = 4096;
+	this._keyBufferMultiline = false;
 	this._caretIndex = 0;
 	this._caretLineIndex = 0;
 	this._enterDown = false;
@@ -121,11 +122,15 @@ GuiInput.prototype.extend(
 		this._caretLineIndex = lineIndex;
 	},
 
+	setMultiline: function( multi ) {
+		this._keyBufferMultiline = multi;
+	},
+
 	// private
 
 	_injectBackspace: function ()
 	{
-		if(this._keyBuffer.indexOf('\n') != -1)
+		if(this._keyBufferMultiline)
 		{
 			var lines = this._keyBuffer.split('\n');
 			// var line = lines[this._caretLineIndex];
@@ -144,11 +149,11 @@ GuiInput.prototype.extend(
 			// 	this._caretIndex--;
 			// }
 			var line = lines[this._caretLineIndex];
+			line =line.split("");	
 
-				line =line.split("");
+			console.log(line, this._caretIndex - 1);
 
-			if( line[this._caretIndex - 1] ) {
-				console.log(line, this._caretIndex);
+			if( this._caretIndex > 0 && line[this._caretIndex - 1] ) {
 
 				line.splice(this._caretIndex - 1, 1);
 				line = line.join("");
@@ -173,17 +178,22 @@ GuiInput.prototype.extend(
 		}
 		else
 		{
-			this._keyBuffer = this._keyBuffer.slice(0, this._caretIndex - 2) + this._keyBuffer.slice(this._caretIndex - 1, this._keyBuffer.length);
-			if(this._keyBuffer.length > 0)
-			{
-				this._caretIndex--;
+			if( this._caretIndex > 0 ) {
+				this._keyBuffer = this._keyBuffer.split("");
+				this._keyBuffer.splice(this._caretIndex - 1, 1);
+				this._keyBuffer = this._keyBuffer.join("");
+
+				if(this._keyBuffer.length > 0)
+				{
+					this._caretIndex--;
+				}
 			}
 		}
 	},
 
 	_injectEnter: function ()
 	{
-		if(this._keyBuffer.indexOf('\n') != -1)
+		if(this._keyBufferMultiline)
 		{
 			var lines = this._keyBuffer.split('\n');
 			var line = lines[this._caretLineIndex];
@@ -207,7 +217,7 @@ GuiInput.prototype.extend(
 
 	_injectUp: function ()
 	{
-		if(this._keyBuffer.indexOf('\n') == -1)
+		if(this._keyBufferMultiline)
 		{
 			return;
 		}
@@ -227,7 +237,7 @@ GuiInput.prototype.extend(
 
 	_injectDown: function ()
 	{
-		if(this._keyBuffer.indexOf('\n') == -1)
+		if(this._keyBufferMultiline)
 		{
 			return;
 		}
@@ -250,7 +260,7 @@ GuiInput.prototype.extend(
 
 	_injectLeft: function ()
 	{
-		if(this._keyBuffer.indexOf('\n') != -1)
+		if(this._keyBufferMultiline)
 		{
 			this._caretIndex--;
 			if(this._caretIndex < 0)
@@ -276,7 +286,7 @@ GuiInput.prototype.extend(
 
 	_injectRight: function ()
 	{
-		if(this._keyBuffer.indexOf('\n') != -1)
+		if(this._keyBufferMultiline)
 		{
 			this._caretIndex++;
 			var lines = this._keyBuffer.split('\n');
@@ -305,7 +315,7 @@ GuiInput.prototype.extend(
 			return;
 		}
 
-		if(this._keyBuffer.indexOf('\n') != -1)
+		if(this._keyBufferMultiline)
 		{
 			var lines = this._keyBuffer.split('\n');
 			var line = lines[this._caretLineIndex];
