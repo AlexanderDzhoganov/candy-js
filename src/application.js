@@ -29,12 +29,12 @@ Application.prototype.extend(
 		//Gui.debugLayout = true;
 
 		var skin = new GuiSkin();
-/*
+
 		this._FirstPersonControllerConfigWindow = this._FirstPersonController.getConfigWindow();
 		this._FirstPersonControllerConfigWindow.show();
 
 		this._openResourceViewer();
-*/
+
 		var testTextBoxWindow = new GuiWindow(vec2.fromValues(512, 256), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
 		testTextBoxWindow.title = "TextBox test";
 		testTextBoxWindow.autoSize = true;
@@ -146,7 +146,7 @@ Application.prototype.extend(
 
 		Gui.bringToFront(testTextBoxWindow);
 
-/*
+
 		// initialize terrain
 		var heightmap = ResourceLoader.getContent("heightmap");
 		var pixels = ImageLoader.GetPixels(heightmap);
@@ -165,7 +165,7 @@ Application.prototype.extend(
 
 		this.terrain = new Terrain(data, size_x, size_y);
 		this.terrain.uploadVertexData();
-		this.sceneGraph.insert(this.terrain);*/
+		this.sceneGraph.insert(this.terrain);
 	},
 
 	update: function(deltaTime)
