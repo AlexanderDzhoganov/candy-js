@@ -1,14 +1,4 @@
-var GuiRenderer = function ()
-{
-
-};
-
-GuiRenderer.extend(
-{
-	
-});
-
-GuiRenderer.prototype.extend(
+var GuiRenderer = 
 {
 
 	drawWindow: function (context, wnd, cursor, deltaTime, windowHovered, headerHovered, closeButtonHovered, resizeHovered)
@@ -422,4 +412,4 @@ GuiRenderer.prototype.extend(
 		context.fillText(text, position[0], position[1]);
 	},
 
-});
+};

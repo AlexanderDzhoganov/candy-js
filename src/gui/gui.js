@@ -19,8 +19,7 @@ var Gui = function ()
 	this._activeControlSize = vec2.fromValues(0.0, 0.0);
 
 	this._input = new GuiInput();
-	this._renderer = new GuiRenderer();
-	this._controls = new GuiControl(this._input, this._renderer, this._context);
+	this._controls = new GuiControl(this._input, this._context);
 
 	this._previousTime = 0.0;
 };
@@ -170,7 +169,7 @@ Gui.prototype.extend(
 			wnd._resizing = false;
 		}
 
-		this._controls.drawWindow(this._context, wnd, this._input.getCursorPosition(), deltaTime, windowHovered, headerHovered, closeButtonHovered, resizeButtonHovered);
+		GuiRenderer.drawWindow(this._context, wnd, this._input.getCursorPosition(), deltaTime, windowHovered, headerHovered, closeButtonHovered, resizeButtonHovered);
 
 		this._controls.drawControls(wnd, deltaTime);
 	},
