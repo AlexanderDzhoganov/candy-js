@@ -52,11 +52,11 @@ var GuiRenderer =
 			}
 		}
 
-		if(this.resizable)
+		if(wnd.resizable)
 		{
-			var v0 = vec2.fromValues(wnd.position[0] + wnd.size[0] - wnd.layout.margin[0], wnd.position[1] + wnd.size[1]);
+			var v0 = vec2.fromValues(wnd.position[0] + wnd.size[0] - wnd.layout.margin[0] * 2.0, wnd.position[1] + wnd.size[1]);
 			var v1 = vec2.fromValues(wnd.position[0] + wnd.size[0], wnd.position[1] + wnd.size[1]);
-			var v2 = vec2.fromValues(wnd.position[0] + wnd.size[0], wnd.position[1] + wnd.size[1] - wnd.layout.margin[0]);
+			var v2 = vec2.fromValues(wnd.position[0] + wnd.size[0], wnd.position[1] + wnd.size[1] - wnd.layout.margin[0] * 2.0);
 
 			if(resizeHovered)
 			{
