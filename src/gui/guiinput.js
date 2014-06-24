@@ -59,52 +59,6 @@ var GuiInput = function ()
 
 		this._injectChar(key);
 	}.bind(this));
-
-/*	window.addEventListener("keydown", function(e)
-	{
-		if (e.keyCode == 8)
-		{
-			e.preventDefault();
-		}
-		else if (e.keyCode == 13) // enter
-		{
-			e.preventDefault();
-		}
-	});
-
-	window.addEventListener("keyup", function(e)
-	{		
-		if (e.keyCode == 8) // backspace
-		{
-			this._injectBackspace();
-			e.preventDefault();
-		}
-		else if (e.keyCode == 13) // enter
-		{
-			this._injectenter();
-			e.preventDefault();
-		}
-		else if (e.keyCode == 37) // left
-		{
-			this._injectLeft();
-		}
-		else if (e.keyCode == 39) // right
-		{
-			this._injectRight();
-		}
-		else if (e.keyCode == 38) // up
-		{
-			this._injectUp();
-		}
-		else if (e.keyCode == 40) // down
-		{
-			this._injectDown();
-		}
-		else
-		{
-			this._injectChar(e);
-		}
-	}.bind(this));*/
 };
 
 GuiInput.extend(
@@ -174,19 +128,47 @@ GuiInput.prototype.extend(
 		if(this._keyBuffer.indexOf('\n') != -1)
 		{
 			var lines = this._keyBuffer.split('\n');
+			// var line = lines[this._caretLineIndex];
+			// line = line.slice(0, this._caretIndex - 1) + line.slice(this._caretIndex, line.length);
+			// lines[this._caretLineIndex] = line;
+
+			// this._keyBuffer = "";
+			// for(var i = 0; i < lines.length; i++)
+			// {
+			// 	this._keyBuffer += lines[i] + '\n';
+			// }
+
+			// console.log(this._keyBuffer);
+			// if(this._keyBuffer.length > 0)
+			// {
+			// 	this._caretIndex--;
+			// }
 			var line = lines[this._caretLineIndex];
-			line = line.slice(0, this._caretIndex - 1) + line.slice(this._caretIndex, line.length);
-			lines[this._caretLineIndex] = line;
 
-			this._keyBuffer = "";
-			for(var i = 0; i < lines.length; i++)
-			{
-				this._keyBuffer += lines[i] + '\n';
-			}
+				line =line.split("");
 
-			if(this._keyBuffer.length > 0)
-			{
+			if( line[this._caretIndex - 1] ) {
+				console.log(line, this._caretIndex);
+
+				line.splice(this._caretIndex - 1, 1);
+				line = line.join("");
+
+				lines[this._caretLineIndex] = line;
+
+				this._keyBuffer = lines.join("\n");
+
 				this._caretIndex--;
+			} else if( lines[this._caretLineIndex - 1] ) {
+				console.log(lines[this._caretLineIndex - 1]);
+				var newLine = lines[this._caretLineIndex - 1].length;
+
+				lines[this._caretLineIndex - 1] += lines[this._caretLineIndex];
+				lines.splice(this._caretLineIndex, 1);
+
+				this._keyBuffer = lines.join("\n");
+
+				this._caretLineIndex--;
+				this._caretIndex = newLine;
 			}
 		}
 		else
@@ -235,6 +217,12 @@ GuiInput.prototype.extend(
 		{
 			this._caretLineIndex = 0;
 		}
+
+		var lines = this._keyBuffer.split('\n');
+		
+		if( this._caretIndex > lines[this._caretLineIndex].length) { 
+			this._caretIndex = lines[this._caretLineIndex].length;
+		}
 	},
 
 	_injectDown: function ()
@@ -247,9 +235,16 @@ GuiInput.prototype.extend(
 		this._caretLineIndex++;
 
 		var numNewLines = this._keyBuffer.match(/\n/g).length;
+
 		if(this._caretLineIndex > numNewLines)
 		{
 			this._caretLineIndex = numNewLines;
+		}
+
+		var lines = this._keyBuffer.split('\n');
+
+		if( this._caretIndex > lines[this._caretLineIndex].length) { 
+			this._caretIndex = lines[this._caretLineIndex].length;
 		}
 	},
 

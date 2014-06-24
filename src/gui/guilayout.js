@@ -1,7 +1,7 @@
 var GuiLayout = function ()
 {
 	// public
-	this.fontFamily = "Verdana";
+	this.fontFamily = "Courier New";
 	this.fontSize = 12;
 
 	this.margin = vec2.fromValues(8.0, 8.0);

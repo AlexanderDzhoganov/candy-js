@@ -149,6 +149,7 @@ var InputController = function()
     this.shiftKeys[188] = "<";
     this.shiftKeys[190] = ">";
     this.shiftKeys[191] = "?";
+    this.shiftKeys[32] = " ";
 };
 
 InputController.extend(
