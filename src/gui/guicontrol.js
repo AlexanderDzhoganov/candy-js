@@ -1,22 +1,28 @@
-var GuiControlRenderer = function (guiInput, context)
+var GuiControl = function (guiInput, guiRenderer, context)
 {
 	this._input = guiInput;
 	this._context = context;
-
-	this._activeWindow = null;
-	this._activeControlPosition = vec2.fromValues(0.0, 0.0);
-	this._activeControlSize = vec2.fromValues(0.0, 0.0);
-
-	this._previousTime = 0.0;
+	this._renderer = guiRenderer;
 };
 
-GuiControlRenderer.extend(
+GuiControl.extend(
 {
 	
 });
 
-GuiControlRenderer.prototype.extend(
+GuiControl.prototype.extend(
 {
+
+	drawWindow: function (context, wnd, cursor, deltaTime, windowHovered, headerHovered, closeButtonHovered, resizeHovered)
+	{
+		return this._renderer.drawWindow(context, wnd, cursor, deltaTime, windowHovered, headerHovered, closeButtonHovered, resizeHovered);
+	},
+
+	drawControls: function (wnd, deltaTime)
+	{
+		this._calculateControlSizes(wnd);
+		this._drawControls(wnd, deltaTime);
+	},
 
 	_beginControl: function (wnd)
 	{
@@ -33,9 +39,9 @@ GuiControlRenderer.prototype.extend(
 		this._context.clip();
 
 		var relativeMousePosition = vec2.create();
-		vec2.subtract(relativeMousePosition, Gui.cursorPosition, rect.position);
+		vec2.subtract(relativeMousePosition, this._input.getCursorPosition(), rect.position);
 
-		var hovered = PointRectTest(Gui.cursorPosition, rect.position, rect.size) && this._activeWindow == wnd;
+		var hovered = PointRectTest(this._input.getCursorPosition(), rect.position, rect.size) && Gui._activeWindow == wnd;
 		var clicked = hovered && this._input._mouseDown;
 
 		if(wnd._resizing || wnd._dragging)
@@ -46,8 +52,8 @@ GuiControlRenderer.prototype.extend(
 
 		if (clicked)
 		{
-			this._activeControlPosition = rect.position;
-			this._activeControlSize = rect.size;
+			Gui._activeControlPosition = rect.position;
+			Gui._activeControlSize = rect.size;
 			this._input._mouseDown = false;
 		}
 
@@ -64,10 +70,10 @@ GuiControlRenderer.prototype.extend(
 		}
 
 		var active =
-			this._activeControlPosition[0] == rect.position[0] &&
-			this._activeControlPosition[1] == rect.position[1] &&
-			this._activeControlSize[0] == rect.size[0] &&
-			this._activeControlSize[1] == rect.size[1];
+			Gui._activeControlPosition[0] == rect.position[0] &&
+			Gui._activeControlPosition[1] == rect.position[1] &&
+			Gui._activeControlSize[0] == rect.size[0] &&
+			Gui._activeControlSize[1] == rect.size[1];
 
 		return {
 
@@ -77,9 +83,8 @@ GuiControlRenderer.prototype.extend(
 			active: active,
 			state: state,
 			relativeMousePosition: relativeMousePosition,
-			mousePosition: Gui.cursorPosition,
-			caretIndex: this._input._caretIndex,
-			caretLineIndex: this._input._caretLineIndex,
+			mousePosition: this._input.getCursorPosition(),
+			caret: this._input.getCaret(),
 
 		};
 	},
@@ -99,6 +104,8 @@ GuiControlRenderer.prototype.extend(
 
 	_calculateControlSizes: function (wnd)
 	{
+		wnd.layout.beginPrepareLayout();
+
 		wnd.drawSelf(
 		{
 
@@ -114,54 +121,58 @@ GuiControlRenderer.prototype.extend(
 
 			horizontalSeparator: function ()
 			{
-				wnd.layout.prepareControl(wnd._calculateHorizontalSeparatorSize(this._context));
+				wnd.layout.prepareControl(this._renderer.calculateHorizontalSeparatorSize(this._context, wnd));
 			}.bind(this),
 
 			label: function (message)
 			{
-				wnd.layout.prepareControl(wnd._calculateLabelSize(this._context, message));
+				wnd.layout.prepareControl(this._renderer.calculateLabelSize(this._context, wnd, message));
 			}.bind(this),
 
 			button: function (label)
 			{
-				wnd.layout.prepareControl(wnd._calculateButtonSize(this._context, label));
+				wnd.layout.prepareControl(this._renderer.calculateButtonSize(this._context, wnd, label));
 				return false;
 			}.bind(this),
 
 			inputbox: function (input, maxLength)
 			{
-				wnd.layout.prepareControl(wnd._calculateInputBoxSize(this._context, maxLength));
+				wnd.layout.prepareControl(this._renderer.calculateInputBoxSize(this._context, wnd, maxLength));
 				return input;
 			}.bind(this),
 
 			textbox: function (input, rows, cols, readonly)
 			{
-				wnd.layout.prepareControl(wnd._calculateTextBoxSize(this._context, rows, cols));
+				wnd.layout.prepareControl(this._renderer.calculateTextBoxSize(this._context, wnd, rows, cols));
 				return input;
 			}.bind(this),
 
 			image: function (resourceName, width, height)
 			{
-				wnd.layout.prepareControl(wnd._calculateImageSize(this._context, ResourceLoader.getContent(resourceName), width, height));
+				wnd.layout.prepareControl(this._renderer.calculateImageSize(this._context, wnd, ResourceLoader.getContent(resourceName), width, height));
 			}.bind(this),
 
 			checkbox: function (checked)
 			{
-				wnd.layout.prepareControl(wnd._calculateCheckBoxSize(this._context));
+				wnd.layout.prepareControl(this._renderer.calculateCheckBoxSize(this._context, wnd));
 				return checked;
 			}.bind(this),
 
 			listbox: function (items, width, height, selectedIndex)
 			{
-				wnd.layout.prepareControl(wnd._calculateListBoxSize(this._context, width, height));
+				wnd.layout.prepareControl(this._renderer.calculateListBoxSize(this._context, wnd, width, height));
 				return selectedIndex;
 			}.bind(this),
 
 		});
+
+		wnd.layout.endPrepareLayout();
 	},
 
 	_drawControls: function (wnd, deltaTime)
 	{
+		wnd.layout.beginLayout(wnd);
+
 		wnd.drawSelf(
 		{
 
@@ -178,21 +189,21 @@ GuiControlRenderer.prototype.extend(
 			horizontalSeparator: function ()
 			{
 				var control = this._beginControl(wnd);
-				wnd._drawHorizontalSeparator(this._context, control.rect);
+				this._renderer.drawHorizontalSeparator(this._context, wnd, control.rect);
 				this._endControl(wnd);
 			}.bind(this),
 
 			label: function (message)
 			{
 				var control = this._beginControl(wnd);
-				wnd._drawLabel(this._context, message, "white", control.rect.position);
+				this._renderer.drawLabel(this._context, wnd, message, "white", control.rect.position);
 				this._endControl(wnd);
 			}.bind(this),
 
 			button: function (label)
 			{
 				var control = this._beginControl(wnd);
-				wnd._drawButton(this._context, label, control.rect, control.state);
+				this._renderer.drawButton(this._context, wnd, label, control.rect, control.state);
 				this._endControl(wnd);
 
 				if (control.clicked)
@@ -206,25 +217,30 @@ GuiControlRenderer.prototype.extend(
 			inputbox: function (input, maxLength)
 			{
 				var control = this._beginControl(wnd);
-
+				
 				if (control.clicked)
 				{
-					this._input._keyBuffer = input;
-					this._input._caretIndex = wnd._calculateInputBoxCaretIndex(this._context, input, control);
+					var caretIndex = 0;
+
+					this._input.setKeyBuffer(input);
+					caretIndex = this._renderer.calculateInputBoxCaretIndex(this._context, wnd, input, control);
+
+					if(caretIndex > input.length + 1)
+					{
+						caretIndex = input.length + 1;
+					}
+
+					this._input.setCaretIndex(caretIndex);
+					control.caret[0] = caretIndex;
 				}
 
-				if(this._input._caretIndex > input.length + 1)
-				{
-					this._input._caretIndex = input.length + 1;
-				}
-
-				wnd._drawInputBox(this._context, input, control);
+				this._renderer.drawInputBox(this._context, wnd, input, control);
 
 				this._endControl(wnd);
 
 				if (control.active)
 				{
-					var newInput = this._input._keyBuffer;
+					var newInput = this._input.getKeyBuffer();
 
 					if(newInput.length > maxLength)
 					{
@@ -243,18 +259,17 @@ GuiControlRenderer.prototype.extend(
 
 				if (control.clicked)
 				{
-					this._input._keyBuffer = input;
-					var carets = wnd._calculateTextBoxCaretIndex(this._context, input, rows, cols, control);
-					this._input._caretIndex = carets[0];
-					this._input._caretLineIndex = carets[1];
+					this._input.setKeyBuffer(input);
+					control.caret = this._renderer.calculateTextBoxCaretIndex(this._context, wnd, input, rows, cols, control);
+					this._input.setCaret(control.caret);
 				}
 
-				wnd._drawTextBox(this._context, input, rows, cols, control);
+				this._renderer.drawTextBox(this._context, wnd, input, rows, cols, control);
 				this._endControl(wnd);
 
 				if(control.active)
 				{
-					var newInput = this._input._keyBuffer;
+					var newInput = this._input.getKeyBuffer();
 					return newInput;
 				}
 
@@ -265,14 +280,14 @@ GuiControlRenderer.prototype.extend(
 			{
 				var control = this._beginControl(wnd);
 				var image = ResourceLoader.getContent(resourceName);
-				wnd._drawImage(this._context, image, control.rect);
+				this._renderer.drawImage(this._context, wnd, image, control.rect);
 				this._endControl(wnd);
 			}.bind(this),
 
 			checkbox: function (checked)
 			{
 				var control = this._beginControl(wnd);
-				wnd._drawCheckBox(this._context, checked, control.rect, control.state);
+				this._renderer.drawCheckBox(this._context, wnd, checked, control.rect, control.state);
 				this._endControl(wnd);
 
 				if (control.clicked)
@@ -308,13 +323,15 @@ GuiControlRenderer.prototype.extend(
 					}
 				}
 
-				wnd._drawListBox(this._context, items, selectedIndex, hoveredItem, control);
+				this._renderer.drawListBox(this._context, wnd, items, selectedIndex, hoveredItem, control);
 				this._endControl(wnd);
 
 				return selectedIndex;
 			}.bind(this),
 
 		});
+
+		wnd.layout.endLayout(wnd);
 	},
 
 });

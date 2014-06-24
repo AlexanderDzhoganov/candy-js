@@ -1,19 +1,28 @@
 var Gui = function ()
 {
 	// public
+
 	this.debugLayout = false;
 	this.renderingLayer = RENDERING_LAYER.GUI;
 	this.zOrder = 1;
+
 	// private
 
 	this._createCanvas();
 	this._createProgram();
 	this._createTexture();
 
-	this.windows = [];
+	this._windows = [];
+
+	this._activeWindow = null;
+	this._activeControlPosition = vec2.fromValues(0.0, 0.0);
+	this._activeControlSize = vec2.fromValues(0.0, 0.0);
 
 	this._input = new GuiInput();
-	this._renderer = new GuiControlRenderer(this._input, this._context);
+	this._renderer = new GuiRenderer();
+	this._controls = new GuiControl(this._input, this._renderer, this._context);
+
+	this._previousTime = 0.0;
 };
 
 Gui.extend(
@@ -23,10 +32,11 @@ Gui.extend(
 
 Gui.prototype.extend(
 {
+	// public
 
 	attachWindow: function (window)
 	{
-		this.windows.push(window);
+		this._windows.push(window);
 		window.visible = true;
 	},
 
@@ -41,13 +51,13 @@ Gui.prototype.extend(
 			}
 		}
 
-		remove(this.windows, window);
+		remove(this._windows, window);
 		window.visible = false;
 	},
 
 	bringToFront: function (wnd)
 	{
-		if (wnd == this.windows[this.windows.length - 1])
+		if (wnd == this._windows[this._windows.length - 1])
 		{
 			return;
 		}
@@ -73,27 +83,31 @@ Gui.prototype.extend(
 		return mat4.create();
 	},
 
+	// private
+
 	_drawWindow: function (wnd, deltaTime)
 	{
-		var windowHovered = this._activeWindow == wnd;
+		var active = this._activeWindow == wnd;
 
-		var headerHovered = this._activeWindow == wnd && wnd.drawTitlebar && PointRectTest
+		var windowHovered = active;
+
+		var headerHovered = active && wnd.drawTitlebar && PointRectTest
 		(
-			this.cursorPosition,
+			this._input.getCursorPosition(),
 			wnd.position,
 			vec2.fromValues(wnd.size[0], wnd.layout.windowHeaderSize)
 		);
 
-		var closeButtonHovered = this._activeWindow == wnd && PointRectTest
+		var closeButtonHovered = active && PointRectTest
 		(
-			this.cursorPosition,
+			this._input.getCursorPosition(),
 			vec2.fromValues(wnd.position[0] + wnd.size[0] - wnd.layout.windowCloseButtonSize[0] - wnd.layout.margin[0], wnd.position[1]),
 			wnd.layout.windowCloseButtonSize
 		);
 
-		var resizeButtonHovered = this._activeWindow == wnd && wnd.resizable && PointRectTest
+		var resizeButtonHovered = active && wnd.resizable && PointRectTest
 		(
-			this.cursorPosition,
+			this._input.getCursorPosition(),
 			vec2.fromValues(wnd.position[0] + wnd.size[0] - wnd.layout.margin[0], wnd.position[1] + wnd.size[1] - wnd.layout.margin[0]),
 			vec2.fromValues(wnd.position[0] + wnd.size[0], wnd.position[1] + wnd.size[1])
 		);
@@ -106,19 +120,19 @@ Gui.prototype.extend(
 			}
 		}
 
-		if (this._activeWindow == wnd && this._input._mouseDown)
+		if (active && this._input._mouseDown)
 		{
 			this.bringToFront(wnd);
 		}
 
-		if (this._activeWindow == wnd && headerHovered && this._input._mouseDown && !wnd._dragging)
+		if (active && headerHovered && this._input._mouseDown && !wnd._dragging)
 		{
 			wnd._dragging = true;
-			vec2.subtract(wnd._dragAnchor, wnd.position, this.cursorPosition);
+			vec2.subtract(wnd._dragAnchor, wnd.position, this._input.getCursorPosition());
 		}
-		else if (this._activeWindow == wnd && wnd._dragging && this._input._mouseDown)
+		else if (active && wnd._dragging && this._input._mouseDown)
 		{
-			vec2.add(wnd.position, this.cursorPosition, wnd._dragAnchor);
+			vec2.add(wnd.position, this._input.getCursorPosition(), wnd._dragAnchor);
 			wnd.position[0] = Clamp(wnd.position[0], 0.0, Renderer.screenWidth - wnd.size[0]);
 			wnd.position[1] = Clamp(wnd.position[1], 0.0, Renderer.screenHeight - wnd.size[1]);
 		}
@@ -127,17 +141,17 @@ Gui.prototype.extend(
 			wnd._dragging = false;
 		}
 
-		if(this._activeWindow == wnd && resizeButtonHovered && this._input._mouseDown && !wnd._resizing)
+		if(active && resizeButtonHovered && this._input._mouseDown && !wnd._resizing)
 		{
 			wnd._resizing = true;
 			var corner = vec2.create();
 			vec2.add(corner, wnd.position, wnd.size);
-			vec2.subtract(wnd._resizeAnchor, corner, this.cursorPosition);
+			vec2.subtract(wnd._resizeAnchor, corner, this._input.getCursorPosition());
 		}
-		else if(this._activeWindow == wnd && wnd._resizing && this._input._mouseDown)
+		else if(active && wnd._resizing && this._input._mouseDown)
 		{
 			var corner = vec2.create();
-			vec2.add(corner, wnd._resizeAnchor, this.cursorPosition);
+			vec2.add(corner, wnd._resizeAnchor, this._input.getCursorPosition());
 			var size = vec2.create();
 			vec2.subtract(size, corner, wnd.position);
 			wnd.size = size;
@@ -156,22 +170,14 @@ Gui.prototype.extend(
 			wnd._resizing = false;
 		}
 
-		wnd._renderSelf(this._context, this.cursorPosition, deltaTime, windowHovered, headerHovered, closeButtonHovered, resizeButtonHovered);
+		this._controls.drawWindow(this._context, wnd, this._input.getCursorPosition(), deltaTime, windowHovered, headerHovered, closeButtonHovered, resizeButtonHovered);
 
-		wnd.layout.beginPrepareLayout();
-		this._renderer._calculateControlSizes(wnd);
-		wnd.layout.endPrepareLayout();
-
-		wnd.layout.beginLayout(wnd);
-		this._renderer._drawControls(wnd, deltaTime);
-		wnd.layout.endLayout(wnd);
+		this._controls.drawControls(wnd, deltaTime);
 	},
 
 	_drawCanvas: function ()
 	{
 		this._context.clearRect(0, 0, Renderer.screenWidth, Renderer.screenHeight);
-
-		this.cursorPosition = vec2.fromValues(this._input._cursor.position[0], Renderer.screenHeight - this._input._cursor.position[1] - this._input._cursor.size[1] * 0.5);
 
 		var time = (new Date).getTime();
 		var deltaTime = (time - this._previousTime) / 1000.0;
@@ -179,9 +185,9 @@ Gui.prototype.extend(
 
 		this._activeWindow = null;
 
-		for (var i = 0; i < this.windows.length; i++)
+		for (var i = 0; i < this._windows.length; i++)
 		{
-			var wnd = this.windows[i];
+			var wnd = this._windows[i];
 			if (!wnd.visible)
 			{
 				continue;
@@ -199,15 +205,15 @@ Gui.prototype.extend(
 				break;
 			}
 
-			if (PointRectTest(this.cursorPosition, wnd.position, wnd.size))
+			if (PointRectTest(this._input.getCursorPosition(), wnd.position, wnd.size))
 			{
 				this._activeWindow = wnd;
 			}
 		}
 
-		for(var i = 0; i < this.windows.length; i++)
+		for(var i = 0; i < this._windows.length; i++)
 		{
-			var wnd = this.windows[i];
+			var wnd = this._windows[i];
 			if(!wnd.visible)
 			{
 				continue;

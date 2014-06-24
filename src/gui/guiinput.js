@@ -4,7 +4,6 @@ var GuiInput = function ()
 	this._cursor = new Cursor("cursor");
 	this._mouseDown = false;
 	this._mouseUp = false;
-
 	this._keyBuffer = "";
 	this._caretIndex = 0;
 	this._caretLineIndex = 0;
@@ -77,7 +76,56 @@ GuiInput.extend(
 
 GuiInput.prototype.extend(
 {
+	// public
 	
+	setKeyBuffer: function (buffer)
+	{
+		this._keyBuffer = buffer;
+	},
+
+	getKeyBuffer: function ()
+	{
+		return this._keyBuffer;
+	},
+
+	getCursorPosition: function ()
+	{
+		return vec2.fromValues(this._cursor.position[0], Renderer.screenHeight - this._cursor.position[1] - this._cursor.size[1] * 0.5);
+	},
+
+	getCaret: function ()
+	{
+		return [ this._caretIndex, this._caretLineIndex ];
+	},
+
+	getCaretIndex: function ()
+	{
+		return this._caretIndex;
+	},
+
+	getCaretLineIndex: function ()
+	{
+		return this._caretLineIndex;
+	},
+
+	setCaret: function (caret)
+	{
+		this._caretIndex = caret[0];
+		this._caretLineIndex = caret[1];
+	},
+
+	setCaretIndex: function (index)
+	{
+		this._caretIndex = index;
+	},
+
+	setCaretLineIndex: function (lineIndex)
+	{
+		this._caretLineIndex = lineIndex;
+	},
+
+	// private
+
 	_injectBackspace: function ()
 	{
 		if(this._keyBuffer.indexOf('\n') != -1)
