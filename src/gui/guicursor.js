@@ -1,4 +1,4 @@
-var Cursor = function (resourceName)
+var GuiCursor = function (resourceName)
 {
 	this.renderingLayer = RENDERING_LAYER.GUI;
 	this.zOrder = 255;
@@ -64,12 +64,12 @@ var Cursor = function (resourceName)
 	}.bind(this);
 };
 
-Cursor.extend(
+GuiCursor.extend(
 {
 	
 });
 
-Cursor.prototype.extend(
+GuiCursor.prototype.extend(
 {
 
 	renderSelf: function ()

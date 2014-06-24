@@ -13,11 +13,6 @@ SceneGraph.prototype.extend(
 
 	insert: function(sceneNode)
 	{
-		if (!this._verifySceneNodeType(sceneNode))
-		{
-			return;
-		}
-
 		if (!sceneNode._ChildNodes)
 		{
 			sceneNode._ChildNodes = [];
@@ -27,10 +22,17 @@ SceneGraph.prototype.extend(
 		{
 			sceneNode._Render = function (parentModelMatrix)
 			{
-				this.renderSelf();
+				var rendererComponent = this.getComponent("renderer");
+				if(rendererComponent)
+				{
+					rendererComponent.renderSelf();
+				}
 
-				var modelMatrix = mat4.create();
-				mat4.multiply(modelMatrix, parentModelMatrix, this.getModelMatrix());
+				var transformComponent = this.getComponent("transform");
+
+				var modelMatrix = transformComponent.getModelMatrix();
+
+				mat4.multiply(modelMatrix, parentModelMatrix, modelMatrix);
 
 				for (var i = 0; i < this._ChildNodes.length; i++)
 				{
@@ -38,9 +40,14 @@ SceneGraph.prototype.extend(
 				}
 			}
 
-			sceneNode.AddChild = function (childNode)
+			sceneNode.addChild = function (childNode)
 			{
-				sceneNode._ChildNodes.push(childNode);
+				this._ChildNodes.push(childNode);
+			}
+
+			sceneNode.getChildren = function ()
+			{
+				return this._ChildNodes; 
 			}
 		}
 
@@ -56,47 +63,14 @@ SceneGraph.prototype.extend(
 		GL.disable(GL.BLEND);
 
 		for (var i = 0; i < this._SceneNodes.length; i++)
-		{	
-			if(this._SceneNodes[i].renderingLayer == RENDERING_LAYER.PERSPECTIVE)
-			{
-					this._SceneNodes[i]._Render(modelMatrix);
-			}
+		{
+			this._SceneNodes[i]._Render(modelMatrix);
 		}
 
 		GL.disable(GL.CULL_FACE);
 		GL.disable(GL.DEPTH_TEST);
-		GL.enable(GL.BLEND); 
+		GL.enable(GL.BLEND);
 		GL.blendFunc(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA);
-
-		var list = [];
-		for (var i = 0; i < this._SceneNodes.length; i++)
-		{	
-			if(this._SceneNodes[i].renderingLayer == RENDERING_LAYER.GUI)
-			{
-				list.push(this._SceneNodes[i]);
-			}
-		}
-
-		list.sort(function(a, b)
-		{
-			return a.zOrder - b.zOrder;
-		});
-
-		for( var i = 0; i < list.length; i++)
-		{
-			list[i]._Render(modelMatrix);
-		}
-	},
-		
-	_verifySceneNodeType: function(sceneNode)
-	{
-		if (!sceneNode.getModelMatrix)
-		{
-			console.log("invalid scene node type, getModelMatrix() not found");
-			return false;
-		}
-
-		return true;
 	},
 
 });

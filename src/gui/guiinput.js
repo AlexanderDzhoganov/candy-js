@@ -1,7 +1,7 @@
 var GuiInput = function ()
 {
 	this._mousePosition = vec2.create();
-	this._cursor = new Cursor("cursor");
+	this._cursor = new GuiCursor("cursor");
 	this._mouseDown = false;
 	this._mouseUp = false;
 	this._keyBuffer = "";
@@ -77,7 +77,7 @@ GuiInput.extend(
 GuiInput.prototype.extend(
 {
 	// public
-	
+
 	setKeyBuffer: function (buffer)
 	{
 		this._keyBuffer = buffer;

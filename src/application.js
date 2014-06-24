@@ -24,7 +24,6 @@ Application.prototype.extend(
 		Renderer.setActiveCamera(this._FirstPersonController._Camera);
 
 		this.sceneGraph = new SceneGraph();
-		this.sceneGraph.insert(Gui);
 
 		//Gui.debugLayout = true;
 
@@ -146,7 +145,6 @@ Application.prototype.extend(
 
 		Gui.bringToFront(testTextBoxWindow);
 
-
 		// initialize terrain
 		var heightmap = ResourceLoader.getContent("heightmap");
 		var pixels = ImageLoader.GetPixels(heightmap);
@@ -163,9 +161,15 @@ Application.prototype.extend(
 			}
 		}
 
-		this.terrain = new Terrain(data, size_x, size_y);
-		this.terrain.uploadVertexData();
-		this.sceneGraph.insert(this.terrain);
+		var vertSource = Shader.GetSourceFromHTMLElement("vertex-shader");
+		var fragSource = Shader.GetSourceFromHTMLElement("fragment-shader");
+
+		var terrainGameObject = new GameObject("terrain01");
+		terrainGameObject.addComponent(new TerrainMeshProvider(data, size_x, size_y));
+		terrainGameObject.addComponent(new MeshRenderer());
+		terrainGameObject.getComponent("renderer").material = new Material(vertSource, fragSource, "grass");
+
+		this.sceneGraph.insert(terrainGameObject);
 	},
 
 	update: function(deltaTime)
@@ -176,6 +180,7 @@ Application.prototype.extend(
 	render: function()
 	{
 		this.sceneGraph.render();
+		Gui.renderSelf();
 	},
 
 	run: function (tickRate)

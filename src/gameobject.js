@@ -1,0 +1,50 @@
+var GameObject = function (name)
+{
+
+	this.name = name;
+
+	this._components =
+	{
+
+		"transform": new Transform(),
+
+	};
+
+};
+
+GameObject.extend(
+{
+	
+});
+
+GameObject.prototype.extend(
+{
+
+	addComponent: function (component)
+	{
+		console.log("adding " + component.type);
+
+		if(this._components[component.type])
+		{
+			console.log("addComponent error: component already exists on object");
+			return;
+		}
+
+		component.gameObject = this;
+		this._components[component.type] = component;
+	},
+
+	removeComponent: function (componentType)
+	{
+		var component = this._components[componentType];
+		this._components[componentType] = null;
+		component.gameObject = null;
+		return component;
+	},
+
+	getComponent: function (componentType)
+	{
+		return this._components[componentType];
+	},
+
+});
