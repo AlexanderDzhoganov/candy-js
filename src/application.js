@@ -137,36 +137,7 @@ Application.prototype.extend(
 
 		Gui.bringToFront(testTextBoxWindow);
 
-		// initialize terrain
-		var heightmap = ResourceLoader.getContent("heightmap");
-		var pixels = ImageLoader.GetPixels(heightmap);
-		var size_x = heightmap.width;
-		var size_y = heightmap.height;
-
-		var data = new Uint8Array(size_x * size_y);
-
-		for(var x = 0; x < size_x; x++)
-		{
-			for(var y = 0; y < size_y; y++)
-			{
-				data[x+y*size_x] = pixels[x*4+4*y*size_x];
-			}
-		}
-
-		var vertSource = ResourceLoader.getContent("terrain_vertex");
-		var fragSource = ResourceLoader.getContent("terrain_fragment");
-		var program = Shader.CreateProgram(vertSource, fragSource);
-
-		var material = new Material("TerrainMaterial");
-		material.setProgram(program);
-		material.addTexture(new Texture("grass"));
-
-		var terrainGameObject = new GameObject("terrain01");
-		terrainGameObject.addComponent(new TerrainMeshProvider(data, size_x, size_y));
-		terrainGameObject.addComponent(new MeshRenderer());
-		terrainGameObject.getComponent("renderer").material = material;
-
-		this.sceneGraph.insert(terrainGameObject);
+		var terrainGameObject = this._createTerrain();
 
 		var Mesh = new OBJMeshProvider("mesh");
 	},
@@ -231,6 +202,40 @@ Application.prototype.extend(
 		this.sceneGraph.insert(newPlayer);
 
 		return newPlayer
+	},
+
+	_createTerrain:  function()
+	{
+		// initialize terrain
+		var heightmap = ResourceLoader.getContent("heightmap");
+		var pixels = ImageLoader.GetPixels(heightmap);
+		var size_x = heightmap.width;
+		var size_y = heightmap.height;
+
+		var data = new Uint8Array(size_x * size_y);
+
+		for(var x = 0; x < size_x; x++)
+		{
+			for(var y = 0; y < size_y; y++)
+			{
+				data[x+y*size_x] = pixels[x * 4 + 4 * y * size_x];
+			}
+		}
+
+		var vertSource = ResourceLoader.getContent("terrain_vertex");
+		var fragSource = ResourceLoader.getContent("terrain_fragment");
+		var program = Shader.CreateProgram(vertSource, fragSource);
+
+		var material = new Material("TerrainMaterial");
+		material.setProgram(program);
+		material.addTexture(new Texture("grass"));
+
+		var newterrainGameObject = new GameObject("terrain01");
+		newterrainGameObject.addComponent(new TerrainMeshProvider(data, size_x, size_y));
+		newterrainGameObject.addComponent(new MeshRenderer());
+		newterrainGameObject.getComponent("renderer").material = material;
+
+		this.sceneGraph.insert(newterrainGameObject);
 	},
 
 	_openResourceViewer: function ()
