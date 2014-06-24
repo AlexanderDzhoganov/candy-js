@@ -256,7 +256,7 @@ GuiControl.prototype.extend(
 					return input;
 				}
 
-				control.input = input;
+				control.input = input.toString();
 				control.maxLength = maxLength;				
 				this.controlList.push(['inputbox', control]);
 
@@ -264,8 +264,8 @@ GuiControl.prototype.extend(
 				{
 					var caretIndex = 0;
 
-					this._input.setKeyBuffer(input);
-					caretIndex = GuiRenderer.calculateInputBoxCaretIndex(this._context, wnd, input, control);
+					this._input.setKeyBuffer(input.toString());
+					caretIndex = GuiRenderer.calculateInputBoxCaretIndex(this._context, wnd, input.toString(), control);
 
 					if(caretIndex > input.length + 1)
 					{
@@ -285,6 +285,17 @@ GuiControl.prototype.extend(
 					if(newInput.length > maxLength)
 					{
 						newInput = newInput.slice(0, maxLength);
+					}
+
+					if(typeof input === 'number')
+					{
+						newInput = parseFloat(newInput);
+						if(newInput == newInput)
+						{
+							return newInput;
+						}
+
+						return input;
 					}
 
 					return newInput;

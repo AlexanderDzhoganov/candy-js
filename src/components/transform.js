@@ -32,26 +32,20 @@ Transform.prototype.extend(
 
 		wnd.drawSelf = function (gui)
 		{
-
 			gui.label("Position");
 
 			gui.beginHorizontalGroup();
 
 			gui.label("x:");
-			var newX = parseFloat(gui.inputbox(this.position[0].toString(), 5));
-			this.position[0] = newX == newX ? newX : this.position[0];
+			this.position[0] = gui.inputbox(this.position[0], 5);
 
 			gui.label("y:");
-			var newY = parseFloat(gui.inputbox(this.position[1].toString(), 5));
-			this.position[1] = newY == newY ? newY : this.position[1];
+			this.position[1] = gui.inputbox(this.position[1], 5);
 
 			gui.label("z:");
-			var newZ = parseFloat(gui.inputbox(this.position[2].toString(), 5));
-			this.position[2] = newZ == newZ ? newY : this.position[2];
+			this.position[2] = gui.inputbox(this.position[2], 5);
 
 			gui.endHorizontalGroup();
-
-			
 
 		}.bind(this);
 
