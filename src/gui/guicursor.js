@@ -7,8 +7,8 @@ var GuiCursor = function (resourceName)
 
 	this._texture = new Texture(resourceName);
 
-	var vertexSource = Shader.GetSourceFromHTMLElement("gui-textured-quad-vertex-shader");
-	var fragmentSource = Shader.GetSourceFromHTMLElement("gui-textured-quad-fragment-shader");
+	var vertexSource = ResourceLoader.getContent("gui_quad_vertex");
+	var fragmentSource = ResourceLoader.getContent("gui_quad_fragment");
 	this._program = Shader.CreateProgram(vertexSource, fragmentSource);
 
 	var pixelStepX = 1.0 / Renderer.screenWidth;

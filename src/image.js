@@ -1,17 +1,5 @@
 var ImageLoader = 
 {
-	
-	LoadFromURL : function (url, callback)
-    {
-		var image = new Image();
-
-		image.onload = function()
-		{
-			callback(image);
-		}
-
-		image.src = url;
-    },
 
     GetPixels : function (img)
     {

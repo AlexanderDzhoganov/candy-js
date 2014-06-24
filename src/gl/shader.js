@@ -11,13 +11,7 @@ Shader.extend({
 
 Shader.prototype.extend(
 {
-
-	GetSourceFromHTMLElement: function(elementId)
-	{
-		var element = document.getElementById(elementId);
-		return element.innerHTML;
-	},
-
+	
 	CreateProgram: function(vertexSource, fragmentSource)
 	{
 		var program = GL.createProgram();

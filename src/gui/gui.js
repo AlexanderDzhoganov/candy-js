@@ -246,8 +246,8 @@ Gui.prototype.extend(
 
 	_createProgram: function ()
 	{
-		var vertexSource = Shader.GetSourceFromHTMLElement("gui-vertex-shader");
-		var fragmentSource = Shader.GetSourceFromHTMLElement("gui-fragment-shader");
+		var vertexSource = ResourceLoader.getContent("gui_vertex");
+		var fragmentSource = ResourceLoader.getContent("gui_fragment");
 		this._program = Shader.CreateProgram(vertexSource, fragmentSource);
 	},
 

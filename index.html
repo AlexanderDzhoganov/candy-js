@@ -43,112 +43,11 @@
 	<script src="src/resourceloader.js"></script>
 	<script src="src/inputcontroller.js"></script>
 	<script src="src/application.js"></script>
+	
 	<link rel="stylesheet" type="text/css" href="main.css">
 </head>
 
 <body>
-	<div id="gui-vertex-shader" hidden>
-		precision mediump float;
-
-		attribute vec4 position;
-
-		void main()
-		{
-			gl_Position = vec4(position.xy, 0, 1);
-		}
-	</div>
-
-	<div id="gui-fragment-shader" hidden>
-		precision mediump float;
-
-		uniform sampler2D texture;
-		uniform vec2 windowSize;
-
-		void main()
-		{
-			gl_FragColor = vec4(texture2D(texture, gl_FragCoord.xy / windowSize).xyzw);
-		}
-	</div>
-
-	<div id="gui-textured-quad-vertex-shader" hidden>
-		precision mediump float;
-
-		attribute vec3 position;
-		attribute vec2 uvs;
-
-		varying vec2 uvsOut;
-
-		uniform vec2 translation;
-
-		void main()
-		{
-			uvsOut = uvs;
-			gl_Position = vec4(translation + position.xy, 0, 1);
-		}
-	</div>
-
-	<div id="gui-textured-quad-fragment-shader" hidden>
-		precision mediump float;
-
-		varying vec2 uvsOut;
-
-		uniform sampler2D texture;
-		uniform vec2 windowSize;
-
-		void main()
-		{
-			gl_FragColor = vec4(texture2D(texture, uvsOut.xy).xyzw);
-		}
-	</div>
-
-	<div id="vertex-shader" hidden>
-		precision mediump float;
-
-		attribute vec3 position;
-		attribute vec3 normal;
-		attribute vec2 uvs;
-
-		varying vec3 normal_out;
-		varying vec2 uvs_out;
-
-		uniform mat4 view;
-		uniform mat4 viewProjection;
-		uniform mat4 model;
-		uniform mat4 inverseModelView;
-
-		uniform vec3 lightPosition;
-
-		varying vec3 lightPositionOut;
-
-		void main()
-		{
-			mat4 modelViewProj = viewProjection * model;
-			normal_out = (inverseModelView * vec4(normal, 0)).xyz;
-			uvs_out = uvs;
-			lightPositionOut = (view * vec4(normalize(lightPosition), 0.0)).xyz;
-			gl_Position = modelViewProj * vec4(position.xyz, 1.0);
-		}
-	</div>
-
-	<div id="fragment-shader" hidden>
-		precision mediump float;
-		varying vec3 normal_out;
-		varying vec2 uvs_out;
-
-		varying vec3 lightPositionOut;
-
-		uniform sampler2D texture;
-
-		void main()
-		{
-			vec3 lightDir = lightPositionOut;
-			float d = max(dot(normal_out, lightDir), 0.0);
-
-			vec3 color = vec3(texture2D(texture, uvs_out).xyz) * max(d, 0.0);
-			gl_FragColor = vec4(color, 1.0);
-		}
-	</div>
-
 	<canvas id="gl-canvas" style="border: none;" width="1280" height="720"></canvas>
 	<canvas id="dummy-canvas" hidden></canvas>
 	

@@ -8,6 +8,10 @@ var ResourceLoader = new ResourceLoader(
 	"grass": "grass.png",
 	"terrain_vertex": "shaders/terrain.vs",
 	"terrain_fragment": "shaders/terrain.fs",
+	"gui_vertex": "shaders/gui.vs",
+	"gui_fragment": "shaders/gui.fs",
+	"gui_quad_vertex": "shaders/gui_quad.vs",
+	"gui_quad_fragment": "shaders/gui_quad.fs",
 }, function (resName, progress, final)
 {
 	// update progress bar
