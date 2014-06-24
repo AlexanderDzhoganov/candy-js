@@ -23,6 +23,10 @@ var Clamp = function (x, min, max)
 	return x;
 }
 
+var ptsToPixels = function( pts ) {
+	return pts * 1.333333;
+}
+
 // Automatic eXtend of object and override of existing ones
 Object.extend = Object.prototype.extend = function(destination, props) 
 {

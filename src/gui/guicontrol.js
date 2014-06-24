@@ -298,19 +298,19 @@ GuiControl.prototype.extend(
 
 				if(control.hovered)
 				{
-					hoveredItem = Math.floor((control.relativeMousePosition[1] - 8.0) / wnd.layout.fontSize);
-
+					hoveredItem = Math.floor(control.relativeMousePosition[1] / ptsToPixels(wnd.layout.fontSize));
+					
 					if(control.clicked)
 					{
 						selectedIndex = hoveredItem;
 
-						if(selectedIndex >= items.length)
+						if(selectedIndex < 0 || selectedIndex >= items.length)
 						{
 							selectedIndex = null; 
 						}
 					}
 
-					if(hoveredItem >= items.length)
+					if(hoveredItem < 0 || 	hoveredItem >= items.length)
 					{
 						hoveredItem = null;
 					}
