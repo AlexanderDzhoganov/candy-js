@@ -61,15 +61,15 @@ Application.prototype.extend(
 
 			gui.label("horizontal group");
 
-			if(testClicked && gui.button("click me too"))
-			{
-				testClicked = false;
-			}
-
 			if(gui.button("click me"))
 			{
 				testClicked = true;
 				console.log("click me");				
+			}
+
+			if(testClicked && gui.button("click me too"))
+			{
+				testClicked = false;
 			}
 
 			gui.endHorizontalGroup();

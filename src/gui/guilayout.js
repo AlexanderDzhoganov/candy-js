@@ -122,6 +122,12 @@ GuiLayout.prototype.extend(
 
 	beginControl: function (wnd)
 	{
+		if(this._controlSizes.length <= this._controlId)
+		{
+			console.log("control sizes mismatch");
+			return null;
+		}
+
 		var rect =
 		{
 			position: vec2.create(),

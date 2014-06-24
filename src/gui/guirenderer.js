@@ -3,6 +3,8 @@ var GuiRenderer =
 
 	drawWindow: function (context, wnd, cursor, deltaTime, windowHovered, headerHovered, closeButtonHovered, resizeHovered)
 	{
+		context.setTransform(1, 0, 0, 1, 0, 0);
+
 		wnd.deltaTime = deltaTime;
 		wnd.time += deltaTime;
 

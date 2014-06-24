@@ -1,4 +1,4 @@
-var ResourceLoader = function(resources, step, callback)
+var ResourceLoader = function (resources, step, callback)
 {
 	this.step = typeof(step) === "function" ? step : function () {};
 	this.callback = typeof(callback) === "function" ? callback : function () {};
@@ -28,7 +28,8 @@ ResourceLoader.extend(
 
 ResourceLoader.prototype.extend(
 {
-	_ajaxLoad: function()
+	
+	_ajaxLoad: function ()
 	{
 		if (window.XMLHttpRequest)
 		{// code for IE7+, Firefox, Chrome, Opera, Safari

@@ -14,23 +14,39 @@ GuiControl.prototype.extend(
 
 	drawControls: function (wnd, deltaTime)
 	{
-		this._calculateControlSizes(wnd);
+		var controlsCount = this._calculateControlSizes(wnd);
+		this._interactControls(wnd, deltaTime);
+
+		var retries = 3;
+
+		while (this.recalculate && retries >= 0)
+		{
+			this._calculateControlSizes(wnd);
+			retries--;
+		}
+
+		if(retries <= 0)
+		{
+			console.log("controls desync, bailing..");
+			return;
+		}
+
 		this._drawControls(wnd, deltaTime);
 	},
 
 	_beginControl: function (wnd)
 	{
 		var rect = wnd.layout.beginControl(wnd);
+		if(rect == null)
+		{
+			this.recalculate = true;
+			return null;
+		}
 
 		if(Gui.debugLayout)
 		{
 			this.debugLayoutLastRect = rect;
 		}
-
-		this._context.save();
-		this._context.beginPath();
-		this._context.rect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
-		this._context.clip();
 
 		var relativeMousePosition = vec2.create();
 		vec2.subtract(relativeMousePosition, this._input.getCursorPosition(), rect.position);
@@ -85,18 +101,12 @@ GuiControl.prototype.extend(
 
 	_endControl: function (wnd)
 	{
-		this._context.restore();
-
-		if(this.debugLayout)
-		{
-			var rect = this.debugLayoutLastRect;
-			this._context.strokeStyle = 'green';
-			this._context.strokeRect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
-		}
+		
 	},
 
 	_calculateControlSizes: function (wnd)
 	{
+		var controlsCount = 0;
 		wnd.layout.beginPrepareLayout();
 
 		wnd.drawSelf(
@@ -115,56 +125,347 @@ GuiControl.prototype.extend(
 			horizontalSeparator: function ()
 			{
 				wnd.layout.prepareControl(GuiRenderer.calculateHorizontalSeparatorSize(this._context, wnd));
+				controlsCount++;
 			}.bind(this),
 
 			label: function (message)
 			{
 				wnd.layout.prepareControl(GuiRenderer.calculateLabelSize(this._context, wnd, message));
+				controlsCount++;
 			}.bind(this),
 
 			button: function (label)
 			{
 				wnd.layout.prepareControl(GuiRenderer.calculateButtonSize(this._context, wnd, label));
+				controlsCount++;
 				return false;
 			}.bind(this),
 
 			inputbox: function (input, maxLength)
 			{
 				wnd.layout.prepareControl(GuiRenderer.calculateInputBoxSize(this._context, wnd, maxLength));
+				controlsCount++;
 				return input;
 			}.bind(this),
 
 			textbox: function (input, rows, cols, readonly)
 			{
 				wnd.layout.prepareControl(GuiRenderer.calculateTextBoxSize(this._context, wnd, rows, cols));
+				controlsCount++;
 				return input;
 			}.bind(this),
 
 			image: function (resourceName, width, height)
 			{
 				wnd.layout.prepareControl(GuiRenderer.calculateImageSize(this._context, wnd, ResourceLoader.getContent(resourceName), width, height));
+				controlsCount++;
 			}.bind(this),
 
 			checkbox: function (checked)
 			{
 				wnd.layout.prepareControl(GuiRenderer.calculateCheckBoxSize(this._context, wnd));
+				controlsCount++;
 				return checked;
 			}.bind(this),
 
 			listbox: function (items, width, height, selectedIndex)
 			{
 				wnd.layout.prepareControl(GuiRenderer.calculateListBoxSize(this._context, wnd, width, height));
+				controlsCount++;
 				return selectedIndex;
 			}.bind(this),
 
 		});
 
 		wnd.layout.endPrepareLayout();
+		return controlsCount;
+	},
+
+	_interactControls: function (wnd, deltaTime)
+	{
+		wnd.layout.beginLayout(wnd);
+
+		this.controlList = [];
+		this.recalculate = false;
+
+		wnd.drawSelf(
+		{
+
+			beginHorizontalGroup: function ()
+			{
+				wnd.layout.beginHorizontalGroup();
+			}.bind(this),
+
+			endHorizontalGroup: function ()
+			{
+				wnd.layout.endHorizontalGroup(wnd);
+			}.bind(this),
+
+			horizontalSeparator: function ()
+			{
+				var control = this._beginControl(wnd);
+				if(control == null)
+				{
+					return;
+				}
+
+				this.controlList.push(['horizontalSeparator', control]);
+				this._endControl(wnd);
+			}.bind(this),
+
+			label: function (message)
+			{
+				var control = this._beginControl(wnd);
+				if(control == null)
+				{
+					return;
+				}
+
+				control.message = message;
+
+				this.controlList.push(['label', control]);
+				this._endControl(wnd);
+			}.bind(this),
+
+			button: function (label)
+			{
+				var control = this._beginControl(wnd);
+				if(control == null)
+				{
+					return false;
+				}
+				
+				this.controlList.push(['button', control]);
+				this._endControl(wnd);
+
+				control.label = label;
+
+				if (control.clicked)
+				{
+					return true;
+				}
+
+				return false;
+			}.bind(this),
+
+			inputbox: function (input, maxLength)
+			{
+				var control = this._beginControl(wnd);
+				if(control == null)
+				{
+					return input;
+				}
+
+				control.input = input;
+				control.maxLength = maxLength;				
+				this.controlList.push(['inputbox', control]);
+
+				if (control.clicked)
+				{
+					var caretIndex = 0;
+
+					this._input.setKeyBuffer(input);
+					caretIndex = GuiRenderer.calculateInputBoxCaretIndex(this._context, wnd, input, control);
+
+					if(caretIndex > input.length + 1)
+					{
+						caretIndex = input.length + 1;
+					}
+
+					this._input.setCaretIndex(caretIndex);
+					control.caret[0] = caretIndex;
+				}
+
+				this._endControl(wnd);
+
+				if (control.active)
+				{
+					var newInput = this._input.getKeyBuffer();
+
+					if(newInput.length > maxLength)
+					{
+						newInput = newInput.slice(0, maxLength);
+					}
+
+					return newInput;
+				}
+
+				return input;
+			}.bind(this),
+
+			textbox: function (input, rows, cols, readonly)
+			{
+				var control = this._beginControl(wnd);
+				if(control == null)
+				{
+					return input;
+				}
+
+				control.input = input;
+				control.rows = rows;
+				control.cols = cols;
+				control.readonly = readonly;
+				this.controlList.push(['textbox', control]);
+
+				if (control.clicked)
+				{
+					this._input.setKeyBuffer(input);
+					control.caret = GuiRenderer.calculateTextBoxCaretIndex(this._context, wnd, input, rows, cols, control);
+					this._input.setCaret(control.caret);
+				}
+
+				this._endControl(wnd);
+
+				if(control.active)
+				{
+					var newInput = this._input.getKeyBuffer();
+					return newInput;
+				}
+
+				return input;
+			}.bind(this),
+
+			image: function (resourceName, width, height)
+			{
+				var control = this._beginControl(wnd);
+				if(control == null)
+				{
+					return;
+				}
+				
+				control.resourceName = resourceName;
+				control.width = width;
+				control.height = height;
+
+				this.controlList.push(['image', control]);
+				this._endControl(wnd);
+			}.bind(this),
+
+			checkbox: function (checked)
+			{
+				var control = this._beginControl(wnd);
+				if(control == null)
+				{
+					return checked;
+				}
+				
+				control.checked = checked;
+				this.controlList.push(['checkbox', control]);
+				this._endControl(wnd);
+
+				if (control.clicked)
+				{
+					return !checked;
+				}
+
+				return checked;
+			}.bind(this),
+
+			listbox: function (items, width, height, selectedIndex)
+			{
+				var control = this._beginControl(wnd);
+				if(control == null)
+				{
+					return selectedIndex;
+				}
+				
+				control.items = items;
+				control.width = width;
+				control.height = height;
+				control.selectedIndex = selectedIndex;
+				this.controlList.push(['listbox', control]);
+				var hoveredItem = null;
+
+				if(control.hovered)
+				{
+					hoveredItem = Math.floor((control.relativeMousePosition[1] - 8.0) / wnd.layout.fontSize);
+
+					if(control.clicked)
+					{
+						selectedIndex = hoveredItem;
+
+						if(selectedIndex >= items.length)
+						{
+							selectedIndex = null; 
+						}
+					}
+
+					if(hoveredItem >= items.length)
+					{
+						hoveredItem = null;
+					}
+				}
+
+				this._endControl(wnd);
+
+				return selectedIndex;
+			}.bind(this),
+
+		});
+
+		wnd.layout.endLayout(wnd);
 	},
 
 	_drawControls: function (wnd, deltaTime)
 	{
-		wnd.layout.beginLayout(wnd);
+		//	console.log(this.controlList[i]);
+
+		for(var i = 0; i < this.controlList.length; i++)
+		{
+			var type = this.controlList[i][0];
+			var control = this.controlList[i][1];
+			var rect = control.rect;
+
+			this._context.save();
+			this._context.beginPath();
+			this._context.rect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
+			this._context.clip();
+
+			if(type == 'horizontalSeparator')
+			{
+				GuiRenderer.drawHorizontalSeparator(this._context, wnd, control.rect);
+			}
+			else if(type == 'label')
+			{
+				GuiRenderer.drawLabel(this._context, wnd, control.message, "white", control);
+			}
+			else if(type == 'button')
+			{
+				GuiRenderer.drawButton(this._context, wnd, control.label, control);
+			}
+			else if(type == 'inputbox')
+			{
+				GuiRenderer.drawInputBox(this._context, wnd, control.input, control);
+			}
+			else if(type == 'textbox')
+			{
+				GuiRenderer.drawTextBox(this._context, wnd, control.input, control.rows, control.cols, control);
+			}
+			else if(type == 'image')
+			{
+				GuiRenderer.drawImage(this._context, wnd, control.image, control);
+			}
+			else if(type == 'checkbox')
+			{
+				GuiRenderer.drawCheckBox(this._context, wnd, control.checked, control);
+			}
+			else if(type == 'listbox')
+			{
+				GuiRenderer.drawListBox(this._context, wnd, control.items, control.selectedIndex, control.hoveredItem, control);
+			}
+
+			this._context.restore();
+
+			if(this.debugLayout)
+			{
+				var rect = this.debugLayoutLastRect;
+				this._context.strokeStyle = 'green';
+				this._context.strokeRect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
+			}
+		}
+	},
+
+	/*	
 
 		wnd.drawSelf(
 		{
@@ -189,14 +490,14 @@ GuiControl.prototype.extend(
 			label: function (message)
 			{
 				var control = this._beginControl(wnd);
-				GuiRenderer.drawLabel(this._context, wnd, message, "white", control);
+				
 				this._endControl(wnd);
 			}.bind(this),
 
 			button: function (label)
 			{
 				var control = this._beginControl(wnd);
-				GuiRenderer.drawButton(this._context, wnd, label, control);
+				
 				this._endControl(wnd);
 
 				if (control.clicked)
@@ -227,7 +528,6 @@ GuiControl.prototype.extend(
 					control.caret[0] = caretIndex;
 				}
 
-				GuiRenderer.drawInputBox(this._context, wnd, input, control);
 
 				this._endControl(wnd);
 
@@ -257,7 +557,6 @@ GuiControl.prototype.extend(
 					this._input.setCaret(control.caret);
 				}
 
-				GuiRenderer.drawTextBox(this._context, wnd, input, rows, cols, control);
 				this._endControl(wnd);
 
 				if(control.active)
@@ -273,14 +572,13 @@ GuiControl.prototype.extend(
 			{
 				var control = this._beginControl(wnd);
 				var image = ResourceLoader.getContent(resourceName);
-				GuiRenderer.drawImage(this._context, wnd, image, control);
+				
 				this._endControl(wnd);
 			}.bind(this),
 
 			checkbox: function (checked)
 			{
 				var control = this._beginControl(wnd);
-				GuiRenderer.drawCheckBox(this._context, wnd, checked, control);
 				this._endControl(wnd);
 
 				if (control.clicked)
@@ -316,7 +614,6 @@ GuiControl.prototype.extend(
 					}
 				}
 
-				GuiRenderer.drawListBox(this._context, wnd, items, selectedIndex, hoveredItem, control);
 				this._endControl(wnd);
 
 				return selectedIndex;
@@ -325,6 +622,6 @@ GuiControl.prototype.extend(
 		});
 
 		wnd.layout.endLayout(wnd);
-	},
+	},*/
 
 });
