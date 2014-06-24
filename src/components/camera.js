@@ -43,6 +43,23 @@ Camera.prototype.extend(
 		return cameraMatrix;
 	},
 
+	createConfigWindow: function ()
+	{
+		var wnd = new GuiWindow(vec2.fromValues(0.0, 0.0), vec2.fromValues(400.0, 0.0), new GuiLayout(), new GuiSkin());
+		wnd.autoSize = true;
+		wnd.title = this.name;
+
+		wnd.drawSelf = function (gui)
+		{
+
+			gui.label("Field of view");
+			this.fov = parseFloat(gui.inputbox(this.fov.toString(), 4));
+
+		}.bind(this);
+
+		return wnd;
+	},
+
 	_CreateProjectionMatrix: function (width, height, fov, near, far)
 	{
 		var matrix = mat4.create();

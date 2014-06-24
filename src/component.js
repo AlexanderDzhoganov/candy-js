@@ -4,6 +4,7 @@ var Component = function ()
 	this.gameObject = null;
 	this.name = "Component";
 	this.type = "component";
+	this.enabled = true;
 
 };
 

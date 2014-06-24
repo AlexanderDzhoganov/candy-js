@@ -230,8 +230,7 @@ var GuiRenderer =
 
 		var lines = input.split("\n");
 
-	//	context.translate(0.5, 0.5); // we do anti-antialiasing so our line is pretty
-
+		
 		for(var i = 0; i < lines.length; i++)
 		{
 			var line = lines[i];
@@ -245,6 +244,7 @@ var GuiRenderer =
 				var caretMetrics = context.measureText(line.slice(0, caretIndex));
 				var caretY = (wnd.layout.fontSize + 2.0) * i;
 
+				//context.translate(0.5, 0.5); // we do anti-antialiasing so our line is pretty
 				// edit line
 				var lineColor = Math.floor(((wnd.time % 1.0)) * 255.0);
 				context.strokeStyle = "rgb(" + lineColor + "," + lineColor + "," + lineColor + ")";
@@ -253,6 +253,7 @@ var GuiRenderer =
 				context.moveTo(rect.position[0] + wnd.layout.margin[0] + caretMetrics.width, rect.position[1] + wnd.layout.margin[1] + 4.0 + caretY);
 				context.lineTo(rect.position[0] + wnd.layout.margin[0] + caretMetrics.width, rect.position[1] + wnd.layout.fontSize + 4.0 + wnd.layout.margin[1] + caretY);
 				context.stroke();
+				context.setTransform(1, 0, 0, 1, 0, 0);
 			}
 		}
 	},
@@ -335,7 +336,11 @@ var GuiRenderer =
 		for(var i = 0; i < items.length; i++)
 		{
 			var y = i * step;
-			var itemRect = { position: vec2.fromValues(control.rect.position[0] + 1.0, control.rect.position[1] + y + 1.0), size: vec2.fromValues(control.rect.size[0] - 2.0, wnd.layout.fontSize + 4.0)};
+			var itemRect =
+			{
+				position: vec2.fromValues(control.rect.position[0] + 1.0, control.rect.position[1] + y + 1.0),
+				size: vec2.fromValues(control.rect.size[0] - 2.0, wnd.layout.fontSize + 4.0)
+			};
 
 			var itemState = "normal";
 			if(hoveredIndex == i)
@@ -392,10 +397,11 @@ var GuiRenderer =
 		context.strokeStyle = this._getStyle(context, style, vec2.fromValues(x0, y0), vec2.fromValues(x1, y1));
 		context.beginPath();
 		context.lineWidth = width;
-		//context.translate(0.5, 0.5); // we do anti-antialiasing so our line is pretty
+		context.translate(0.5, 0.5); // we do anti-antialiasing so our line is pretty
 		context.moveTo(x0, y0);
 		context.lineTo(x1, y1);
 		context.stroke();
+		context.setTransform(1, 0, 0, 1, 0, 0);
 	},
 
 	_drawTriangle: function (context, style, a, b, c)
