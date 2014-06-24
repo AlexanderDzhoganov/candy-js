@@ -3,6 +3,7 @@ var ResourceLoader = new ResourceLoader(
 	"heightmap": "resources/images/heightmap.png",
 	"cursor": "resources/images/cursor.png",
 	"grass": "resources/images/grass.png",
+	"mesh": "resources/meshes/teapot_lowres.obj",
 	"terrain_vertex": "resources/shaders/terrain.vs",
 	"terrain_fragment": "resources/shaders/terrain.fs",
 	"gui_vertex": "resources/shaders/gui.vs",

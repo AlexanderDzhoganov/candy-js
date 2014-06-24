@@ -20,7 +20,7 @@ ResourceLoader.extend(
 	EXT:
 	{
 		image: ["jpg", "png", "gif"],
-		text: ["txt", "vs", "fs"],
+		text: ["txt", "vs", "fs", "obj"],
 		json: ["json"],
 		uint8array: ["bin"]
 	}
@@ -28,6 +28,21 @@ ResourceLoader.extend(
 
 ResourceLoader.prototype.extend(
 {
+	getResource: function(name)
+	{
+		return this.resources[name];
+	},
+
+	getContent: function(name)
+	{
+		return this.resources[name] ? this.resources[name].content : null;
+	},
+
+	getResources: function()
+	{
+		return this.resources;
+	},
+	
 	_ajaxLoad: function()
 	{
 		if (window.XMLHttpRequest)
@@ -203,21 +218,5 @@ ResourceLoader.prototype.extend(
 		}
 
 		this.step(resName, this.progress, this.numElements );
-	},
-
-	getResource: function(name)
-	{
-		return this.resources[name];
-	},
-
-	getContent: function(name)
-	{
-		return this.resources[name] ? this.resources[name].content : null;
-	},
-
-	getResources: function()
-	{
-		return this.resources;
 	}
-
 });

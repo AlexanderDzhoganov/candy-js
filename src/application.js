@@ -158,6 +158,8 @@ Application.prototype.extend(
 		terrainGameObject.getComponent("renderer").material = material;
 
 		this.sceneGraph.insert(terrainGameObject);
+
+		var Mesh = new SubMesh("mesh");
 	},
 
 	update: function(deltaTime)
