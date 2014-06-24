@@ -34,7 +34,7 @@ Application.prototype.extend(
 
 		this._openResourceViewer();
 
-		var testTextBoxWindow = this._createWindow("TextBox test", vec2.fromValues(512, 256), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
+		var testTextBoxWindow = this._createWindow("TextBox test", vec2.fromValues(0, 0), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
 
 		var multiLineText = "hello world,\nthis is some multiline text\n123456";
 
@@ -45,7 +45,7 @@ Application.prototype.extend(
 
 		testTextBoxWindow.show();
 
-		var testWindow = this._createWindow("test window", vec2.fromValues(512.0, 16.0), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
+		var testWindow = this._createWindow("test window", vec2.fromValues(0, 0), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
 
 		var testInput = "hello world";
 
