@@ -256,20 +256,14 @@ GuiControl.prototype.extend(
 					return input;
 				}
 
-				control.input = input.toString();
-				control.maxLength = maxLength;				
-				this.controlList.push(['inputbox', control]);
-
 				if (control.clicked)
 				{
-					var caretIndex = 0;
-
 					this._input.setKeyBuffer(input.toString());
-					caretIndex = GuiRenderer.calculateInputBoxCaretIndex(this._context, wnd, input.toString(), control);
+					var caretIndex = GuiRenderer.calculateInputBoxCaretIndex(this._context, wnd, this._input.getKeyBuffer(), control);
 
-					if(caretIndex > input.length + 1)
+					if(caretIndex > input.length)
 					{
-						caretIndex = input.length + 1;
+						caretIndex = input.length;
 					}
 
 					this._input.setCaretIndex(caretIndex);
@@ -278,27 +272,37 @@ GuiControl.prototype.extend(
 
 				this._endControl(wnd);
 
-				if (control.active)
+				if(control.active)
 				{
-					var newInput = this._input.getKeyBuffer();
+					control.input = this._input.getKeyBuffer();
 
-					if(newInput.length > maxLength)
+					if(control.input.length > maxLength)
 					{
-						newInput = newInput.slice(0, maxLength);
+						control.input = control.input.slice(0, maxLength);
+						this._input.setKeyBuffer(control.input);
 					}
+				}
+				else
+				{
+					control.input = input.toString();
+				}
+
+				control.maxLength = maxLength;
+				this.controlList.push(['inputbox', control]);
+
+				if (control.active && this._input._enterDown)
+				{
+					this._input._enterDown = false;
+
+					Gui._activeControlPosition = vec2.create();
+					Gui._activeControlSize = vec2.create();
 
 					if(typeof input === 'number')
 					{
-						newInput = parseFloat(newInput);
-						if(newInput == newInput)
-						{
-							return newInput;
-						}
-
-						return input;
+						return parseFloat(this._input.getKeyBuffer());
 					}
 
-					return newInput;
+					return this._input.getKeyBuffer();
 				}
 
 				return input;
@@ -423,8 +427,6 @@ GuiControl.prototype.extend(
 
 	_drawControls: function (wnd, deltaTime)
 	{
-		//	console.log(this.controlList[i]);
-
 		for(var i = 0; i < this.controlList.length; i++)
 		{
 			var type = this.controlList[i][0];

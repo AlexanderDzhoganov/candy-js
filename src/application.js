@@ -23,6 +23,8 @@ Application.prototype.extend(
 		var testObject = new GameObject("testMesh");
 		testObject.addComponent(new OBJMeshProvider("mesh"));
 		testObject.addComponent(new MeshRenderer());
+		testObject.getComponent("transform").position = vec3.fromValues(-128, -16, -120);
+		this.sceneGraph.insert(testObject);
 //		testObject.
 
 		var player = this._createPlayer(vec3.fromValues(-128, -16, -128));

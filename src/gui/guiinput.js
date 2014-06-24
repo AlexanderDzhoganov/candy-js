@@ -7,6 +7,7 @@ var GuiInput = function ()
 	this._keyBuffer = "";
 	this._caretIndex = 0;
 	this._caretLineIndex = 0;
+	this._enterDown = false;
 
 	document.body.onclick = document.body.requestPointerLock || document.body.mozRequestPointerLock || document.body.webkitRequestPointerLock;
 
@@ -30,6 +31,7 @@ var GuiInput = function ()
 	InputController.add(InputController.keys.ENTER, InputController.modes.DOWN, function(key)
 	{
 	 	this._injectEnter();
+	 	this._enterDown = true;
 	}.bind(this));
 
 	InputController.add(InputController.keys.LEFTARROW, InputController.modes.DOWN, function(key)
@@ -184,7 +186,7 @@ GuiInput.prototype.extend(
 		else
 		{
 			this._keyBuffer = this._keyBuffer.slice(0, this._caretIndex - 1) + this._keyBuffer.slice(this._caretIndex, this._keyBuffer.length);
-
+			console.log(this._keyBuffer);
 			if(this._keyBuffer.length > 0)
 			{
 				this._caretIndex--;
@@ -315,7 +317,7 @@ GuiInput.prototype.extend(
 		}
 		else
 		{
-			this._keyBuffer = this._keyBuffer.slice(0, this._caretIndex) + String.fromCharCode(e.which).toLowerCase() + this._keyBuffer.slice(this._caretIndex, this._keyBuffer.length);
+			this._keyBuffer = this._keyBuffer.slice(0, this._caretIndex) + e + this._keyBuffer.slice(this._caretIndex, this._keyBuffer.length);
 			this._caretIndex++;
 		}
 	},
