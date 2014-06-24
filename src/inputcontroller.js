@@ -1,10 +1,12 @@
 var InputController = function()
 {
-	this.disableExternalKeyEvents = false;
+	this.disableExternalKeyEvents = true;
 
 	this.listeners = {"keydown": {}, "keyup": {}};
 
 	this.listenersOnce = {"keydown": {},"keyup": {}};
+
+	this.allListeners = {"keydown": [], "keyup": []};
 
 	this.listenersCombo = [];
 
@@ -203,6 +205,27 @@ InputController.prototype.extend(
 		}
 	},
 
+	addGlobal: function( mode, listenerFunc ) {
+		if(mode === "keydown" || mode === "keyup")
+		{
+			this.allListeners[mode].push(listenerFunc);
+		}
+		else
+		{
+			console.error("No such key event mode: " + mode);
+		}
+	},
+
+	removeGlobal: function( listenerFunc, mode ) {
+		this.allListeners[mode].forEach(function(func, ind)
+		{
+			if(func.toString() == listenerFunc.toString())
+			{
+				this.allListeners[mode].splice( ind, 1 );
+			}
+		}.bind(this));
+	},
+
 	once: function(key, mode, listenerFunc)
 	{
 		if(!key)
@@ -286,6 +309,10 @@ InputController.prototype.extend(
 			addToStack = true,
 			returnKey;
 
+		if (this.disableExternalKeyEvents) {
+			e.preventDefault();
+		}
+
 		if( e.type == "keydown" ) {
 			for( var i = 0; i < this.keyPressStack.length; i++ ) {
 				if( this.keyPressStack[i] == keyCode ) {
@@ -333,9 +360,9 @@ InputController.prototype.extend(
 	        }
 	    }
 
-		if (this.disableExternalKeyEvents) {
-			e.preventDefault();
-		}
+		this.allListeners[e.type].forEach(function(func) {
+			func( returnKey );
+		});
 
 		if (this.listeners[e.type][keyCode])
 		{

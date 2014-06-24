@@ -20,7 +20,7 @@ var ResourceLoader = new ResourceLoader(
 	InputController = new InputController();	
 
 	// Tests
-	// InputController.add( InputController.keys.A, InputController.modes.DOWN, function( key ) {
+	// InputController.addGlobal( InputController.modes.DOWN, function( key ) {
 	// 	console.log(key);
 	// });
 
