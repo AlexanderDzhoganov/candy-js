@@ -5,6 +5,7 @@ var GuiInput = function ()
 	this._mouseDown = false;
 	this._mouseUp = false;
 	this._keyBuffer = "";
+	this._keyBufferMaxLength = 4096;
 	this._caretIndex = 0;
 	this._caretLineIndex = 0;
 	this._enterDown = false;
@@ -115,8 +116,13 @@ GuiInput.prototype.extend(
 {
 	// public
 
-	setKeyBuffer: function (buffer)
+	setKeyBuffer: function (buffer, maxLength)
 	{
+		if(maxLength != undefined)
+		{
+			this._keyBufferMaxLength = maxLength;
+		}
+
 		this._keyBuffer = buffer;
 	},
 
@@ -300,6 +306,11 @@ GuiInput.prototype.extend(
 
 	_injectChar: function (e)
 	{
+		if(this._keyBuffer.length >= this._keyBufferMaxLength)
+		{
+			return;
+		}
+
 		if(this._keyBuffer.indexOf('\n') != -1)
 		{
 			var lines = this._keyBuffer.split('\n');

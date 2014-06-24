@@ -258,12 +258,12 @@ GuiControl.prototype.extend(
 
 				if (control.clicked)
 				{
-					this._input.setKeyBuffer(input.toString());
+					this._input.setKeyBuffer(input.toString(), maxLength);
 					var caretIndex = GuiRenderer.calculateInputBoxCaretIndex(this._context, wnd, this._input.getKeyBuffer(), control);
 
-					if(caretIndex > input.length)
+					if(caretIndex > input.length + 1)
 					{
-						caretIndex = input.length;
+						caretIndex = input.length + 1;
 					}
 
 					this._input.setCaretIndex(caretIndex);
