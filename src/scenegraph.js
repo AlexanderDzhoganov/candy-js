@@ -23,13 +23,12 @@ SceneGraph.prototype.extend(
 			sceneNode._Render = function (parentModelMatrix)
 			{
 				var rendererComponent = this.getComponent("renderer");
-				if(rendererComponent)
+				if(rendererComponent && rendererComponent.enabled)
 				{
 					rendererComponent.renderSelf();
 				}
 
 				var transformComponent = this.getComponent("transform");
-
 				var modelMatrix = transformComponent.getModelMatrix();
 
 				mat4.multiply(modelMatrix, parentModelMatrix, modelMatrix);
@@ -43,7 +42,7 @@ SceneGraph.prototype.extend(
 			sceneNode._Update = function (deltaTime)
 			{
 				var scriptComponent = this.getComponent("script");
-				if(scriptComponent && scriptComponent.onUpdate)
+				if(scriptComponent && scriptComponent.onUpdate && scriptComponent.enabled)
 				{
 					scriptComponent.onUpdate(deltaTime);
 				}
@@ -91,7 +90,10 @@ SceneGraph.prototype.extend(
 	{
 		for (var i = 0; i < this._SceneNodes.length; i++)
 		{
-			this._SceneNodes[i]._Update(deltaTime);
+			if(this._SceneNodes[i].enabled)
+			{
+				this._SceneNodes[i]._Update(deltaTime);
+			}
 		}
 	},
 

@@ -21,9 +21,13 @@ var ResourceLoader = new ResourceLoader(
 	InputController = new InputController();	
 
 	// Tests
-	InputController.add( InputController.keys.A, InputController.modes.DOWN, function( key ) {
-		console.log("left");
-	});
+	// InputController.addGlobal( InputController.modes.DOWN, function( key ) {
+	// 	console.log(key);
+	// });
+
+	// InputController.addCombo( [InputController.keys.CTRL, InputController.keys.A], function() {
+	// 	console.log("Select all");
+	// });
 
 	Renderer = new Renderer();
 	Shader = new Shader();

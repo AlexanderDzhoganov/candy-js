@@ -2,6 +2,7 @@ var GameObject = function (name)
 {
 
 	this.name = name;
+	this.enabled = true;
 
 	this._components =
 	{
@@ -51,6 +52,11 @@ GameObject.prototype.extend(
 	getComponent: function (componentType)
 	{
 		return this._components[componentType];
+	},
+
+	getComponents: function ()
+	{
+		return this._components;
 	},
 
 });

@@ -22,7 +22,37 @@ var GuiInput = function ()
 		this._mouseUp = true;
 	}.bind(this);
 
-	window.addEventListener("keydown", function(e)
+	InputController.add(InputController.keys.BACKSPACE, InputController.modes.DOWN, function(key)
+	{
+	 	this._injectBackspace();
+	}.bind(this));
+
+	InputController.add(InputController.keys.ENTER, InputController.modes.DOWN, function(key)
+	{
+	 	this._injectEnter();
+	}.bind(this));
+
+	InputController.add(InputController.keys.LEFTARROW, InputController.modes.DOWN, function(key)
+	{
+	 	this._injectLeft();
+	}.bind(this));
+
+	InputController.add(InputController.keys.RIGHTARROW, InputController.modes.DOWN, function(key)
+	{
+	 	this._injectRight();
+	}.bind(this));
+
+	InputController.add(InputController.keys.UPARROW, InputController.modes.DOWN, function(key)
+	{
+	 	this._injectUp();
+	}.bind(this));
+
+	InputController.add(InputController.keys.DOWNARROW, InputController.modes.DOWN, function(key)
+	{
+	 	this._injectDown();
+	}.bind(this));
+
+/*	window.addEventListener("keydown", function(e)
 	{
 		if (e.keyCode == 8)
 		{
@@ -66,7 +96,7 @@ var GuiInput = function ()
 		{
 			this._injectChar(e);
 		}
-	}.bind(this));
+	}.bind(this));*/
 };
 
 GuiInput.extend(
