@@ -34,7 +34,14 @@ MeshRenderer.prototype.extend(
 		GL.bindBuffer(GL.ARRAY_BUFFER, meshProvider.vertexBuffer);
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, meshProvider.indexBuffer);
 
-		Renderer.drawIndexedTriangleStrip(meshProvider.indices.length);
+		if(meshProvider.primitiveType == 'indexedTriangleStrip')
+		{
+			Renderer.drawIndexedTriangleStrip(meshProvider.indices.length);
+		}
+		else if(meshProvider.primitiveType == 'indexedTriangles')
+		{
+			Renderer.drawIndexedTriangles(meshProvider.indices.length);	
+		}
 	},
 
 });
