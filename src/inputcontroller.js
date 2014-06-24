@@ -2,23 +2,15 @@ var InputController = function()
 {
 	this.disableExternalKeyEvents = false;
 
-	this.listeners = 
-	{
-		"press": {},
-		"down": {},
-		"up": {}
-	};
+	this.listeners = {"down": {}, "up": {}};
 
-	this.listenersOnce =
-	{
-		"press": {},
-		"down": {},
-		"up": {}
-	};
+	this.listenersOnce = {"down": {},"up": {}};
 
 	window.addEventListener("keydown", function(e)
 	{
 		var keyCode = e.keyCode;
+
+		console.log(keyCode);
 
 		if (this.disableExternalKeyEvents) {
 			e.preventDefault();

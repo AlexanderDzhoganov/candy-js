@@ -17,32 +17,12 @@ var ResourceLoader = new ResourceLoader(
 	console.log("Resources Loaded.");
 	document.getElementById('gl-canvas').width = window.innerWidth;
 	document.getElementById('gl-canvas').height = window.innerHeight;
-	//InputController = new InputController();	
+	InputController = new InputController();	
 
 	// Tests
-	/*InputController.add( InputController.keys.A, InputController.modes.DOWN, function() {
+	InputController.add( InputController.keys.A, InputController.modes.DOWN, function( key ) {
 		console.log("left");
 	});
-
-	InputController.add( InputController.keys.D, InputController.modes.UP, function() {
-		console.log("right");
-	});
-
-	InputController.once( InputController.keys.Q, InputController.modes.DOWN, function() {
-		console.log("Q");
-	});	
-
-	InputController.add( InputController.keys.W, InputController.modes.DOWN, function() {
-		console.log("up");
-	});
-
-	InputController.once( InputController.keys.S, InputController.modes.UP, function() {
-		console.log("down");
-	});
-
-	InputController.remove( InputController.keys.W, InputController.modes.DOWN, function() {
-		console.log("up");
-	});*/
 
 	Renderer = new Renderer();
 	Shader = new Shader();

@@ -19,7 +19,7 @@ Application.prototype.extend(
 	{
 		this.sceneGraph = new SceneGraph();
 
-		var player = _createPlayer(vec3.fromValues(-128, -16, -128));
+		var player = this._createPlayer(vec3.fromValues(-128, -16, -128));
 		
 		//Gui.debugLayout = true;
 
@@ -217,7 +217,7 @@ Application.prototype.extend(
 		newPlayer.addComponent(new Camera(Renderer.screenWidth, Renderer.screenHeight, 45.0, 0.1, 100.0));
 		newPlayer.getComponent("camera").setActive();
 		newPlayer.getComponent("transform").position = position;
-		this.sceneGraph.insert(player);
+		this.sceneGraph.insert(newPlayer);
 
 		return newPlayer
 	},
