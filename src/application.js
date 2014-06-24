@@ -19,22 +19,13 @@ Application.prototype.extend(
 	{
 		this.sceneGraph = new SceneGraph();
 
-		var player = new GameObject("FPS Controller");
-		player.addComponent(new FirstPersonController());
-		player.addComponent(new Camera(Renderer.screenWidth, Renderer.screenHeight, 45.0, 0.1, 100.0));
-		player.getComponent("camera").setActive();
-		player.getComponent("transform").position = vec3.fromValues(-128, -16, -128);
-		this.sceneGraph.insert(player);
-
+		var player = _createPlayer(vec3.fromValues(-128, -16, -128));
+		
 		//Gui.debugLayout = true;
 
 		this._openResourceViewer();
 
-		var testTextBoxWindow = new GuiWindow(vec2.fromValues(512, 256), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
-		testTextBoxWindow.title = "TextBox test";
-		testTextBoxWindow.autoSize = true;
-		testTextBoxWindow.drawTitlebar = true;
-		testTextBoxWindow.resizable = true;
+		var testTextBoxWindow = this._createWindow("TextBox test", vec2.fromValues(512, 256), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
 
 		var multiLineText = "hello world,\nthis is some multiline text\n123456";
 
@@ -45,11 +36,7 @@ Application.prototype.extend(
 
 		testTextBoxWindow.show();
 
-		var testWindow = new GuiWindow(vec2.fromValues(512.0, 16.0), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
-		testWindow.title = "Test Window";
-		testWindow.autoSize = true;
-		testWindow.drawTitlebar = true;
-		testWindow.resizable = true;
+		var testWindow = this._createWindow("test window", vec2.fromValues(512.0, 16.0), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
 
 		var testInput = "hello world";
 
@@ -211,6 +198,28 @@ Application.prototype.extend(
 		}.bind(this);
 
 		window.requestAnimationFrame(doFrame);
+	},
+
+	_createWindow: function (title, position, size, layout, skin) // assumes true for autoSize, draw title bar and resizing;
+	{
+		var newWindow = new GuiWindow(position, size, layout, skin);
+		newWindow.title = title;
+		newWindow.autoSize = true;
+		newWindow.drawTitlebar = true;
+		newWindow.resizable = true;
+
+		return newWindow;
+	},
+	_createPlayer: function(position)
+	{
+		var newPlayer = new GameObject("FPS Controller");
+		newPlayer.addComponent(new FirstPersonController());
+		newPlayer.addComponent(new Camera(Renderer.screenWidth, Renderer.screenHeight, 45.0, 0.1, 100.0));
+		newPlayer.getComponent("camera").setActive();
+		newPlayer.getComponent("transform").position = position;
+		this.sceneGraph.insert(player);
+
+		return newPlayer
 	},
 
 	_openResourceViewer: function ()
