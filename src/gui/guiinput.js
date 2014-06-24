@@ -52,6 +52,11 @@ var GuiInput = function ()
 	 	this._injectDown();
 	}.bind(this));
 
+	InputController.addGlobal( InputController.modes.DOWN, function( key ) {
+
+		this._injectChar(key);
+	}.bind(this));
+
 /*	window.addEventListener("keydown", function(e)
 	{
 		if (e.keyCode == 8)
@@ -297,7 +302,7 @@ GuiInput.prototype.extend(
 		{
 			var lines = this._keyBuffer.split('\n');
 			var line = lines[this._caretLineIndex];
-			line = line.slice(0, this._caretIndex) + String.fromCharCode(e.which).toLowerCase() + line.slice(this._caretIndex, line.length);
+			line = line.slice(0, this._caretIndex) + e + line.slice(this._caretIndex, line.length);
 			lines[this._caretLineIndex] = line;
 
 			this._keyBuffer = "";
