@@ -1,17 +1,14 @@
 var ResourceLoader = new ResourceLoader(
 {
-	"test_image": "resources/images/test.jpg",
-	"text": "text.txt",
-	"my_json_file": "testjson.json",
-	"heightmap": "heightmap.png",
-	"cursor": "cursor.png",
-	"grass": "grass.png",
-	"terrain_vertex": "shaders/terrain.vs",
-	"terrain_fragment": "shaders/terrain.fs",
-	"gui_vertex": "shaders/gui.vs",
-	"gui_fragment": "shaders/gui.fs",
-	"gui_quad_vertex": "shaders/gui_quad.vs",
-	"gui_quad_fragment": "shaders/gui_quad.fs",
+	"heightmap": "resources/images/heightmap.png",
+	"cursor": "resources/images/cursor.png",
+	"grass": "resources/images/grass.png",
+	"terrain_vertex": "resources/shaders/terrain.vs",
+	"terrain_fragment": "resources/shaders/terrain.fs",
+	"gui_vertex": "resources/shaders/gui.vs",
+	"gui_fragment": "resources/shaders/gui.fs",
+	"gui_quad_vertex": "resources/shaders/gui_quad.vs",
+	"gui_quad_fragment": "resources/shaders/gui_quad.fs",
 }, function (resName, progress, final)
 {
 	// update progress bar
