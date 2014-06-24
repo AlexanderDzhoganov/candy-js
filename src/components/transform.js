@@ -21,7 +21,9 @@ Transform.prototype.extend(
 
 	getModelMatrix: function ()
 	{
-		return mat4.create();
+		var model = mat4.create();
+		mat4.fromRotationTranslation(model, this.orientation, this.position);
+		return model;
 	},
 
 	createConfigWindow: function ()

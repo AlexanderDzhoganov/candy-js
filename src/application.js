@@ -19,6 +19,12 @@ Application.prototype.extend(
 	{
 		this.sceneGraph = new SceneGraph();
 
+
+		var testObject = new GameObject("testMesh");
+		testObject.addComponent(new OBJMeshProvider("mesh"));
+		testObject.addComponent(new MeshRenderer());
+//		testObject.
+
 		var player = this._createPlayer(vec3.fromValues(-128, -16, -128));
 		var editor = new GameObjectEditor(player);
 
