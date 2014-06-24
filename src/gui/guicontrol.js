@@ -85,7 +85,6 @@ GuiControl.prototype.extend(
 
 	_endControl: function (wnd)
 	{
-		wnd.layout.endControl();
 		this._context.restore();
 
 		if(this.debugLayout)
@@ -190,14 +189,14 @@ GuiControl.prototype.extend(
 			label: function (message)
 			{
 				var control = this._beginControl(wnd);
-				GuiRenderer.drawLabel(this._context, wnd, message, "white", control.rect.position);
+				GuiRenderer.drawLabel(this._context, wnd, message, "white", control);
 				this._endControl(wnd);
 			}.bind(this),
 
 			button: function (label)
 			{
 				var control = this._beginControl(wnd);
-				GuiRenderer.drawButton(this._context, wnd, label, control.rect, control.state);
+				GuiRenderer.drawButton(this._context, wnd, label, control);
 				this._endControl(wnd);
 
 				if (control.clicked)
@@ -274,14 +273,14 @@ GuiControl.prototype.extend(
 			{
 				var control = this._beginControl(wnd);
 				var image = ResourceLoader.getContent(resourceName);
-				GuiRenderer.drawImage(this._context, wnd, image, control.rect);
+				GuiRenderer.drawImage(this._context, wnd, image, control);
 				this._endControl(wnd);
 			}.bind(this),
 
 			checkbox: function (checked)
 			{
 				var control = this._beginControl(wnd);
-				GuiRenderer.drawCheckBox(this._context, wnd, checked, control.rect, control.state);
+				GuiRenderer.drawCheckBox(this._context, wnd, checked, control);
 				this._endControl(wnd);
 
 				if (control.clicked)

@@ -182,9 +182,4 @@ GuiLayout.prototype.extend(
 		return rect;
 	},
 
-	endControl: function ()
-	{
-		this.controlId++;
-	},
-
 });

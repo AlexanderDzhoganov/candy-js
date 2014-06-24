@@ -16,7 +16,11 @@ var GuiWindow = function (position, size, layout, skin)
 
 	this.minimumSize = vec2.fromValues(128.0, 16.0);
 
-	this.drawSelf = function (gui) { gui.label("!!! implement drawSelf for this window !!!"); };
+	this.drawSelf = function (gui)
+	{
+		gui.label("drawSelf() not implemented");
+	};
+
 	this.onClose = null;
 
 	// private

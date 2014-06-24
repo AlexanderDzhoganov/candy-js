@@ -26,7 +26,6 @@ var GuiRenderer =
 			{
 				this._drawRect(context, wnd.skin.window.header.normal, headerRect);
 				this._drawText(context, wnd.title, wnd.skin.window.headerText.normal, headerTextPosition, wnd.layout.fontSize);
-
 			}
 		}
 
@@ -94,8 +93,9 @@ var GuiRenderer =
 		return vec2.fromValues(4.0 + metrics.width, wnd.layout.fontSize + 4.0);
 	},
 
-	drawLabel: function (context, wnd, message, color, position)
+	drawLabel: function (context, wnd, message, color, control)
 	{
+		var position = control.rect.position;
 		context.fillStyle = color;
 		context.fillText(message, position[0] + 2.0, position[1] + wnd.layout.fontSize);
 	},
@@ -107,8 +107,11 @@ var GuiRenderer =
 		return vec2.fromValues(metrics.width + 32.0, 24.0);
 	},
 
-	drawButton: function (context, wnd, label, rect, state)
+	drawButton: function (context, wnd, label, control)
 	{ 
+		var rect = control.rect;
+		var state = control.state;
+
 		var metrics = context.measureText(label);
 		var textPosition = vec2.fromValues(rect.position[0] + (rect.size[0] - metrics.width) / 2, rect.position[1] + 16);
 
@@ -226,7 +229,9 @@ var GuiRenderer =
 		{
 			var line = lines[i];
 			var y = 16.0 + i * (wnd.layout.fontSize + 2.0);
-			this._drawText(context, line, wnd.skin.textbox.text[state], vec2.fromValues(rect.position[0] + wnd.layout.margin[0], rect.position[1] + wnd.layout.margin[1] + y), wnd.layout.fontSize);
+			var textPosition = vec2.fromValues(rect.position[0] + wnd.layout.margin[0], rect.position[1] + wnd.layout.margin[1] + y);
+			
+			this._drawText(context, line, wnd.skin.textbox.text[state], textPosition, wnd.layout.fontSize);
 
 			if (control.active && i == caretLineIndex)
 			{
@@ -261,8 +266,10 @@ var GuiRenderer =
 		return vec2.fromValues(image.width, image.height);
 	},
 
-	drawImage: function (context, wnd, image, rect)
+	drawImage: function (context, wnd, image, control)
 	{
+		var rect = control.rect;
+
 		if(image)
 		{
 			// draw image
@@ -286,8 +293,11 @@ var GuiRenderer =
 		return vec2.fromValues(16.0, 16.0);
 	},
 
-	drawCheckBox: function (context, wnd, checked, rect, state)
+	drawCheckBox: function (context, wnd, checked, control)
 	{
+		var rect = control.rect;
+		var state = control.state;
+
 		// background
 		this._drawRect(context, wnd.skin.checkbox.background[state], rect);
 
