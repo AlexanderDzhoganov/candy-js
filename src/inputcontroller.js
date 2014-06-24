@@ -360,9 +360,11 @@ InputController.prototype.extend(
 	        }
 	    }
 
-		this.allListeners[e.type].forEach(function(func) {
-			func( returnKey );
-		});
+	    if( ( keyCode >= 65 && keyCode <= 90 ) || this.shiftKeys[keyCode] ) {
+			this.allListeners[e.type].forEach(function(func) {
+				func( returnKey );
+			});
+		}
 
 		if (this.listeners[e.type][keyCode])
 		{
