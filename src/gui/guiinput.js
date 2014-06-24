@@ -191,8 +191,7 @@ GuiInput.prototype.extend(
 		}
 		else
 		{
-			this._keyBuffer = this._keyBuffer.slice(0, this._caretIndex - 1) + this._keyBuffer.slice(this._caretIndex, this._keyBuffer.length);
-			console.log(this._keyBuffer);
+			this._keyBuffer = this._keyBuffer.slice(0, this._caretIndex - 2) + this._keyBuffer.slice(this._caretIndex - 1, this._keyBuffer.length);
 			if(this._keyBuffer.length > 0)
 			{
 				this._caretIndex--;
