@@ -91,6 +91,8 @@ var TerrainMeshProvider = function (data, size_x, size_y)
 	this.renderingLayer = RENDERING_LAYER.PERSPECTIVE;
 };
 
+TerrainMeshProvider.prototype = new Component();
+
 TerrainMeshProvider.extend(
 {
 	

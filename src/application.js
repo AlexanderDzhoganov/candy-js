@@ -160,7 +160,7 @@ Application.prototype.extend(
 
 		this.sceneGraph.insert(terrainGameObject);
 
-		var Mesh = new SubMesh("mesh");
+		var Mesh = new OBJMeshProvider("mesh");
 	},
 
 	update: function(deltaTime)
