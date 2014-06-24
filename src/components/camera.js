@@ -1,15 +1,16 @@
 var Camera = function (width, height, fov, near, far)
 {
+	this.name = "Camera";
+	this.type = "camera";
 
-	this.position = vec3.create();
-	this.orientation = quat.create();
 	this.width = width;
 	this.height = height;
 	this.fov = fov;
 	this.near = near;
 	this.far = far;
-
 };
+
+Camera.prototype = new Component();
 
 Camera.extend(
 {
@@ -19,6 +20,11 @@ Camera.extend(
 Camera.prototype.extend(
 {
 
+	setActive: function ()
+	{
+		Renderer.setActiveCamera(this);
+	},
+
 	getProjectionMatrix: function ()
 	{
 	   return this._CreateProjectionMatrix(this.width, this.height, this.fov, this.near, this.far);
@@ -26,7 +32,8 @@ Camera.prototype.extend(
 
 	getViewMatrix: function ()
 	{
-	   return this._CreateViewMatrix(this.position, this.orientation);
+		var transform = this.gameObject.getComponent("transform");
+		return this._CreateViewMatrix(transform.position, transform.orientation);
 	},
 
 	getViewProjectionMatrix: function ()

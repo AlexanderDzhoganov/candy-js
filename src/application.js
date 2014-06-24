@@ -4,7 +4,6 @@ var Application = function()
 	this.terrain = null;
 	this.cube = null;
 	this.sceneGraph = null;
-	this._FirstPersonController = null;
 
 	this.init();
 };
@@ -18,19 +17,16 @@ Application.prototype.extend(
 
 	init: function ()
 	{
-		this._FirstPersonController = new FirstPersonController();
-		this._FirstPersonController.position = vec3.fromValues(-128, -16, -128);
-
-		Renderer.setActiveCamera(this._FirstPersonController._Camera);
-
 		this.sceneGraph = new SceneGraph();
 
+		var player = new GameObject("FPS Controller");
+		player.addComponent(new FirstPersonController());
+		player.addComponent(new Camera(Renderer.screenWidth, Renderer.screenHeight, 45.0, 0.1, 100.0));
+		player.getComponent("camera").setActive();
+		player.getComponent("transform").position = vec3.fromValues(-128, -16, -128);
+		this.sceneGraph.insert(player);
+
 		//Gui.debugLayout = true;
-
-		var skin = new GuiSkin();
-
-		this._FirstPersonControllerConfigWindow = this._FirstPersonController.getConfigWindow();
-		this._FirstPersonControllerConfigWindow.show();
 
 		this._openResourceViewer();
 
@@ -179,7 +175,7 @@ Application.prototype.extend(
 
 	update: function(deltaTime)
 	{
-		this._FirstPersonController.update(deltaTime);
+		this.sceneGraph.update(deltaTime);
 	},
 
 	render: function()
@@ -216,13 +212,6 @@ Application.prototype.extend(
 
 		window.requestAnimationFrame(doFrame);
 	},
-
-	stop: function()
-	{
-		this.doStop = true;
-	},
-
-	doStop: false,
 
 	_openResourceViewer: function ()
 	{

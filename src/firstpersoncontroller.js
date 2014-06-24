@@ -1,16 +1,18 @@
 var FirstPersonController = function () 
 {
+	this.name = "FirstPersonController";
+	this.type = "script";
+
 	this.yaw = 0.0;
 	this.pitch = 0.0;
 	this.roll = 0.0;
 	this.upVector = vec3.create(0.0, 1.0, 0.0);
-	this.position = vec3.create(0.0, 0.0, 0.0);
+
 	this.moveSpeed = 5.0;
-	this._Camera = null;
 	this._Movement = vec3.create();
-	
-	this.init();
 };
+
+FirstPersonController.prototype = new Component();
 
 FirstPersonController.extend(
 {
@@ -20,16 +22,14 @@ FirstPersonController.extend(
 FirstPersonController.prototype.extend(
 {
 
-	init: function ()
+	onInit: function ()
 	{
-		this._Camera = new Camera(Renderer.screenWidth, Renderer.screenHeight, 45.0, 0.1, 100.0);
-		this.position = vec3.fromValues(0, 0.5, -2);
-
+		//this.position = vec3.fromValues(0, 0.5, -2);
 		// Not recommended if there's more than one instance of FIRSTPERSONCONTROLLER
 		window.addEventListener("keydown", this.handleKeydown.bind(this), false);
 		window.addEventListener("keyup", this.handleKeyup.bind(this), false);
 
-		document.body.onclick = document.body.requestPointerLock || document.body.mozRequestPointerLock || document.body.webkitRequestPointerLock;
+	//	document.body.onclick = document.body.requestPointerLock || document.body.mozRequestPointerLock || document.body.webkitRequestPointerLock;
 
 		/*document.onmousemove = function(e)
 		{
@@ -41,8 +41,10 @@ FirstPersonController.prototype.extend(
 		}.bind(this);*/
 	},
 		
-	update: function (deltaTime)
+	onUpdate: function (deltaTime)
 	{
+		var transform = this.gameObject.getComponent("transform");
+
 		var orientation = quat.create();
 		quat.rotateX(orientation, orientation, this.pitch);
 		quat.rotateY(orientation, orientation, this.yaw);
@@ -51,14 +53,13 @@ FirstPersonController.prototype.extend(
 		var movement = vec3.create();
 		vec3.transformQuat(movement, this._Movement, orientation);
 
-		this.position[0] += movement[0] * deltaTime * this.moveSpeed;
-		this.position[1] += movement[1] * deltaTime * this.moveSpeed;
-		this.position[2] += movement[2] * deltaTime * this.moveSpeed;
+		transform.position[0] += movement[0] * deltaTime * this.moveSpeed;
+		transform.position[1] += movement[1] * deltaTime * this.moveSpeed;
+		transform.position[2] += movement[2] * deltaTime * this.moveSpeed;
 
-		this._Camera.position = this.position;
-		this._Camera.orientation = quat.create();
-		quat.rotateX(this._Camera.orientation, this._Camera.orientation, this.pitch);
-		quat.rotateY(this._Camera.orientation, this._Camera.orientation, this.yaw);
+		transform.orientation = quat.create();
+		quat.rotateX(transform.orientation, transform.orientation, this.pitch);
+		quat.rotateY(transform.orientation, transform.orientation, this.yaw);
 	},
 
 	getConfigWindow: function ()

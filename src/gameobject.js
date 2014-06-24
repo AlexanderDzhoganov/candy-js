@@ -31,6 +31,12 @@ GameObject.prototype.extend(
 		}
 
 		component.gameObject = this;
+
+		if(component.onInit)
+		{
+			component.onInit();
+		}
+
 		this._components[component.type] = component;
 	},
 
