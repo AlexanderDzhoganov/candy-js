@@ -127,17 +127,13 @@ Gui.prototype.extend(
 		if (active && headerHovered && this._input._mouseDown && !wnd._dragging)
 		{
 			wnd._dragging = true;
+			if(wnd.dockTo)
+			{
+				wnd.dockTo._dockedBy = null;
+			}
+
+			wnd.dockTo = null;
 			vec2.subtract(wnd._dragAnchor, wnd.position, this._input.getCursorPosition());
-		}
-		else if (active && wnd._dragging && this._input._mouseDown)
-		{
-			vec2.add(wnd.position, this._input.getCursorPosition(), wnd._dragAnchor);
-			wnd.position[0] = Clamp(wnd.position[0], 0.0, Renderer.screenWidth - wnd.size[0]);
-			wnd.position[1] = Clamp(wnd.position[1], 0.0, Renderer.screenHeight - wnd.size[1]);
-		}
-		else
-		{
-			wnd._dragging = false;
 		}
 
 		if(active && resizeButtonHovered && this._input._mouseDown && !wnd._resizing)
@@ -146,27 +142,6 @@ Gui.prototype.extend(
 			var corner = vec2.create();
 			vec2.add(corner, wnd.position, wnd.size);
 			vec2.subtract(wnd._resizeAnchor, corner, this._input.getCursorPosition());
-		}
-		else if(active && wnd._resizing && this._input._mouseDown)
-		{
-			var corner = vec2.create();
-			vec2.add(corner, wnd._resizeAnchor, this._input.getCursorPosition());
-			var size = vec2.create();
-			vec2.subtract(size, corner, wnd.position);
-			wnd.size = size;
-
-			if(wnd.size[0] < wnd.minimumSize[0])
-			{
-				wnd.size[0] = wnd.minimumSize[0];
-			}
-			if(wnd.size[1] < wnd.minimumSize[1])
-			{
-				wnd.size[1] = wnd.minimumSize[1];
-			}
-		}
-		else
-		{
-			wnd._resizing = false;
 		}
 
 		GuiRenderer.drawWindow(this._context, wnd, this._input.getCursorPosition(), deltaTime, windowHovered, headerHovered, closeButtonHovered, resizeButtonHovered);
@@ -207,6 +182,79 @@ Gui.prototype.extend(
 			if (PointRectTest(this._input.getCursorPosition(), wnd.position, wnd.size))
 			{
 				this._activeWindow = wnd;
+			}
+		}
+
+		// apply dragging
+		if (this._activeWindow && this._activeWindow._dragging && this._input._mouseDown)
+		{
+			vec2.add(this._activeWindow.position, this._input.getCursorPosition(), this._activeWindow._dragAnchor);
+			this._activeWindow.position[0] = Clamp(this._activeWindow.position[0], 0.0, Renderer.screenWidth - this._activeWindow.size[0]);
+			this._activeWindow.position[1] = Clamp(this._activeWindow.position[1], 0.0, Renderer.screenHeight - this._activeWindow.size[1]);
+		}
+		else if(this._activeWindow)
+		{
+			if(this._activeWindow._dragging)
+			{
+				this._activeWindow._dragging = false;
+
+				for (var i = 0; i < this._windows.length; i++)
+				{
+					var other = this._windows[i];
+
+					if(this._activeWindow == other)
+					{
+						continue;
+					}
+
+					var dockPosition = vec2.fromValues(other.position[0], other.position[1] + other.size[1] - 16.0);
+					if(PointRectTest(this._input.getCursorPosition(), dockPosition, vec2.fromValues(other.size[0], 16.0)))
+					{
+						if(other._dockedBy)
+						{
+							continue;
+						}
+
+						this._activeWindow.dockTo = other;
+						other._dockedBy = this._activeWindow;
+						break;
+					}
+				}
+			}
+		}
+
+		// apply resizing
+		if(this._activeWindow && this._activeWindow._resizing && this._input._mouseDown)
+		{
+			var corner = vec2.create();
+			vec2.add(corner, this._activeWindow._resizeAnchor, this._input.getCursorPosition());
+			var size = vec2.create();
+			vec2.subtract(size, corner, this._activeWindow.position);
+			this._activeWindow.size = size;
+
+			if(this._activeWindow.size[0] < this._activeWindow.minimumSize[0])
+			{
+				this._activeWindow.size[0] = this._activeWindow.minimumSize[0];
+			}
+			if(this._activeWindow.size[1] < this._activeWindow.minimumSize[1])
+			{
+				this._activeWindow.size[1] = this._activeWindow.minimumSize[1];
+			}
+		}
+		else if(this._activeWindow)
+		{
+			this._activeWindow._resizing = false;
+		}
+
+		// resolve docking
+		for (var i = 0; i < this._windows.length; i++)
+		{
+			var wnd = this._windows[i];
+
+			if(wnd.dockTo)
+			{
+				wnd.position = vec2.fromValues(wnd.dockTo.position[0], wnd.dockTo.position[1] + wnd.dockTo.size[1]);
+				wnd.size[0] = wnd.dockTo.size[0];
 			}
 		}
 

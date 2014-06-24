@@ -22,6 +22,11 @@ var GuiRenderer =
 				this._drawRect(context, wnd.skin.window.header.hovered, headerRect);
 				this._drawText(context, wnd.title, wnd.skin.window.headerText.hovered, headerTextPosition, wnd.layout.fontSize);
 			}
+			else if(wnd.dockTo)
+			{
+				this._drawRect(context, wnd.skin.window.header.docked, headerRect);
+				this._drawText(context, wnd.title, wnd.skin.window.headerText.docked, headerTextPosition, wnd.layout.fontSize);
+			}
 			else
 			{
 				this._drawRect(context, wnd.skin.window.header.normal, headerRect);

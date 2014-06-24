@@ -8,12 +8,14 @@ var GuiSkin = function ()
 
 		header:
 		{
+			docked: "#444444",
 			hovered: "#FFFFFF",
 			normal: ["#E7E7E7", "#C7C7C7", "#E7E7E7"],
 		},
 
 		headerText:
 		{
+			docked: "#AAAAAA",
 			hovered: "grey",
 			normal: "black",
 		},

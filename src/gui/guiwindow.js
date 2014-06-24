@@ -13,6 +13,9 @@ var GuiWindow = function (position, size, layout, skin)
 	this.autoSize = false;
 	this.resizable = false;
 	this.drawTitlebar = true;
+	this.dockTo = null;
+
+	this._dockedBy = null;
 
 	this.minimumSize = vec2.fromValues(128.0, 16.0);
 
