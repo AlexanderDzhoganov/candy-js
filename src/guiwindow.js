@@ -191,31 +191,44 @@ GuiWindow.prototype.extend(
 		return vec2.fromValues(maxLength * 6 + 32.0, 24.0);
 	},
 
-	_drawInputBox: function (context, input, rect, state, active, caretIndex)
+	_calculateInputBoxCaretIndex: function (context, input, control)
 	{
-		var textPosition = vec2.fromValues(rect.position[0] + this.layout.margin[0], rect.position[1] + 16);
-
-		// background
-		this._drawRect(context, this.skin.inputbox.background[state], rect);
-
-		// border
-		this._strokeRect(context, this.skin.inputbox.border[state], rect, this.skin.button.borderThickness);
-
-		// text
-		this._drawText(context, input, this.skin.inputbox.text[state], textPosition);
+		var textPosition = vec2.fromValues(control.rect.position[0] + this.layout.margin[0], control.rect.position[1] + 16);
+		var cursorPosition = control.mousePosition;
+		var difference = vec2.create();
+		vec2.subtract(difference, cursorPosition, textPosition);
 
 		var metrics = context.measureText(input);
-		if (active)
+		var xStep = metrics.width / input.length;
+		var xDiff = difference[0] / xStep;
+		return Math.floor(xDiff);
+	},
+
+	_drawInputBox: function (context, input, control)
+	{
+		var textPosition = vec2.fromValues(control.rect.position[0] + this.layout.margin[0], control.rect.position[1] + 16);
+
+		// background
+		this._drawRect(context, this.skin.inputbox.background[control.state], control.rect);
+
+		// border
+		this._strokeRect(context, this.skin.inputbox.border[control.state], control.rect, this.skin.button.borderThickness);
+
+		// text
+		this._drawText(context, input, this.skin.inputbox.text[control.state], textPosition);
+
+		var metrics = context.measureText(input);
+		if (control.active)
 		{
-			var caretMetrics = context.measureText(input.slice(0, caretIndex));
+			var caretMetrics = context.measureText(input.slice(0, control.caretIndex));
 			// edit line
 			var lineColor = Math.floor(((this.time % 1.0)) * 255.0);
 			context.strokeStyle = "rgb(" + lineColor + "," + lineColor + "," + lineColor + ")";
 			context.beginPath();
 			context.lineWidth = 1;
 			context.translate(0.5, 0.5); // we do anti-antialiasing so our line is pretty
-			context.moveTo(rect.position[0] + this.layout.margin[0] + caretMetrics.width, rect.position[1] + 5);
-			context.lineTo(rect.position[0] + this.layout.margin[0] + caretMetrics.width, rect.position[1] + 16 + this.layout.margin[1] - 5);
+			context.moveTo(control.rect.position[0] + this.layout.margin[0] + caretMetrics.width, control.rect.position[1] + 5);
+			context.lineTo(control.rect.position[0] + this.layout.margin[0] + caretMetrics.width, control.rect.position[1] + 16 + this.layout.margin[1] - 5);
 			context.stroke();
 		}
 	},
@@ -226,10 +239,41 @@ GuiWindow.prototype.extend(
 		return vec2.fromValues(rows * 4.0, cols * this.layout.fontSize);
 	},
 
-	_drawTextBox: function (context, input, rows, cols, control, caretIndex, caretLineIndex)
+	_calculateTextBoxCaretIndex: function (context, input, rows, cols, control)
+	{
+		var textPosition = vec2.fromValues(control.rect.position[0] + this.layout.margin[0], control.rect.position[1] + this.layout.margin[1] + this.layout.fontSize);
+		var cursorPosition = control.mousePosition;
+		var difference = vec2.create();
+		vec2.subtract(difference, cursorPosition, textPosition);
+
+		var index = Math.floor(difference[1] / (this.layout.fontSize + 2.0));
+		var lines = input.split('\n');
+
+		if(index >= lines.length)
+		{
+			index = lines.length - 1;
+			return [ lines[index].length, index ];
+		}
+		else if(index < 0)
+		{
+			index = 0;
+		}
+
+		var line = lines[index];
+
+		var metrics = context.measureText(line);
+		var xStep = metrics.width / line.length;
+		var xDiff = Math.floor(difference[0] / xStep);
+
+		return [ xDiff, index ];
+	},
+
+	_drawTextBox: function (context, input, rows, cols, control)
 	{
 		var rect = control.rect;
 		var state = control.state;
+		var caretIndex = control.caretIndex;
+		var caretLineIndex = control.caretLineIndex;
 
 		// background
 		this._drawRect(context, this.skin.textbox.background[state], rect);

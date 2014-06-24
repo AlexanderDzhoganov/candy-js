@@ -289,12 +289,17 @@ Gui.prototype.extend(
 			this._activeControlSize[1] == rect.size[1];
 
 		return {
+
 			rect: rect,
-			relativeMousePosition: relativeMousePosition,
 			hovered: hovered,
 			clicked: clicked,
 			active: active,
 			state: state,
+			relativeMousePosition: relativeMousePosition,
+			mousePosition: this.cursorPosition,
+			caretIndex: this._caretIndex,
+			caretLineIndex: this._caretLineIndex,
+
 		};
 	},
 
@@ -424,7 +429,7 @@ Gui.prototype.extend(
 				if (control.clicked)
 				{
 					this._keyBuffer = input;
-					this._caretIndex = input.length;
+					this._caretIndex = wnd._calculateInputBoxCaretIndex(this._context, input, control);
 				}
 
 				if(this._caretIndex > input.length + 1)
@@ -432,7 +437,7 @@ Gui.prototype.extend(
 					this._caretIndex = input.length + 1;
 				}
 
-				wnd._drawInputBox(this._context, input, control.rect, control.state, control.active, this._caretIndex);
+				wnd._drawInputBox(this._context, input, control);
 
 				this._endControl(wnd);
 
@@ -458,10 +463,12 @@ Gui.prototype.extend(
 				if (control.clicked)
 				{
 					this._keyBuffer = input;
-					this._caretIndex = 0;
+					var carets = wnd._calculateTextBoxCaretIndex(this._context, input, rows, cols, control);
+					this._caretIndex = carets[0];
+					this._caretLineIndex = carets[1];
 				}
 
-				wnd._drawTextBox(this._context, input, rows, cols, control, this._caretIndex, this._caretLineIndex);
+				wnd._drawTextBox(this._context, input, rows, cols, control);
 				this._endControl(wnd);
 
 				if(control.active)
