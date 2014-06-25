@@ -48,33 +48,33 @@ var Shader = function (vertexSource, fragmentSource)
 Shader.extend(
 {
 	
-	ActiveProgram: function (program)
+	setActiveProgram: function (program)
 	{
 		Shader._ActiveProgram = program;
 		GL.useProgram(program._program);
 	},
 
-	SetUniformInt: function (uniform, value)
+	setUniformInt: function (uniform, value)
 	{
 		GL.uniform1i(Shader._ActiveProgram[uniform], value);
 	},
 
-	SetUniformVec2: function (uniform, vector)
+	setUniformVec2: function (uniform, vector)
 	{
 		GL.uniform2fv(Shader._ActiveProgram[uniform], vector);
 	},
 
-	SetUniformVec3: function (uniform, vector)
+	setUniformVec3: function (uniform, vector)
 	{
 		GL.uniform3fv(Shader._ActiveProgram[uniform], vector);
 	},
 
-	SetUniformMat3: function (uniform, matrix)
+	setUniformMat3: function (uniform, matrix)
 	{
 		GL.uniformMatrix3fv(Shader._ActiveProgram[uniform], GL.FALSE, matrix);
 	},
 
-	SetUniformMat4: function (uniform, matrix)
+	setUniformMat4: function (uniform, matrix)
 	{
 		GL.uniformMatrix4fv(Shader._ActiveProgram[uniform], GL.FALSE, matrix);
 	},
