@@ -12,7 +12,21 @@ MeshRenderer.prototype = new Component();
 
 MeshRenderer.extend(
 {
-	
+	getWireframeProgram: function ()
+	{
+		if (MeshRenderer._wireframeProgram == null)
+		{
+			MeshRenderer._wireframeProgram = Shader.CreateProgram 
+			(
+				ResourceLoader.getContent("wireframe_vertex"),
+				ResoursceLoader.getContent("wireframe_fragment")
+			);
+
+			return MeshRenderer._wireframeProgram;
+		}
+	},	
+
+	_wireframeProgram: null,
 });
 
 MeshRenderer.prototype.extend(
