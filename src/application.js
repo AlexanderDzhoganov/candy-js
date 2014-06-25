@@ -23,7 +23,7 @@ Application.prototype.extend(
 		var testProgram = Shader.CreateProgram(ResourceLoader.getContent("diffuse_vertex"), ResourceLoader.getContent("diffuse_fragment"));
 
 		testMaterial.setProgram(testProgram);
-		testMaterial.addTexture(new Texture("grass"));
+		testMaterial.addTexture("diffuse", new Texture("grass"));
 
 		var testObject = new GameObject("testMesh");
 		testObject.addComponent(new OBJMeshProvider("mesh"));
@@ -234,7 +234,7 @@ Application.prototype.extend(
 
 		var material = new Material("TerrainMaterial");
 		material.setProgram(program);
-		material.addTexture(new Texture("grass"));
+		material.addTexture("diffuse", new Texture("grass"));
 
 		var newterrainGameObject = new GameObject("terrain01");
 		newterrainGameObject.addComponent(new TerrainMeshProvider(data, size_x, size_y));
