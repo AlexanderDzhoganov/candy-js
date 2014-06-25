@@ -30,13 +30,12 @@ GameObject.prototype.extend(
 		}
 
 		component.gameObject = this;
+		this._components[component.type] = component;
 
 		if(component.onInit)
 		{
 			component.onInit();
 		}
-
-		this._components[component.type] = component;
 	},
 
 	removeComponent: function (componentType)

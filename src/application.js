@@ -27,8 +27,6 @@ Application.prototype.extend(
 
 		var testObject = new GameObject("testMesh");
 		testObject.addComponent(new OBJMeshProvider("mesh"));
-		testObject.addComponent(new BoundsProvider());
-		var aabb = testObject.getComponent("boundsProvider").recalculateMinimumAABB();
 
 		testObject.addComponent(new MeshRenderer());
 		testObject.getComponent("renderer").material = testMaterial;

@@ -189,6 +189,17 @@ OBJMeshProvider.prototype.extend(
 		GL.deleteBuffer(this.indexBuffer);
 	},
 
+	onInit: function ()
+	{
+		if(!this.gameObject.getComponent("boundsProvider"))
+		{
+			this.gameObject.addComponent(new BoundsProvider());
+		}
+
+		var boundsProvider = this.gameObject.getComponent("boundsProvider");
+		boundsProvider.recalculateMinimumAABB();
+	},
+
 	_uploadVertexData: function ()
 	{
 		GL.bindBuffer(GL.ARRAY_BUFFER, this.vertexBuffer);

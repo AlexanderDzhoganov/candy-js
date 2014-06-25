@@ -21,9 +21,13 @@ BoundsProvider.prototype.extend(
 		GL.deleteBuffer(this.indexBuffer);
 	},
 
+	onInit: function ()
+	{
+	},
+
 	getMinimumAABB: function ()
 	{
-
+		return this.aabb;
 	},
 
 	recalculateMinimumAABB: function ()
