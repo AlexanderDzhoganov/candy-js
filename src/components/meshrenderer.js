@@ -16,7 +16,7 @@ MeshRenderer.extend(
 	{
 		if (MeshRenderer._wireframeProgram == null)
 		{
-			MeshRenderer._wireframeProgram = Shader.CreateProgram 
+			MeshRenderer._wireframeProgram = new Shader 
 			(
 				ResourceLoader.getContent("wireframe_vertex"),
 				ResoursceLoader.getContent("wireframe_fragment")
@@ -52,6 +52,8 @@ MeshRenderer.prototype.extend(
 		{
 			if (this.wireframe) 
 			{
+				Shader.setActiveProgram(MeshRenderer.getWireframeProgram());
+				Sharer.setUniformVec3("wireframeColor", vec3.fromValues(0, 0, 1);
 				this._drawWireframeSubmesh(meshProvider.submeshes[i]);
 			}
 			else

@@ -20,6 +20,8 @@ var ResourceLoader = new ResourceLoader(
 	"diffuse_fragment": "resources/shaders/diffuse.fs",
 	"show_normals_vertex": "resources/shaders/show_normals.vs",
 	"show_normals_fragment": "resources/shaders/show_normals.fs",
+	"wireframe_vertex": "resources/shaders/wireframe.vs",
+	"wireframe_fragment": "resources/shaders/wireframe.fs",
 }, function (resName, progress, final)
 {
 	// update progress bar
