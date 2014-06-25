@@ -7,161 +7,178 @@ var OBJMeshProvider = function (name)
 
 	var verts = [], vertNormals = [], textures = [], unpacked = {};
 	
-	var f = ResourceLoader.getContent(name); // read file
+	var obj = ResourceLoader.getContent(name); // read file
+	var lines = obj.split('\n');
 
-	unpacked.verts = [];
-	unpacked.norms = [];
-	unpacked.textures = [];
-	unpacked.hashindices = {};
-	unpacked.indices = [];
-	unpacked.index = 0;
-	// array of lines separated by the newline
-	var lines = f.split('\n');
-	var i;
-	for (i = 0; i < lines.length; i++) 
+	var positions = [];
+	var normals = [];
+	var uvs = [];
+	var faces = [];
+
+	for(var i = 0; i < lines.length; i++)
 	{
-		// if this is a vertex
-		var line;
-		if (lines[i].startsWith('v ')) 
+		var line = lines[i];
+		var components = line.split(' ');
+
+		if(components[0] == 'v')
 		{
-			line = lines[i].slice(3).split(" ");
-			verts.push(line[0]);
-			verts.push(line[1]);
-			verts.push(line[2]);
+			positions.push
+			(
+				vec3.fromValues
+				(
+					parseFloat(components[1]),
+					parseFloat(components[2]),
+					parseFloat(components[3])
+				)
+			);
 		}
-		else if (lines[i].startsWith('vn')) 
+		else if(components[0] == 'vn')
 		{
-			// if this is a vertex normal
-			line = lines[i].slice(3).split(" ");
-			vertNormals.push(line[0]);
-			vertNormals.push(line[1]);
-			vertNormals.push(line[2]);
-		} 
-		else if (lines[i].startsWith('vt')) 
-		{
-			// if this is a texture
-			line = lines[i].slice(3).split(" ");
-			textures.push(line[0]);
-			textures.push(line[1]);
+			normals.push
+			(
+				vec3.fromValues
+				(
+					parseFloat(components[1]),
+					parseFloat(components[2]),
+					parseFloat(components[3])
+				)
+			);
 		}
-		else if (lines[i].startsWith('f ')) 
+		else if(components[0] == 'vt')
 		{
-			// if this is a face
-			/*
-			split this face into an array of Vertex groups
-			for example:
-				 f 16/92/11 14/101/22 1/69/1
-			becomes:
-				['16/92/11', '14/101/22', '1/69/1'];
-			*/
-			line = lines[i].slice(2).split(" ");
-			var quad = false;
-			for (var j=0; j<line.length; j++){
-					// Triangulating quads
-					// quad: 'f v0/t0/vn0 v1/t1/vn1 v2/t2/vn2 v3/t3/vn3/'
-					// corresponding triangles:
-					//      'f v0/t0/vn0 v1/t1/vn1 v2/t2/vn2'
-					//      'f v2/t2/vn2 v3/t3/vn3 v0/t0/vn0'
-					if(j === 3 && !quad) {
-							// add v2/t2/vn2 in again before continuing to 3
-							j = 2;
-							quad = true;
-					}
-					if(line[j] in unpacked.hashindices){
-							unpacked.indices.push(unpacked.hashindices[line[j]]);
-					}
-					else
-					{
-							/*
-							Each element of the face line array is a Vertex which has its
-							attributes delimited by a forward slash. This will separate
-							each attribute into another array:
-									'19/92/11'
-							becomes:
-									Vertex = ['19', '92', '11'];
-							where
-									Vertex[0] is the vertex index
-									Vertex[1] is the texture index
-									Vertex[2] is the normal index
-							 Think of faces having Vertices which are comprised of the
-							 attributes location (v), texture (vt), and normal (vn).
-							 */
-							var Vertex = line[ j ].split( '/' );
-							/*
-							 The verts, textures, and vertNormals arrays each contain a
-							 flattend array of coordinates.
+			uvs.push
+			(
+				vec2.fromValues
+				(
+					parseFloat(components[1]),
+					parseFloat(components[2])
+				)
+			);
+		}
+		else if(components[0] == 'f')
+		{
+			faces.push
+			([
+				components[1],
+				components[2],
+				components[3]
+			]);
+		}
+	}
 
-							 Because it gets confusing by referring to Vertex and then
-							 vertex (both are different in my descriptions) I will explain
-							 what's going on using the vertexNormals array:
+	var uniqueVertices = {};
+	var indices = [];
 
-							 Vertex[2] will contain the one-based index of the vertexNormals
-							 section (vn). One is subtracted from this index number to play
-							 nice with javascript's zero-based array indexing.
+	for(var i = 0; i < faces.length; i++)
+	{
+		var face = faces[i];
+		var verts = [face[0], face[1], face[2]];
 
-							 Because vertexNormal is a flattened array of x, y, z values,
-							 simple pointer arithmetic is used to skip to the start of the
-							 vertexNormal, then the offset is added to get the correct
-							 component: +0 is x, +1 is y, +2 is z.
-
-							 This same process is repeated for verts and textures.
-							 */
-							// vertex position
-							unpacked.verts.push(verts[(Vertex[0] - 1) * 3 + 0]);
-							unpacked.verts.push(verts[(Vertex[0] - 1) * 3 + 1]);
-							unpacked.verts.push(verts[(Vertex[0] - 1) * 3 + 2]);
-							// vertex textures
-							unpacked.textures.push(textures[(Vertex[1] - 1) * 2 + 0]);
-							unpacked.textures.push(textures[(Vertex[1] - 1) * 2 + 1]);
-							// vertex normals
-							unpacked.norms.push(vertNormals[(Vertex[2] - 1) * 3 + 0]);
-							unpacked.norms.push(vertNormals[(Vertex[2] - 1) * 3 + 1]);
-							unpacked.norms.push(vertNormals[(Vertex[2] - 1) * 3 + 2]);
-							// add the newly created vertex to the list of indices
-							unpacked.hashindices[line[j]] = unpacked.index;
-							unpacked.indices.push(unpacked.index);
-							// increment the counter
-							unpacked.index += 1;
-					}
-					if(j === 3 && quad) 
-					{
-							// add v0/t0/vn0 onto the second triangle
-							unpacked.indices.push( unpacked.hashindices[line[0]]);
-					}
+		for(var q = 0; q < verts.length; q++)
+		{
+			var vert = verts[q];
+			if(vert in uniqueVertices)
+			{
+				continue;
 			}
+
+			var vertSplit = vert.split('/');
+
+			var pidx = parseInt(vertSplit[0]) - 1;
+			var nidx = parseInt(vertSplit[2]) - 1;
+			var uvidx = parseInt(vertSplit[1]) - 1;
+
+			uniqueVertices[vert] =
+			[
+				positions[pidx][0],
+				positions[pidx][1],
+				positions[pidx][2],
+				normals[nidx][0],
+				normals[nidx][1],
+				normals[nidx][2],
+				uvs[uvidx][0],
+				uvs[uvidx][1]
+			];
 		}
 	}
 
-	var unpackedVertices = unpacked.verts;
-	var unpackedNormals = unpacked.norms;
-	var unpackedUVs = unpacked.textures;
-	var unpackedIndices = unpacked.indices;
+	var hashToIndex = {};
+	var interleavedVertices = [];
 
-	var vrts = [];
-	for(var i = 0; i < unpackedVertices.length / 3; i++)
+	var currentIndex = 0;
+	for(var vertex in uniqueVertices)
 	{
-		vrts.push(unpackedVertices[i * 3 + 0]);
-		vrts.push(unpackedVertices[i * 3 + 1]);
-		vrts.push(unpackedVertices[i * 3 + 2]);
+		if(typeof uniqueVertices[vertex] != 'object')
+		{
+			continue;
+		}
 
-		vrts.push(unpackedNormals[i * 3 + 0]);
-		vrts.push(unpackedNormals[i * 3 + 1]);
-		vrts.push(unpackedNormals[i * 3 + 2]);
+		hashToIndex[vertex] = currentIndex++;
+		var data = uniqueVertices[vertex];
 
-		vrts.push(unpackedUVs[i * 2 + 0]);
-		vrts.push(unpackedUVs[i * 2 + 1]);
+		for(var i = 0; i < data.length; i++)
+		{
+			interleavedVertices.push(data[i]);
+		}
 	}
 
-	this.vertices = new Float32Array(vrts);
-	this.indices = new Float32Array(unpackedIndices);
+	var indices = [];
+	for(var i = 0; i < faces.length; i++)
+	{
+		var face = faces[i];
+		indices.push(hashToIndex[face[0]]);
+		indices.push(hashToIndex[face[1]]);
+		indices.push(hashToIndex[face[2]]);		
+	}
+
+	this.vertices = new Float32Array(interleavedVertices);
+	this.indices = new Uint16Array(indices);
+
+	console.log
+	(
+		"obj parsed - " +
+		positions.length + " positions, " +
+		normals.length + " normals, " +
+		uvs.length + " uvs, " +
+		faces.length + " faces, resulting in " +
+		(this.vertices.length / 8) + " unique vertices and " +
+		this.indices.length / 3 + " triangles"
+	);
+
+	this._uploadVertexData();
+
+	this.renderingLayer = RENDERING_LAYER.PERSPECTIVE;
 };
 
 OBJMeshProvider.prototype = new Component();
 
-OBJMeshProvider.extend({
+OBJMeshProvider.extend(
+{
 
 })
 
-OBJMeshProvider.prototype.extend({
+OBJMeshProvider.prototype.extend(
+{
+
+	dispose: function ()
+	{
+		GL.deleteBuffer(this._vertexBuffer);
+		GL.deleteBuffer(this._indexBuffer);
+	},
+
+	_uploadVertexData: function ()
+	{
+		if(!this.vertexBuffer)
+		{
+			this.vertexBuffer = GL.createBuffer();
+			this.indexBuffer = GL.createBuffer();
+		}
+
+		GL.bindBuffer(GL.ARRAY_BUFFER, this.vertexBuffer);
+		GL.bufferData(GL.ARRAY_BUFFER, this.vertices, GL.STATIC_DRAW);
+
+		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, this.indices, GL.STATIC_DRAW);
+	},
 
 })

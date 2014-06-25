@@ -138,8 +138,6 @@ Application.prototype.extend(
 		Gui.bringToFront(testTextBoxWindow);
 
 		var terrainGameObject = this._createTerrain();
-
-		var Mesh = new OBJMeshProvider("mesh");
 	},
 
 	update: function(deltaTime)
