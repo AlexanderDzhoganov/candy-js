@@ -508,9 +508,9 @@ GuiControl.prototype.extend(
 
 					var inStack = parentWindows.length;
 
-					//
-					// ondeactivate
-					//
+					dropDownWindow.onDeactivate = function() {
+						console.log("dsa");
+					}.bind(this);
 
 					dropDownWindow.show();
 				}
