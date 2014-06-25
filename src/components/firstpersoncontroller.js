@@ -10,6 +10,66 @@ var FirstPersonController = function ()
 
 	this.moveSpeed = 5.0;
 	this._Movement = vec3.create();
+
+	InputController.add(InputController.keys.Q, InputController.modes.DOWN, function(key)
+	{
+	 	this._Movement[1] = -1;
+	}.bind(this));
+
+	InputController.add(InputController.keys.Q, InputController.modes.UP, function(key)
+	{
+	 	this._Movement[1] = 0;
+	}.bind(this));
+
+	InputController.add(InputController.keys.E, InputController.modes.DOWN, function(key)
+	{
+	 	this._Movement[1] = 1;
+	}.bind(this));
+
+	InputController.add(InputController.keys.E, InputController.modes.UP, function(key)
+	{
+	 	this._Movement[1] = 0;
+	}.bind(this));
+
+	InputController.add(InputController.keys.W, InputController.modes.DOWN, function(key)
+	{
+	 	this._Movement[2] = 1;
+	}.bind(this));
+
+	InputController.add(InputController.keys.W, InputController.modes.UP, function(key)
+	{
+	 	this._Movement[2] = 0;
+	}.bind(this));
+
+	InputController.add(InputController.keys.S, InputController.modes.DOWN, function(key)
+	{
+	 	this._Movement[2] = -1;
+	}.bind(this));
+
+	InputController.add(InputController.keys.S, InputController.modes.UP, function(key)
+	{
+	 	this._Movement[2] = 0;
+	}.bind(this));
+
+	InputController.add(InputController.keys.A, InputController.modes.DOWN, function(key)
+	{
+	 	this._Movement[0] = -1;
+	}.bind(this));
+
+	InputController.add(InputController.keys.A, InputController.modes.UP, function(key)
+	{
+	 	this._Movement[0] = 0;
+	}.bind(this));
+
+	InputController.add(InputController.keys.D, InputController.modes.DOWN, function(key)
+	{
+	 	this._Movement[0] = 1;
+	}.bind(this));
+
+	InputController.add(InputController.keys.D, InputController.modes.UP, function(key)
+	{
+	 	this._Movement[0] = 0;
+	}.bind(this));
 };
 
 FirstPersonController.prototype = new Component();
@@ -23,7 +83,7 @@ FirstPersonController.prototype.extend(
 {
 
 	onInit: function ()
-	{
+	{/*
 		//this.position = vec3.fromValues(0, 0.5, -2);
 		// Not recommended if there's more than one instance of FIRSTPERSONCONTROLLER
 		window.addEventListener("keydown", this.handleKeydown.bind(this), false);
@@ -31,7 +91,7 @@ FirstPersonController.prototype.extend(
 
 	//	document.body.onclick = document.body.requestPointerLock || document.body.mozRequestPointerLock || document.body.webkitRequestPointerLock;
 
-		/*document.onmousemove = function(e)
+		document.onmousemove = function(e)
 		{
 			var dx = e.movementX || e.mozMovementX || e.webkitMovementX || 0;
 			var dy = e.movementY || e.mozMovementY || e.webkitMovementY || 0;
@@ -83,50 +143,6 @@ FirstPersonController.prototype.extend(
 		}.bind(this);
 
 		return config;
-	},
-		
-	handleKeydown: function ()
-	{
-		var keyCode = event.keyCode;
-
-		if (keyCode == 65) // left
-		{
-			this._Movement[0] = 1;
-		}
-		else if (keyCode == 68) // right
-		{
-			this._Movement[0] = -1;
-		}
-		else if (keyCode == 87) // up
-		{
-			this._Movement[2] = 1;
-		}
-		else if (keyCode == 83) // down
-		{
-			this._Movement[2] = -1;
-		}
-	},
-
-	handleKeyup: function ()
-	{
-		var keyCode = event.keyCode;
-
-		if (keyCode == 65) // left
-		{
-			this._Movement[0] = 0.0;
-		}
-		else if (keyCode == 68) // right
-		{
-			this._Movement[0] = 0.0;
-		}
-		else if (keyCode == 87) // up
-		{
-			this._Movement[2] = 0.0;
-		}
-		else if (keyCode == 83) // down
-		{
-			this._Movement[2] = 0.0;
-		}
 	},
 
 });
