@@ -12,6 +12,7 @@ MeshRenderer.prototype = new Component();
 
 MeshRenderer.extend(
 {
+
 	getWireframeProgram: function ()
 	{
 		if (MeshRenderer._wireframeProgram == null)
@@ -27,6 +28,7 @@ MeshRenderer.extend(
 	},	
 
 	_wireframeProgram: null,
+
 });
 
 MeshRenderer.prototype.extend(
@@ -45,12 +47,9 @@ MeshRenderer.prototype.extend(
 			return;
 		}
 
-		this._setupMaterial();
-		Shader.setUniformMat4("model", worldModelMatrix);
-
-		for(var i = 0; i < meshProvider.submeshes.length; i++)
+		if(this.wireframe)
 		{
-			if (this.wireframe) 
+			for(var i = 0; i < meshProvider.submeshes.length; i++)
 			{
 				Shader.setActiveProgram(MeshRenderer.getWireframeProgram());
 				Shader.setUniformVec3("wireframeColor", vec3.fromValues(0, 0.2, 1));
@@ -58,16 +57,38 @@ MeshRenderer.prototype.extend(
 
 				this._drawWireframeSubmesh(meshProvider.submeshes[i]);
 			}
-			else
+		}
+		else
+		{
+			for(var i = 0; i < meshProvider.submeshes.length; i++)
 			{
+				this._setupMaterial();
+				Shader.setUniformMat4("model", worldModelMatrix);
 				this._drawSubmesh(meshProvider.submeshes[i]);
 			}
 		}
 
 		if(this.drawBounds)
 		{
-			this._drawBounds();
+			this._drawBounds(worldModelMatrix);
 		}
+	},
+
+	createConfigWindow: function ()
+	{
+		var wnd = new GuiWindow(vec2.fromValues(0.0, 0.0), vec2.fromValues(400.0, 0.0), new GuiLayout(), new GuiSkin());
+		wnd.autoSize = true;
+		wnd.title = this.name;
+
+		wnd.drawSelf = function (gui)
+		{
+			gui.beginHorizontalGroup();
+			gui.label("Wireframe");
+			this.wireframe = gui.checkbox(this.wireframe);
+			gui.endHorizontalGroup();
+		}.bind(this);
+
+		return wnd;
 	},
 
 	_setupMaterial: function ()
@@ -133,11 +154,11 @@ MeshRenderer.prototype.extend(
 		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(lineIndices), GL.STREAM_DRAW);
 
 		GL.bindBuffer(GL.ARRAY_BUFFER, subMesh.vertexBuffer);
-		
+
 		Renderer.drawIndexedLines(lineIndices.length, "PPPXXXXX");
 	},
 
-	_drawBounds: function ()
+	_drawBounds: function (worldModelMatrix)
 	{
 		var boundsProvider = this.gameObject.getComponent("meshBoundsProvider");
 		if(!boundsProvider)
@@ -145,6 +166,10 @@ MeshRenderer.prototype.extend(
 			console.log("MeshRenderer: drawBounds set but no meshBoundsProvider on the gameobject");
 			return;
 		}
+
+		Shader.setActiveProgram(MeshRenderer.getWireframeProgram());
+		Shader.setUniformVec3("wireframeColor", vec3.fromValues(0, 1, 0));
+		Shader.setUniformMat4("model", worldModelMatrix);
 
 		GL.bindBuffer(GL.ARRAY_BUFFER, boundsProvider.vertexBuffer);
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, boundsProvider.indexBuffer);

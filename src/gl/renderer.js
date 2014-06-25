@@ -199,9 +199,11 @@ Renderer.prototype.extend(
 		{
 			if(Shader._ActiveProgram.position != undefined)
 			{
+				GL.disableVertexAttribArray(0);
+				GL.disableVertexAttribArray(1);
+				GL.disableVertexAttribArray(2);
+
 				GL.enableVertexAttribArray(Shader._ActiveProgram.position);
-				GL.disableVertexAttribArray(Shader._ActiveProgram.normal);
-				GL.disableVertexAttribArray(Shader._ActiveProgram.uvs);
 
 				GL.vertexAttribPointer(Shader._ActiveProgram.position, 3, GL.FLOAT, false, 32, 0);
 			}

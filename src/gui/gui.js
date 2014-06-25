@@ -63,6 +63,13 @@ Gui.prototype.extend(
 
 		this.detachWindow(wnd);
 		this.attachWindow(wnd);
+
+		while(wnd._dockedBy != null)
+		{
+			this.detachWindow(wnd._dockedBy);
+			this.attachWindow(wnd._dockedBy);
+			wnd = wnd._dockedBy;
+		}
 	},
 
 	renderSelf: function ()
@@ -130,6 +137,7 @@ Gui.prototype.extend(
 			if(wnd.dockTo)
 			{
 				wnd.dockTo._dockedBy = null;
+				wnd.size = wnd.beforeDockSize;
 			}
 
 			wnd.dockTo = null;
@@ -158,6 +166,7 @@ Gui.prototype.extend(
 		this._previousTime = time;
 
 		this._activeWindow = null;
+		var windowActivated = false;
 
 		for (var i = 0; i < this._windows.length; i++)
 		{
@@ -201,12 +210,13 @@ Gui.prototype.extend(
 
 			if (PointRectTest(this._input.getCursorPosition(), wnd.position, wnd.size))
 			{
-				if(this._activeWindow && this._activeWindow.onDeactivate)
+				if(this._activeWindow != wnd && this._activeWindow && this._activeWindow.onDeactivate)
 				{
 					this._activeWindow.onDeactivate();
 				}
 
 				this._activeWindow = wnd;
+				windowActivated = true;
 
 				if(this._activeWindow.onActivate)
 				{
@@ -246,6 +256,7 @@ Gui.prototype.extend(
 						}
 
 						this._activeWindow.dockTo = other;
+						this._activeWindow.beforeDockSize = this._activeWindow.size;
 						other._dockedBy = this._activeWindow;
 						break;
 					}
@@ -286,6 +297,11 @@ Gui.prototype.extend(
 				wnd.position = vec2.fromValues(wnd.dockTo.position[0], wnd.dockTo.position[1] + wnd.dockTo.size[1]);
 				wnd.size[0] = wnd.dockTo.size[0];
 			}
+		}
+
+		if(!windowActivated)
+		{
+			this._activeWindow = null;
 		}
 
 		for(var i = 0; i < this._windows.length; i++)
