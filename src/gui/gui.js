@@ -181,7 +181,17 @@ Gui.prototype.extend(
 
 			if (PointRectTest(this._input.getCursorPosition(), wnd.position, wnd.size))
 			{
+				if(this._activeWindow && this._activeWindow.onDeactivate)
+				{
+					this._activeWindow.onDeactivate();
+				}
+
 				this._activeWindow = wnd;
+
+				if(this._activeWindow.onActivate)
+				{
+					this._activeWindow.onActivate();
+				}
 			}
 		}
 
