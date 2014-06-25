@@ -124,7 +124,6 @@ GuiLayout.prototype.extend(
 	{
 		if(this._controlSizes.length <= this._controlId)
 		{
-			console.log("control sizes mismatch");
 			return null;
 		}
 

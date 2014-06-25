@@ -14,21 +14,14 @@ GuiControl.prototype.extend(
 
 	drawControls: function (wnd, deltaTime)
 	{
+		this.recalculate = false;
 		var controlsCount = this._calculateControlSizes(wnd);
 		this._interactControls(wnd, deltaTime);
 
-		var retries = 3;
-
-		while (this.recalculate && retries >= 0)
+		if(this.recalculate)
 		{
 			this._calculateControlSizes(wnd);
-			retries--;
-		}
-
-		if(retries <= 0)
-		{
-			console.log("controls desync, bailing..");
-			return;
+			this._interactControls(wnd, deltaTime);
 		}
 
 		this._drawControls(wnd, deltaTime);
@@ -186,7 +179,6 @@ GuiControl.prototype.extend(
 		wnd.layout.beginLayout(wnd);
 
 		this.controlList = [];
-		this.recalculate = false;
 
 		wnd.drawSelf(
 		{
