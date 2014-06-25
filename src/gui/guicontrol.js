@@ -509,9 +509,7 @@ GuiControl.prototype.extend(
 					var inStack = parentWindows.length;
 
 					dropDownWindow.onDeactivate = function() {
-						for( var i = parentWindows.length - 1; i >= 0 ; i-- ) {
-							parentWindows[i].close();
-						}
+						console.log("deactivate");
 					}.bind(this);
 
 					dropDownWindow.show();
