@@ -26,6 +26,9 @@ var GuiWindow = function (position, size, layout, skin)
 
 	this.onClose = null;
 
+	this.onActivate = null;
+	this.onDisactivate = null;
+	
 	// private
 
 	this._attached = false;

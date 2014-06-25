@@ -18,7 +18,7 @@ MeshRenderer.extend(
 MeshRenderer.prototype.extend(
 {
 
-	onRender: function ()
+	onRender: function (worldModelMatrix)
 	{
 		if(!this.material)
 		{
@@ -32,6 +32,7 @@ MeshRenderer.prototype.extend(
 		}
 
 		this._setupMaterial();
+		Shader.SetUniformMat4("model", worldModelMatrix);
 
 		for(var i = 0; i < meshProvider.submeshes.length; i++)
 		{

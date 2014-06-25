@@ -145,7 +145,6 @@ Renderer.prototype.extend(
 		if (Shader._ActiveProgram)
 		{
 			Shader.SetUniformMat4("viewProjection", this._ViewProjectionMatrix);
-			Shader.SetUniformMat4("model", mat4.create());
 			Shader.SetUniformMat4("view", this._ViewMatrix);
 			Shader.SetUniformMat4("inverseModelView", this._InverseModelViewMatrix);
 			Shader.SetUniformVec3("lightPosition", this.lightPos)

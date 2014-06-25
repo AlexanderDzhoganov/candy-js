@@ -41,7 +41,7 @@ Application.prototype.extend(
 //		testObject.
 
 		var player = this._createPlayer(vec3.fromValues(-0.15, -0.5, -6.5));
-		var editor = new GameObjectEditor(player);
+		var editor = new GameObjectEditor(testObject);
 
 		//Gui.debugLayout = true;
 

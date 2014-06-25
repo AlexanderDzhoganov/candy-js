@@ -22,16 +22,16 @@ SceneGraph.prototype.extend(
 		{
 			sceneNode._Render = function (parentModelMatrix)
 			{
-				var rendererComponent = this.getComponent("renderer");
-				if(rendererComponent && rendererComponent.enabled)
-				{
-					rendererComponent.onRender();
-				}
-
 				var transformComponent = this.getComponent("transform");
 				var modelMatrix = transformComponent.getModelMatrix();
 
 				mat4.multiply(modelMatrix, parentModelMatrix, modelMatrix);
+				
+				var rendererComponent = this.getComponent("renderer");
+				if(rendererComponent && rendererComponent.enabled)
+				{
+					rendererComponent.onRender(modelMatrix);
+				}
 
 				for (var i = 0; i < this._ChildNodes.length; i++)
 				{
