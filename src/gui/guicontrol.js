@@ -258,9 +258,9 @@ GuiControl.prototype.extend(
 					this._input.setKeyBuffer(input.toString(), maxLength);
 					var caretIndex = GuiRenderer.calculateInputBoxCaretIndex(this._context, wnd, this._input.getKeyBuffer(), control);
 
-					if(caretIndex > input.length + 1)
+					if(caretIndex > input.length)
 					{
-						caretIndex = input.length + 1;
+						caretIndex = input.length;
 					}
 
 					this._input.setCaretIndex(caretIndex);
@@ -419,7 +419,7 @@ GuiControl.prototype.extend(
 				return selectedIndex;
 			}.bind(this),
 
-			dropdownmenu: function( label, items, parentWindow ) {
+			dropdownmenu: function( label, items, parentWindows ) {
 				var control = this._beginControl(wnd);
 
 				if(control == null)
@@ -431,17 +431,6 @@ GuiControl.prototype.extend(
 
 				if(control.clicked) {
 					var popupPosition = vec2.fromValues(control.rect.position[0] + control.rect.size[0], control.rect.position[1]);
-					var popupLayout = new GuiLayout();
-
-					popupLayout.margin = vec2.fromValues(0, 0);
-					popupLayout.windowTopMargin = 0;
-					popupLayout.horizontalSeparatorMargin = 0;
-
-					var popupSkin = new GuiSkin();
-					popupSkin.backgroundColor = "";
-					popupSkin.border = { "hovered": "", "normal": ""};
-
-					console.log(popupSkin.backgroundColor);
 
 					var itemWidth = 0;
 					items.forEach(function( key, val ) {
@@ -451,6 +440,15 @@ GuiControl.prototype.extend(
 					}.bind(this));
 
 					var popupSize = vec2.fromValues(itemWidth * 12.0, items.size() * 16);
+
+					var popupLayout = new GuiLayout();
+					popupLayout.margin = vec2.fromValues(0, 0);
+					popupLayout.windowTopMargin = 0;
+					popupLayout.horizontalSeparatorMargin = 0;
+
+					var popupSkin = new GuiSkin();
+					popupSkin.backgroundColor = "";
+					popupSkin.border = { "hovered": "", "normal": ""};
 
 					var dropDownWindow = new GuiWindow(popupPosition, popupSize, popupLayout, popupSkin);
 					dropDownWindow.title = "";
@@ -462,21 +460,32 @@ GuiControl.prototype.extend(
 					{
 						items.forEach(function( key, val ) {
 							if( typeof val === "object" && val !== null ) {
-								gui.dropdownmenu(key, val, dropDownWindow);
+								gui.dropdownmenu(key, val, parentWindows);
 							} else if( typeof val === "function" ) {
 								if(gui.button(key))
 								{
-									dropDownWindow.close();
-
-									if(parentWindow instanceof GuiWindow) {
-										parentWindow.close();
+									for( var i = parentWindows.length - 1; i >= 0 ; i-- ) {
+										parentWindows[i].close();
 									}
 
 									val();
 								}
 							}
 						}.bind(this));
-					};
+					}.bind(this);
+
+					if( !parentWindows )
+					{
+						parentWindows = [];
+					}
+
+					parentWindows.push(dropDownWindow);
+
+					var inStack = parentWindows.length;
+
+					//
+					// ondeactivate
+					//
 
 					dropDownWindow.show();
 				}

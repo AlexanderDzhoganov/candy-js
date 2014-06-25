@@ -51,6 +51,9 @@ Application.prototype.extend(
 
 		var multiLineText = "hello world,\nthis is some multiline text\n123456";
 
+		var testShowButton = false;
+		var testSpinTires = false;
+
 		testTextBoxWindow.drawSelf = function (gui)
 		{
 			multiLineText = gui.textbox(multiLineText, 64, 16, false);
@@ -60,11 +63,13 @@ Application.prototype.extend(
 				"stuff1": {
 					"substuff1": function()
 					{
-						console.log("WOW");
+						multiLineText = "SUCH GUI\nMUCH FUNCTIONALITY";
 					},
 					"substuff2": function()
 					{
-						console.log("substufffff");
+						setInterval(function() {
+							testSpinTires = testSpinTires ? false : true;
+						}, 500);
 					},
 					"substuff3": {
 						"subsubstuff1": function() {
@@ -76,9 +81,21 @@ Application.prototype.extend(
 					}
 				},
 				stuff2: function() {
-					console.log("shit");
+					testShowButton = testShowButton ? false : true;
 				}
 			});
+
+			if( testShowButton ) {
+				gui.button("WHY AM I HERE")
+			}
+
+			if( testSpinTires ) {
+				gui.beginHorizontalGroup();
+				gui.button("SPINTIRES!");
+				gui.button("SPINTIRES!");
+				gui.button("SPINTIRES!");
+				gui.endHorizontalGroup();
+			}
 		}.bind(this);
 
 		testTextBoxWindow.show();
