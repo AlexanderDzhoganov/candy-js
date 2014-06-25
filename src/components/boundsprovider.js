@@ -115,17 +115,18 @@ BoundsProvider.prototype.extend(
 		vec3.subtract(topLeft, this.aabb.center, this.aabb.extents);
 
 		var bottomRight = vec3.create();
-		vec2.add(bottomRight, this.aabb.center, this.aabb.extents);
+		vec3.add(bottomRight, this.aabb.center, this.aabb.extents);
+		console.log(this.aabb.center[2] + this.aabb.extents[2] + " , " + bottomRight[2]);
 
 		pushVertex(topLeft[0], topLeft[1], topLeft[2]);
 		pushVertex(topLeft[0], bottomRight[1], topLeft[2]);
 		pushVertex(bottomRight[0], bottomRight[1], topLeft[2]);
 		pushVertex(bottomRight[0], topLeft[1], topLeft[2]);
 
-		pushVertex(topLeft[0], topLeft[1], bottomRight[2] + this.aabb.extents[2]);
-		pushVertex(topLeft[0], bottomRight[1], bottomRight[2] + this.aabb.extents[2]);
-		pushVertex(bottomRight[0], bottomRight[1], bottomRight[2] + this.aabb.extents[2]);
-		pushVertex(bottomRight[0], topLeft[1], bottomRight[2] + this.aabb.extents[2]);
+		pushVertex(topLeft[0], topLeft[1], bottomRight[2]);
+		pushVertex(topLeft[0], bottomRight[1], bottomRight[2]);
+		pushVertex(bottomRight[0], bottomRight[1], bottomRight[2]);
+		pushVertex(bottomRight[0], topLeft[1], bottomRight[2]);
 
 		var indices = 
 		[
