@@ -17,7 +17,12 @@ var OBJMeshProvider = function (name)
 	for(var i = 0; i < lines.length; i++)
 	{
 		var line = lines[i];
-		line = line.replace('  ', ' ');
+
+		while(line.indexOf('  ') != -1)
+		{
+			line = line.replace('  ', ' ');
+		}
+
 		var components = line.trim().split(' ');
 
 		if(components[0] == 'v')
@@ -105,20 +110,43 @@ var OBJMeshProvider = function (name)
 
 			var vertSplit = vert.split('/');
 
-			var pidx = parseInt(vertSplit[0]) - 1;
-			var nidx = parseInt(vertSplit[2]) - 1;
-			var uvidx = parseInt(vertSplit[1]) - 1;
+			var pidx = null;
+			var nidx = null;
+			var uvidx = null;
+
+			if(vertSplit.length == 3)
+			{
+				pidx = parseInt(vertSplit[0]) - 1;
+				nidx = parseInt(vertSplit[2]) - 1;
+				uvidx = parseInt(vertSplit[1]) - 1;
+			}
+			else
+			{
+				pidx = parseInt(vertSplit[0]) - 1;
+				nidx = null;
+				uvidx = parseInt(vertSplit[1]) - 1;
+			}
+
+			var position = positions[pidx];
+			var normal = normals[nidx];
+
+			if(!normal || !nidx)
+			{
+				normal = this._calculateNormal(pidx, positions, faces);
+			}
+
+			var uv = uvs[uvidx];
 
 			uniqueVertices[vert] =
 			[
-				positions[pidx][0],
-				positions[pidx][1],
-				positions[pidx][2],
-				normals[nidx][0],
-				normals[nidx][1],
-				normals[nidx][2],
-				uvs[uvidx][0],
-				uvs[uvidx][1]
+				position[0],
+				position[1],
+				position[2],
+				normal[0],
+				normal[1],
+				normal[2],
+				uv[0],
+				uv[1]
 			];
 		}
 	}
@@ -157,7 +185,7 @@ var OBJMeshProvider = function (name)
 
 	console.log
 	(
-		"obj parsed - " +
+		"OBJMeshProvider: obj parsed - " +
 		positions.length + " positions, " +
 		normals.length + " normals, " +
 		uvs.length + " uvs, " +
@@ -207,6 +235,27 @@ OBJMeshProvider.prototype.extend(
 
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, this.indices, GL.STATIC_DRAW);
+	},
+
+	_calculateNormal: function (positionIndex, positions, faces)
+	{
+		var resultNormal = vec3.create();
+
+		var calculateNormal = function (v0, v1, v2)
+		{
+			var sideA = vec3.create();
+			vec3.subtract(sideA, v0, v1);
+			
+			var sideB = vec3.create();
+			vec3.subtract(sideB, v0, v2);
+
+			var normal = vec3.create();
+			vec3.cross(normal, sideA, sideB);
+			vec3.normalize(normal, crossProduct);
+			return crossProduct;
+		};
+
+		return resultNormal;
 	},
 
 })

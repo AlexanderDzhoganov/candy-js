@@ -116,7 +116,6 @@ BoundsProvider.prototype.extend(
 
 		var bottomRight = vec3.create();
 		vec3.add(bottomRight, this.aabb.center, this.aabb.extents);
-		console.log(this.aabb.center[2] + this.aabb.extents[2] + " , " + bottomRight[2]);
 
 		pushVertex(topLeft[0], topLeft[1], topLeft[2]);
 		pushVertex(topLeft[0], bottomRight[1], topLeft[2]);
