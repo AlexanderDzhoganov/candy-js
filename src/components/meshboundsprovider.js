@@ -3,6 +3,7 @@ var MeshBoundsProvider = function ()
 	this.name = "MeshBoundsProvider";
 	this.type = "meshBoundsProvider";
 	this.aabb = new AABB();
+	this.boundingSphereRadius = 0.0;
 };
 
 MeshBoundsProvider.prototype = new Component();
@@ -95,8 +96,9 @@ MeshBoundsProvider.prototype.extend(
 		vec3.add(this.aabb.center, min, diff);
 		this.aabb.extents = diff;
 
-		this.createAABBMesh();
+		this.boundingSphereRadius = vec3.length(this.aabb.extents);
 
+		this.createAABBMesh();
 		return this.aabb;
 	},
 

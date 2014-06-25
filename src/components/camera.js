@@ -43,6 +43,11 @@ Camera.prototype.extend(
 		return cameraMatrix;
 	},
 
+	getFrustum: function ()
+	{
+		return new Frustum(this.fov, this.width / this.height, this.near, this.far);
+	},
+
 	createConfigWindow: function ()
 	{
 		var wnd = new GuiWindow(vec2.fromValues(0.0, 0.0), vec2.fromValues(400.0, 0.0), new GuiLayout(), new GuiSkin());
