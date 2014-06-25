@@ -47,7 +47,6 @@ Shader.prototype.extend(
 		for (var i = 0; i < uniformsCount; i++)
 		{
 			var uniform = GL.getActiveUniform(program, i);
-			console.log(uniform.name);
 			program[uniform.name] = GL.getUniformLocation(program, uniform.name);
 		}
 

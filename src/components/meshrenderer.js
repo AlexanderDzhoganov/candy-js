@@ -3,6 +3,8 @@ var MeshRenderer = function ()
 	this.name = "MeshRenderer";
 	this.type = "renderer";
 	this.material = null;
+
+	this.drawBounds = false;
 };
 
 MeshRenderer.prototype = new Component();
@@ -62,6 +64,21 @@ MeshRenderer.prototype.extend(
 		else if(meshProvider.primitiveType == 'indexedTriangles')
 		{
 			Renderer.drawIndexedTriangles(meshProvider.indices.length, meshProvider.vertexFormat);	
+		}
+
+		if(this.drawBounds)
+		{
+			var boundsProvider = this.gameObject.getComponent("boundsProvider");
+			if(!boundsProvider)
+			{
+				console.log("MeshRenderer: drawBounds set but no boundsProvider on the gameobject");
+				return;
+			}
+
+			GL.bindBuffer(GL.ARRAY_BUFFER, boundsProvider.vertexBuffer);
+			GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, boundsProvider.indexBuffer);
+
+			Renderer.drawIndexedLines(boundsProvider.indices.length);
 		}
 	},
 

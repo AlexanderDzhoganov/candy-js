@@ -104,8 +104,8 @@ TerrainMeshProvider.prototype.extend(
 
 	dispose: function ()
 	{
-		GL.deleteBuffer(this._vertexBuffer);
-		GL.deleteBuffer(this._indexBuffer);
+		GL.deleteBuffer(this.vertexBuffer);
+		GL.deleteBuffer(this.indexBuffer);
 	},
 
 	_uploadVertexData: function ()

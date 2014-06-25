@@ -27,8 +27,12 @@ Application.prototype.extend(
 
 		var testObject = new GameObject("testMesh");
 		testObject.addComponent(new OBJMeshProvider("mesh"));
+		testObject.addComponent(new BoundsProvider());
+		var aabb = testObject.getComponent("boundsProvider").recalculateMinimumAABB();
+
 		testObject.addComponent(new MeshRenderer());
 		testObject.getComponent("renderer").material = testMaterial;
+		testObject.getComponent("renderer").drawBounds = true;
 
 		testObject.getComponent("transform").position = vec3.fromValues(0, 0, 0);
 
