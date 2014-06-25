@@ -26,12 +26,7 @@ Texture.extend(
 
 Texture.prototype.extend(
 {
-
-	bind: function ()
-	{
-		GL.bindTexture(GL.TEXTURE_2D, this._texture);
-	},
-
+	
 	dispose: function ()
 	{
 		GL.deleteTexture(this._texture);

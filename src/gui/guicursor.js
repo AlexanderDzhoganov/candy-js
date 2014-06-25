@@ -81,7 +81,9 @@ GuiCursor.prototype.extend(
 
 		Shader.SetUniformVec2("translation", vec2.fromValues(positionX, positionY));
 
-		this._texture.bind();
+		GL.bindTexture(GL.TEXTURE_2D, this._texture._texture);
+
+//		this._texture.bind();
 
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 		GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);

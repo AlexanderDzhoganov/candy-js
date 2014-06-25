@@ -3,7 +3,7 @@ var Material = function (name)
 	this.name = name;
 
 	this.program = null;
-	this.texture = null;
+	this.textures = {};
 };
 
 Material.extend(
@@ -19,9 +19,9 @@ Material.prototype.extend(
 		this.program = program;
 	},
 
-	addTexture: function (texture)
+	addTexture: function (name, texture)
 	{
-		this.texture = texture;
+		this.textures[name] = texture;
 	},
 
 });

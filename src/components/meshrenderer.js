@@ -28,8 +28,29 @@ MeshRenderer.prototype.extend(
 			return;
 		}
 
-		Shader.ActiveProgram(this.material.program);
-		this.material.texture.bind();
+		var material = this.material;
+		var program = this.material.program;
+		Shader.ActiveProgram(program);
+
+		var index = 0;
+		for(var name in material.textures)
+		{
+			if (!material.textures.hasOwnProperty(name))
+			{
+				continue;
+			}
+
+			if(program[name] == undefined)
+			{
+				console.log("no uniform sampler2D for texture \"" + name + "\"");
+				continue;
+			}
+
+			Shader.SetUniformInt(name, index);
+			GL.activeTexture(GL.TEXTURE0 + index);
+			GL.bindTexture(GL.TEXTURE_2D, material.textures[name]._texture);
+			index++;
+		}
 
 		GL.bindBuffer(GL.ARRAY_BUFFER, meshProvider.vertexBuffer);
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, meshProvider.indexBuffer);

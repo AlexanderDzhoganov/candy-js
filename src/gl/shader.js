@@ -46,8 +46,9 @@ Shader.prototype.extend(
 		var uniformsCount = GL.getProgramParameter(program, GL.ACTIVE_UNIFORMS);
 		for (var i = 0; i < uniformsCount; i++)
 		{
-			var name = GL.getActiveUniform(program, i).name;
-			program[name] = GL.getUniformLocation(program, name);
+			var uniform = GL.getActiveUniform(program, i);
+			console.log(uniform.name);
+			program[uniform.name] = GL.getUniformLocation(program, uniform.name);
 		}
 
 		return program;
@@ -57,6 +58,11 @@ Shader.prototype.extend(
 	{
 		this._ActiveProgram = program;
 		GL.useProgram(program);
+	},
+
+	SetUniformInt: function (uniform, value)
+	{
+		GL.uniform1i(this._ActiveProgram[uniform], value);
 	},
 
 	SetUniformVec2: function (uniform, vector)
