@@ -147,7 +147,7 @@ Renderer.prototype.extend(
 			Shader.setUniformMat4("viewProjection", this._ViewProjectionMatrix);
 			Shader.setUniformMat4("view", this._ViewMatrix);
 			Shader.setUniformMat4("inverseModelView", this._InverseModelViewMatrix);
-			Shader.setUniformVec3("lightPosition", this.lightPos)
+			Shader.setUniformVec3("lightPosition", this.lightPos);
 		}
 	},
 

@@ -19,11 +19,11 @@ MeshRenderer.extend(
 			MeshRenderer._wireframeProgram = new Shader 
 			(
 				ResourceLoader.getContent("wireframe_vertex"),
-				ResoursceLoader.getContent("wireframe_fragment")
+				ResourceLoader.getContent("wireframe_fragment")
 			);
-
-			return MeshRenderer._wireframeProgram;
 		}
+
+		return MeshRenderer._wireframeProgram;
 	},	
 
 	_wireframeProgram: null,
@@ -53,7 +53,9 @@ MeshRenderer.prototype.extend(
 			if (this.wireframe) 
 			{
 				Shader.setActiveProgram(MeshRenderer.getWireframeProgram());
-				Sharer.setUniformVec3("wireframeColor", vec3.fromValues(0, 0, 1);
+				Shader.setUniformVec3("wireframeColor", vec3.fromValues(0, 0.2, 1));
+				Shader.setUniformMat4("model", worldModelMatrix);
+
 				this._drawWireframeSubmesh(meshProvider.submeshes[i]);
 			}
 			else
