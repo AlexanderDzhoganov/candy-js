@@ -37,6 +37,22 @@ Application.prototype.extend(
 
 		testObject.getComponent("transform").position = vec3.fromValues(0, 0, 0);
 
+		testObject.addComponent(new AnimationController());
+		var time = 0.0;
+		testObject.getComponent("animationController").setAnimate(function (gameObject, deltaTime)
+		{
+			time += deltaTime * 4.0;
+
+			var orientationEuler = vec3.fromValues(0, time, 0);
+			var orientation = quat.create();
+			quat.rotateX(orientation, orientation, orientationEuler[0] * 0.0174532925);
+			quat.rotateY(orientation, orientation, orientationEuler[1] * 0.0174532925);
+			quat.rotateZ(orientation, orientation, orientationEuler[2] * 0.0174532925);
+			quat.normalize(orientation, orientation);
+
+			gameObject.getComponent("transform").orientation = orientation;
+		});
+
 		this.sceneGraph.insert(testObject);
 //		testObject.
 

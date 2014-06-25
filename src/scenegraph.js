@@ -47,6 +47,12 @@ SceneGraph.prototype.extend(
 					scriptComponent.onUpdate(deltaTime);
 				}
 
+				var animationComponent = this.getComponent("animationController");
+				if(animationComponent && animationComponent.onUpdate && animationComponent.enabled)
+				{
+					animationComponent.onUpdate(deltaTime);
+				}
+
 				for(var i = 0; i < this._ChildNodes.length; i++)
 				{
 					this._ChildNodes._Update(deltaTime);

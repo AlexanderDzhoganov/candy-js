@@ -8,6 +8,78 @@ var PointRectTest = function (point, position, size)
 	return false;
 }
 
+/*void GetEulerAngles(Quaternion q, double& yaw, double& pitch, double& roll)
+{
+    const double w2 = q.w*q.w;
+    const double x2 = q.x*q.x;
+    const double y2 = q.y*q.y;
+    const double z2 = q.z*q.z;
+    const double unitLength = w2 + x2 + y2 + z2;    // Normalised == 1, otherwise correction divisor.
+    const double abcd = q.w*q.x + q.y*q.z;
+    const double eps = 1e-7;    // TODO: pick from your math lib instead of hardcoding.
+    const double pi = 3.14159265358979323846;   // TODO: pick from your math lib instead of hardcoding.
+    if (abcd > (0.5-eps)*unitLength)
+    {
+        yaw = 2 * atan2(q.y, q.w);
+        pitch = pi;
+        roll = 0;
+    }
+    else if (abcd < (-0.5+eps)*unitLength)
+    {
+        yaw = -2 * ::atan2(q.y, q.w);
+        pitch = -pi;
+        roll = 0;
+    }
+    else
+    {
+        const double adbc = q.w*q.z - q.x*q.y;
+        const double acbd = q.w*q.y - q.x*q.z;
+        yaw = ::atan2(2*adbc, 1 - 2*(z2+x2));
+        pitch = ::asin(2*abcd/unitLength);
+        roll = ::atan2(2*acbd, 1 - 2*(y2+x2));
+    }
+}*/
+
+var QuatToEuler = function(q)
+{
+	var w2 = q[3] * q[3];
+	var x2 = q[0] * q[0];
+	var y2 = q[1] * q[1];
+	var z2 = q[2] * q[2];
+
+	var unitLength = w2 + x2 + y2 + z2;
+	var abcd = q[3] * q[0] + q[1] * q[2];
+	var eps = 1e-7;
+	var pi = Math.PI;
+
+	var yaw = 0.0;
+	var pitch = 0.0;
+	var roll = 0.0;
+
+	if (abcd > (0.5 - eps) * unitLength)
+	{
+		yaw = 2.0 * Math.atan2(q[1], q[3]);
+		pitch = pi;
+		roll = 0.0;
+	}
+	else if (abcd < (-0.5 + eps) * unitLength)
+	{
+		yaw = -2.0 * Math.atan2(q[1], q[3]);
+		pitch = -pi;
+		roll = 0.0;
+	}
+	else
+	{
+		var adbc = q[3] * q[2] - q[0] * q[1];
+		var acbd = q[3] * q[1] - q[0] * q[2];
+		yaw = Math.atan2(2.0 * adbc, 1.0 - 2.0 * (z2 + x2));
+		pitch = Math.asin(2.0 * abcd / unitLength);
+		roll = Math.atan2(2.0 * acbd, 1.0 - 2.0 * (y2 + x2));
+	}
+
+	return vec3.fromValues(yaw, pitch, roll);
+};
+
 var Clamp = function (x, min, max)
 {
 	if(x < min)

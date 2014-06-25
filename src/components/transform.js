@@ -6,6 +6,7 @@ var Transform = function ()
 
 	this.position = vec3.create();
 	this.orientation = quat.create();
+	this.orientationEuler = vec3.create();
 
 };
 
@@ -51,25 +52,24 @@ Transform.prototype.extend(
 
 			gui.label("Rotation");
 
-			var rotationsEuler = vec3.fromValues(0.0, 0.0, 0.0);
-
 			gui.beginHorizontalGroup();
 
 			gui.label("x:");
-			rotationsEuler[0] = gui.inputbox(rotationsEuler[0], 6);
+			this.orientationEuler[0] = gui.inputbox(this.orientationEuler[0], 6);
 
 			gui.label("y:");
-			rotationsEuler[1] = gui.inputbox(rotationsEuler[1], 6);
+			this.orientationEuler[1] = gui.inputbox(this.orientationEuler[1], 6);
 
 			gui.label("z:");
-			rotationsEuler[2] = gui.inputbox(rotationsEuler[2], 6);
+			this.orientationEuler[2] = gui.inputbox(this.orientationEuler[2], 6);
 
 			gui.endHorizontalGroup();
 
 			this.orientation = quat.create();
-			quat.rotateX(this.orientation, this.orientation, rotationsEuler[0] * 0.0174532925);
-			quat.rotateY(this.orientation, this.orientation, rotationsEuler[1] * 0.0174532925);
-			quat.rotateZ(this.orientation, this.orientation, rotationsEuler[2] * 0.0174532925);
+			quat.rotateX(this.orientation, this.orientation, this.orientationEuler[0] * 0.0174532925);
+			quat.rotateY(this.orientation, this.orientation, this.orientationEuler[1] * 0.0174532925);
+			quat.rotateZ(this.orientation, this.orientation, this.orientationEuler[2] * 0.0174532925);
+			quat.normalize(this.orientation, this.orientation);
 
 		}.bind(this);
 

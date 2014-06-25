@@ -7,7 +7,7 @@ var ResourceLoader = new ResourceLoader(
 	"checker": "resources/images/checker.png",
 
 	// meshes
-	"mesh": "resources/meshes/heart.obj",
+	"mesh": "resources/meshes/teapot_lowres.obj",
 
 	// shaders
 	"terrain_vertex": "resources/shaders/terrain.vs",
