@@ -7,7 +7,7 @@ var ResourceLoader = new ResourceLoader(
 	"checker": "resources/images/checker.png",
 
 	// meshes
-	"mesh": "resources/meshes/teapot_hires.obj",
+	"mesh": "resources/meshes/heart.obj",
 
 	// shaders
 	"terrain_vertex": "resources/shaders/terrain.vs",
@@ -18,6 +18,8 @@ var ResourceLoader = new ResourceLoader(
 	"gui_quad_fragment": "resources/shaders/gui_quad.fs",
 	"diffuse_vertex": "resources/shaders/diffuse.vs",
 	"diffuse_fragment": "resources/shaders/diffuse.fs",
+	"show_normals_vertex": "resources/shaders/show_normals.vs",
+	"show_normals_fragment": "resources/shaders/show_normals.fs",
 }, function (resName, progress, final)
 {
 	// update progress bar

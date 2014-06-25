@@ -20,7 +20,7 @@ Application.prototype.extend(
 		this.sceneGraph = new SceneGraph();
 
 		var testMaterial = new Material("test material");
-		var testProgram = Shader.CreateProgram(ResourceLoader.getContent("diffuse_vertex"), ResourceLoader.getContent("diffuse_fragment"));
+		var testProgram = Shader.CreateProgram(ResourceLoader.getContent("show_normals_vertex"), ResourceLoader.getContent("show_normals_fragment"));
 
 		testMaterial.setProgram(testProgram);
 		var tex = new Texture("checker");
@@ -28,7 +28,7 @@ Application.prototype.extend(
 		testMaterial.addTexture("diffuse", tex);
 
 		var testObject = new GameObject("testMesh");
-		testObject.addComponent(new OBJMeshProvider("mesh"));
+		testObject.addComponent(new OBJMeshProvider("mesh", false));
 
 		testObject.addComponent(new MeshRenderer());
 		testObject.getComponent("renderer").material = testMaterial;

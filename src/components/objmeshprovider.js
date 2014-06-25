@@ -1,10 +1,18 @@
-var OBJMeshProvider = function (name)
+var OBJMeshProvider = function (name, forceRecalculateNormals)
 {
 	this.name = "OBJMeshProvider";
 	this.type = "meshProvider";
 
 	var objData = this._extractDataFromOBJ(ResourceLoader.getContent(name));
-	var uniqueVertices = this._calculateUniqueVertices(objData.positions, objData.normals, objData.uvs, objData.faces);
+	var uniqueVertices = this._calculateUniqueVertices
+	(
+		objData.positions,
+		objData.normals,
+		objData.uvs,
+		objData.faces, 
+		forceRecalculateNormals
+	);
+
 	var result = this._prepareVerticesIndices(uniqueVertices, objData.faces);
 
 	var vertices = new Float32Array(result.vertices);
@@ -172,7 +180,7 @@ OBJMeshProvider.prototype.extend(
 		return { positions: positions, normals: normals, uvs: uvs, faces: faces };
 	},
 
-	_calculateUniqueVertices: function (positions, normals, uvs, faces)
+	_calculateUniqueVertices: function (positions, normals, uvs, faces, forceRecalculateNormals)
 	{
 		var uniqueVertices = {};
 
@@ -211,9 +219,10 @@ OBJMeshProvider.prototype.extend(
 				var position = positions[pidx];
 				var normal = normals[nidx];
 
-				if(!normal || !nidx)
+				if(!normal || !nidx || forceRecalculateNormals)
 				{
 					normal = this._calculateNormal(pidx, positions, faces);
+					//console.log("call");
 				}
 
 				var uv = uvs[uvidx];
@@ -271,6 +280,7 @@ OBJMeshProvider.prototype.extend(
 
 	_calculateNormal: function (positionIndex, positions, faces)
 	{
+	
 		var resultNormal = vec3.create();
 
 		var normalForTriangle = function (v0, v1, v2)
@@ -283,11 +293,45 @@ OBJMeshProvider.prototype.extend(
 
 			var normal = vec3.create();
 			vec3.cross(normal, sideA, sideB);
-			vec3.normalize(normal, crossProduct);
-			return crossProduct;
+
+			vec3.normalize(normal, normal);
+
+			return normal;
 		};
 
-		// TO DO
+		var faceVertexIndex = positionIndex + 1;
+		var faceSet = [];
+
+		for (var i = 0; i < faces.length; i++)
+		{
+			for (var q = 0; q < 3; q++)
+			{
+				var currentFaceVertex = faces[i][q].split('/')[0];
+				if (faceVertexIndex == currentFaceVertex)
+				{
+					faceSet.push(faces[i]);
+					break;
+				}
+			}
+		}
+
+		for (var i = 0; i < faceSet.length; i++)
+		{
+			var v0_idx = parseInt(faceSet[i][0].split('/')[0]) - 1;
+			var v1_idx = parseInt(faceSet[i][1].split('/')[0]) - 1;
+			var v2_idx = parseInt(faceSet[i][2].split('/')[0]) - 1;
+
+			var v0 = positions[v0_idx];
+			var v1 = positions[v1_idx];
+			var v2 = positions[v2_idx];
+
+			var calculatedNormal = normalForTriangle(v0, v1, v2);
+			vec3.add(resultNormal, calculatedNormal, resultNormal);
+		}
+
+		vec3.scale(resultNormal, resultNormal, 1.0 / faceSet.length);
+
+		vec3.normalize(resultNormal, resultNormal);
 
 		return resultNormal;
 	},
