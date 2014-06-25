@@ -451,7 +451,16 @@ GuiControl.prototype.extend(
 				control.label = label;
 
 				if(control.clicked) {
-					var popupPosition = vec2.fromValues(control.rect.position[0] + control.rect.size[0], control.rect.position[1]);
+					var popupPosition;
+
+					if( !parentWindows )
+					{
+						popupPosition = vec2.fromValues(control.rect.position[0] + control.rect.size[0], control.rect.position[1]);
+					} 
+					else 
+					{
+						popupPosition = vec2.fromValues(control.rect.position[0] + control.rect.size[0], control.rect.position[1]);
+					}
 
 					var itemLength = 0;
 
@@ -466,10 +475,10 @@ GuiControl.prototype.extend(
 					popupLayout.windowTopMargin = 0;
 					popupLayout.horizontalSeparatorMargin = 0;
 
-					var itemWidth = popupLayout.fontSize;
+					var itemWidth = popupLayout.fontSize * itemLength;
 					var itemHeight = ptsToPixels(popupLayout.fontSize);
 
-					var popupSize = vec2.fromValues(itemLength * itemWidth, items.size() * 16);
+					var popupSize = vec2.fromValues(itemWidth, items.size() * 16);
 
 					var popupSkin = new GuiSkin();
 					popupSkin.backgroundColor = "";
@@ -485,9 +494,9 @@ GuiControl.prototype.extend(
 					{
 						items.forEach(function( key, val ) {
 							if( typeof val === "object" && val !== null ) {
-								gui.dropdownmenu(key, val, parentWindows, {"width": itemLength * itemWidth});
+								gui.dropdownmenu(key, val, parentWindows, {"width": itemWidth});
 							} else if( typeof val === "function" ) {
-								if(gui.button(key, {"width": itemLength * itemWidth}))
+								if(gui.button(key, {"width": itemWidth}))
 								{
 									for( var i = parentWindows.length - 1; i >= 0 ; i-- ) {
 										parentWindows[i].close();
@@ -508,8 +517,31 @@ GuiControl.prototype.extend(
 
 					var inStack = parentWindows.length;
 
+					var closeTimeout = null;
+
 					dropDownWindow.onDeactivate = function() {
-						console.log("deactivate");
+						// closeTimeout = setTimeout(function() {
+							console.log(inStack, parentWindows.length);
+
+							if( inStack === parentWindows.length )
+							{
+								for(var i = 0; i < parentWindows.length; i++)
+								{
+									//parentWindows[i].close();
+								}
+							}
+						// }, 1000);
+					}.bind(this);
+
+					dropDownWindow.activate = function() {
+						if( closeTimeout ) {
+							clearTimeout(closeTimeout);
+						}
+
+						if( control.activeWindow != inStack ) {
+							control.activeWindow = inStack;
+							console.log(control.activeWindow);	
+						}
 					}.bind(this);
 
 					dropDownWindow.show();

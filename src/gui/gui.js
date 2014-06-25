@@ -165,7 +165,16 @@ Gui.prototype.extend(
 		var deltaTime = (time - this._previousTime) / 1000.0;
 		this._previousTime = time;
 
-		if(this._activeWindow && this._activeWindow.onDeactivate)
+		if(	this._activeWindow && 
+			this._activeWindow.activate && 
+			PointRectTest(this._input.getCursorPosition(), this._activeWindow.position, this._activeWindow.size))
+		{
+			this._activeWindow.activate();
+		}
+
+		if(	this._activeWindow && 
+			this._activeWindow.onDeactivate && 
+			!PointRectTest(this._input.getCursorPosition(), this._activeWindow.position, this._activeWindow.size))
 		{
 			this._activeWindow.onDeactivate();
 		}
