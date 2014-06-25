@@ -204,7 +204,7 @@ Application.prototype.extend(
 	{
 		var newPlayer = new GameObject("FPS Controller");
 		newPlayer.addComponent(new FirstPersonController());
-		newPlayer.addComponent(new Camera(Renderer.screenWidth, Renderer.screenHeight, 45.0, 0.1, 100.0));
+		newPlayer.addComponent(new Camera(Renderer.screenWidth, Renderer.screenHeight, 120.0, 0.1, 100.0));
 		newPlayer.getComponent("camera").setActive();
 		newPlayer.getComponent("transform").position = position;
 		this.sceneGraph.insert(newPlayer);
