@@ -56,8 +56,6 @@ var OBJMeshProvider = function (name)
 		}
 		else if(components[0] == 'f')
 		{
-			console.log(components);
-
 			if(components.length == 4)
 			{
 				// triangle
