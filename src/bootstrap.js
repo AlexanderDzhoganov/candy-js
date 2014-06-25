@@ -4,6 +4,7 @@ var ResourceLoader = new ResourceLoader(
 	"heightmap": "resources/images/heightmap.png",
 	"cursor": "resources/images/cursor.png",
 	"grass": "resources/images/grass.png",
+	"checker": "resources/images/checker.png",
 
 	// meshes
 	"mesh": "resources/meshes/teapot_hires.obj",

@@ -23,7 +23,7 @@ Application.prototype.extend(
 		var testProgram = Shader.CreateProgram(ResourceLoader.getContent("diffuse_vertex"), ResourceLoader.getContent("diffuse_fragment"));
 
 		testMaterial.setProgram(testProgram);
-		var tex = new Texture("grass");
+		var tex = new Texture("checker");
 		tex.setRepeat();
 		testMaterial.addTexture("diffuse", tex);
 
