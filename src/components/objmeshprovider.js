@@ -17,7 +17,7 @@ var OBJMeshProvider = function (name)
 	{
 		var line = lines[i];
 		line = line.replace('  ', ' ');
-		var components = line.split(' ');
+		var components = line.trim().split(' ');
 
 		if(components[0] == 'v')
 		{
@@ -56,12 +56,35 @@ var OBJMeshProvider = function (name)
 		}
 		else if(components[0] == 'f')
 		{
-			faces.push
-			([
-				components[1],
-				components[2],
-				components[3]
-			]);
+			console.log(components);
+
+			if(components.length == 4)
+			{
+				// triangle
+				faces.push
+				([
+					components[1],
+					components[2],
+					components[3]
+				]);
+			}
+			else if(components.length == 5)
+			{
+				// quad
+				faces.push
+				([
+					components[1],
+					components[2],
+					components[3]
+				]);
+
+				faces.push
+				([
+					components[1],
+					components[3],
+					components[4]
+				]);
+			}
 		}
 	}
 

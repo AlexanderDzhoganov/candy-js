@@ -6,7 +6,7 @@ var ResourceLoader = new ResourceLoader(
 	"grass": "resources/images/grass.png",
 
 	// meshes
-	"mesh": "resources/meshes/newwine.obj",
+	"mesh": "resources/meshes/teapot_lowres.obj",
 
 	// shaders
 	"terrain_vertex": "resources/shaders/terrain.vs",
