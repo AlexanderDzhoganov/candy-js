@@ -177,9 +177,20 @@ GuiControl.prototype.extend(
 				controlsCount++;
 				return selectedIndex;
 			}.bind(this),
-			dropdownmenu: function( label ) 
+			dropdownmenu: function( label, items, parentWindows, _args ) 
 			{
-				wnd.layout.prepareControl(GuiRenderer.calculateDropDownMenu(this._context, label));
+				var controlSize = GuiRenderer.calculateDropDownMenu(this._context, label);
+
+				if(_args != undefined)
+				{
+					if(_args.width != undefined)
+					{
+						controlSize[0] = _args.width;
+					}
+				}
+
+				wnd.layout.prepareControl(controlSize);
+
 				controlsCount++;
 			}.bind(this),
 		});
@@ -442,19 +453,23 @@ GuiControl.prototype.extend(
 				if(control.clicked) {
 					var popupPosition = vec2.fromValues(control.rect.position[0] + control.rect.size[0], control.rect.position[1]);
 
-					var itemWidth = 0;
+					var itemLength = 0;
+
 					items.forEach(function( key, val ) {
-						if( key.length > itemWidth ) {
-							itemWidth = key.length;
+						if( key.length > itemLength ) {
+							itemLength = key.length;
 						}
 					}.bind(this));
-
-					var popupSize = vec2.fromValues(itemWidth * 12.0, items.size() * 16);
 
 					var popupLayout = new GuiLayout();
 					popupLayout.margin = vec2.fromValues(0, 0);
 					popupLayout.windowTopMargin = 0;
 					popupLayout.horizontalSeparatorMargin = 0;
+
+					var itemWidth = popupLayout.fontSize;
+					var itemHeight = ptsToPixels(popupLayout.fontSize);
+
+					var popupSize = vec2.fromValues(itemLength * itemWidth, items.size() * 16);
 
 					var popupSkin = new GuiSkin();
 					popupSkin.backgroundColor = "";
@@ -470,9 +485,9 @@ GuiControl.prototype.extend(
 					{
 						items.forEach(function( key, val ) {
 							if( typeof val === "object" && val !== null ) {
-								gui.dropdownmenu(key, val, parentWindows);
+								gui.dropdownmenu(key, val, parentWindows, {"width": itemLength * itemWidth});
 							} else if( typeof val === "function" ) {
-								if(gui.button(key))
+								if(gui.button(key, {"width": itemLength * itemWidth}))
 								{
 									for( var i = parentWindows.length - 1; i >= 0 ; i-- ) {
 										parentWindows[i].close();
