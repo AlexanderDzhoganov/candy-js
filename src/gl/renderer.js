@@ -128,10 +128,15 @@ Renderer.prototype.extend(
 		GL.drawArrays(GL.TRIANGLES, 0, 6);
 	},
 
-	drawIndexedLines: function (indicesCount)
+	drawIndexedLines: function (indicesCount, vertexFormat)
 	{
+		if(vertexFormat == undefined)
+		{
+			vertexFormat = 'PPP';
+		}
+
 		this._setupUniforms();
-		this._setupVertexPointers('PPP');
+		this._setupVertexPointers(vertexFormat);
 		GL.drawElements(GL.LINES, indicesCount, GL.UNSIGNED_SHORT, 0);
 	},
 
@@ -189,6 +194,17 @@ Renderer.prototype.extend(
 			{
 				GL.enableVertexAttribArray(Shader._ActiveProgram.position);
 				GL.vertexAttribPointer(Shader._ActiveProgram.position, 3, GL.FLOAT, false, 12, 0);
+			}
+		}
+		else if(vertexFormat == 'PPPXXXXX')
+		{
+			if(Shader._ActiveProgram.position != undefined)
+			{
+				GL.enableVertexAttribArray(Shader._ActiveProgram.position);
+				GL.disableVertexAttribArray(Shader._ActiveProgram.normal);
+				GL.disableVertexAttribArray(Shader._ActiveProgram.uvs);
+
+				GL.vertexAttribPointer(Shader._ActiveProgram.position, 3, GL.FLOAT, false, 32, 0);
 			}
 		}
 		else

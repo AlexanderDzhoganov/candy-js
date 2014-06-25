@@ -33,6 +33,7 @@ Application.prototype.extend(
 		testObject.addComponent(new MeshRenderer());
 		testObject.getComponent("renderer").material = testMaterial;
 		testObject.getComponent("renderer").drawBounds = true;
+		testObject.getComponent("renderer").wireframe = false;
 
 		testObject.getComponent("transform").position = vec3.fromValues(0, 0, 0);
 

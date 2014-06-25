@@ -5,6 +5,7 @@ var MeshRenderer = function ()
 	this.material = null;
 
 	this.drawBounds = false;
+	this.wireframe = false;
 };
 
 MeshRenderer.prototype = new Component();
@@ -34,7 +35,14 @@ MeshRenderer.prototype.extend(
 
 		for(var i = 0; i < meshProvider.submeshes.length; i++)
 		{
-			this._drawSubmesh(meshProvider.submeshes[i]);
+			if (this.wireframe) 
+			{
+				this._drawWireframeSubmesh(meshProvider.submeshes[i]);
+			}
+			else
+			{
+				this._drawSubmesh(meshProvider.submeshes[i]);
+			}
 		}
 
 		if(this.drawBounds)
@@ -84,6 +92,30 @@ MeshRenderer.prototype.extend(
 		{
 			Renderer.drawIndexedTriangles(subMesh.indices.length, subMesh.vertexFormat);	
 		}
+	},
+
+	_drawWireframeSubmesh: function(subMesh)
+	{
+		var indices = subMesh.indices;
+		var lineIndices = [];
+
+		for (var i = 0; i < indices.length / 3; i++)
+		{
+			var v0 = indices[3 * i + 0];
+			var v1 = indices[3 * i + 1];
+			var v2 = indices[3 * i + 2];
+
+			lineIndices = lineIndices.concat([v0, v1, v1, v2, v2, v0]);
+		}
+
+		var lineIndexBuffer = GL.createBuffer();
+
+		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, lineIndexBuffer);
+		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(lineIndices), GL.STREAM_DRAW);
+
+		GL.bindBuffer(GL.ARRAY_BUFFER, subMesh.vertexBuffer);
+		
+		Renderer.drawIndexedLines(lineIndices.length, "PPPXXXXX");
 	},
 
 	_drawBounds: function ()

@@ -53,7 +53,7 @@ var FirstPersonController = function ()
 
 	InputController.add(InputController.keys.A, InputController.modes.DOWN, function(key)
 	{
-	 	this._Movement[0] = -1;
+	 	this._Movement[0] = 1;
 	}.bind(this));
 
 	InputController.add(InputController.keys.A, InputController.modes.UP, function(key)
@@ -63,7 +63,7 @@ var FirstPersonController = function ()
 
 	InputController.add(InputController.keys.D, InputController.modes.DOWN, function(key)
 	{
-	 	this._Movement[0] = 1;
+	 	this._Movement[0] = -1;
 	}.bind(this));
 
 	InputController.add(InputController.keys.D, InputController.modes.UP, function(key)
