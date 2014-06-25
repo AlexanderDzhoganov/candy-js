@@ -74,12 +74,12 @@ GuiCursor.prototype.extend(
 
 	renderSelf: function ()
 	{
-		Shader.ActiveProgram(this._program);
+		Shader.setActiveProgram(this._program);
 
 		var positionX = -1.0 + 2.0 * this.position[0] * (1.0 / Renderer.screenWidth);
 		var positionY = -1.0 + 2.0 * this.position[1] * (1.0 / Renderer.screenHeight);
 
-		Shader.SetUniformVec2("translation", vec2.fromValues(positionX, positionY));
+		Shader.setUniformVec2("translation", vec2.fromValues(positionX, positionY));
 
 		GL.bindTexture(GL.TEXTURE_2D, this._texture._texture);
 

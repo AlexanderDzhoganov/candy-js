@@ -117,7 +117,7 @@ Renderer.prototype.extend(
 
 		if(Shader._ActiveProgram)
 		{
-			Shader.SetUniformVec2("windowSize", vec2.fromValues(this.screenWidth, this.screenHeight));
+			Shader.setUniformVec2("windowSize", vec2.fromValues(this.screenWidth, this.screenHeight));
 		}
 
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
@@ -144,10 +144,10 @@ Renderer.prototype.extend(
 	{
 		if (Shader._ActiveProgram)
 		{
-			Shader.SetUniformMat4("viewProjection", this._ViewProjectionMatrix);
-			Shader.SetUniformMat4("view", this._ViewMatrix);
-			Shader.SetUniformMat4("inverseModelView", this._InverseModelViewMatrix);
-			Shader.SetUniformVec3("lightPosition", this.lightPos)
+			Shader.setUniformMat4("viewProjection", this._ViewProjectionMatrix);
+			Shader.setUniformMat4("view", this._ViewMatrix);
+			Shader.setUniformMat4("inverseModelView", this._InverseModelViewMatrix);
+			Shader.setUniformVec3("lightPosition", this.lightPos)
 		}
 	},
 

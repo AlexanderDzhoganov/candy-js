@@ -46,7 +46,7 @@ MeshRenderer.prototype.extend(
 		}
 
 		this._setupMaterial();
-		Shader.SetUniformMat4("model", worldModelMatrix);
+		Shader.setUniformMat4("model", worldModelMatrix);
 
 		for(var i = 0; i < meshProvider.submeshes.length; i++)
 		{
@@ -71,7 +71,7 @@ MeshRenderer.prototype.extend(
 		var material = this.material;
 		var program = this.material.program;
 
-		Shader.ActiveProgram(program);
+		Shader.setActiveProgram(program);
 
 		var index = 0;
 		for(var name in material.textures)
@@ -87,7 +87,7 @@ MeshRenderer.prototype.extend(
 				continue;
 			}
 
-			Shader.SetUniformInt(name, index);
+			Shader.setUniformInt(name, index);
 			GL.activeTexture(GL.TEXTURE0 + index);
 			GL.bindTexture(GL.TEXTURE_2D, material.textures[name]._texture);
 			index++;

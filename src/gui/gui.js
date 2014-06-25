@@ -69,7 +69,7 @@ Gui.prototype.extend(
 	{
 		this._drawCanvas();
 
-		Shader.ActiveProgram(this._program);
+		Shader.setActiveProgram(this._program);
 		GL.bindTexture(GL.TEXTURE_2D, this._texture);
 		GL.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, this._canvas);
 		Renderer.drawFullscreenQuad();
