@@ -20,7 +20,7 @@ Application.prototype.extend(
 		this.sceneGraph = new SceneGraph();
 
 		var testMaterial = new Material("test material");
-		var testProgram = Shader.CreateProgram(ResourceLoader.getContent("show_normals_vertex"), ResourceLoader.getContent("show_normals_fragment"));
+		var testProgram = new Shader(ResourceLoader.getContent("show_normals_vertex"), ResourceLoader.getContent("show_normals_fragment"));
 
 		testMaterial.setProgram(testProgram);
 		var tex = new Texture("checker");
@@ -277,7 +277,7 @@ Application.prototype.extend(
 
 		var vertSource = ResourceLoader.getContent("terrain_vertex");
 		var fragSource = ResourceLoader.getContent("terrain_fragment");
-		var program = Shader.CreateProgram(vertSource, fragSource);
+		var program = new Shader(vertSource, fragSource);
 
 		var material = new Material("TerrainMaterial");
 		material.setProgram(program);

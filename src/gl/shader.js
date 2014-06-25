@@ -1,90 +1,92 @@
-var Shader = function()
+var Shader = function (vertexSource, fragmentSource)
 {
+	if(vertexSource == undefined || fragmentSource == undefined)
+	{
+		debugger;
+	}
 
-	this._ActiveProgram = null;
+	this._program = GL.createProgram();
+	var vertexShader = this._CreateShader(vertexSource, GL.VERTEX_SHADER);
+	if (!vertexShader)
+	{
+		return null;
+	}
 
+	var fragmentShader = this._CreateShader(fragmentSource, GL.FRAGMENT_SHADER);
+	if (!fragmentShader)
+	{
+		return null;
+	}
+
+	GL.attachShader(this._program, vertexShader);
+	GL.attachShader(this._program, fragmentShader);
+	GL.linkProgram(this._program);
+
+	GL.deleteShader(vertexShader);
+	GL.deleteShader(fragmentShader);
+
+	if (!GL.getProgramParameter(this._program, GL.LINK_STATUS))
+	{
+		alert("failed to link program: " + GL.getProgramInfoLog(this._program));
+	}
+
+	var attributesCount = GL.getProgramParameter(this._program, GL.ACTIVE_ATTRIBUTES);
+	for (var i = 0; i < attributesCount; i++)
+	{
+		var name = GL.getActiveAttrib(this._program, i).name;
+		this[name] = GL.getAttribLocation(this._program, name);
+	}
+
+	var uniformsCount = GL.getProgramParameter(this._program, GL.ACTIVE_UNIFORMS);
+	for (var i = 0; i < uniformsCount; i++)
+	{
+		var uniform = GL.getActiveUniform(this._program, i);
+		this[uniform.name] = GL.getUniformLocation(this._program, uniform.name);
+	}
 };
 
-Shader.extend({
-	
-});
-
-Shader.prototype.extend(
+Shader.extend(
 {
 	
-	CreateProgram: function(vertexSource, fragmentSource)
+	ActiveProgram: function (program)
 	{
-		var program = GL.createProgram();
-		var vertexShader = this._CreateShader(vertexSource, GL.VERTEX_SHADER);
-		if (!vertexShader)
-		{
-			return null;
-		}
-
-		var fragmentShader = this._CreateShader(fragmentSource, GL.FRAGMENT_SHADER);
-		if (!fragmentShader)
-		{
-			return null;
-		}
-
-		GL.attachShader(program, vertexShader);
-		GL.attachShader(program, fragmentShader);
-		GL.linkProgram(program);
-
-		if (!GL.getProgramParameter(program, GL.LINK_STATUS))
-		{
-			alert("failed to link program: " + GL.getProgramInfoLog(program));
-		}
-
-		var attributesCount = GL.getProgramParameter(program, GL.ACTIVE_ATTRIBUTES);
-		for (var i = 0; i < attributesCount; i++)
-		{
-			var name = GL.getActiveAttrib(program, i).name;
-			program[name] = GL.getAttribLocation(program, name);
-		}
-
-		var uniformsCount = GL.getProgramParameter(program, GL.ACTIVE_UNIFORMS);
-		for (var i = 0; i < uniformsCount; i++)
-		{
-			var uniform = GL.getActiveUniform(program, i);
-			program[uniform.name] = GL.getUniformLocation(program, uniform.name);
-		}
-
-		return program;
-	},
-
-	ActiveProgram: function(program)
-	{
-		this._ActiveProgram = program;
-		GL.useProgram(program);
+		Shader._ActiveProgram = program;
+		GL.useProgram(program._program);
 	},
 
 	SetUniformInt: function (uniform, value)
 	{
-		GL.uniform1i(this._ActiveProgram[uniform], value);
+		GL.uniform1i(Shader._ActiveProgram[uniform], value);
 	},
 
 	SetUniformVec2: function (uniform, vector)
 	{
-		GL.uniform2fv(this._ActiveProgram[uniform], vector);
+		GL.uniform2fv(Shader._ActiveProgram[uniform], vector);
 	},
 
-	SetUniformVec3: function(uniform, vector)
+	SetUniformVec3: function (uniform, vector)
 	{
-		GL.uniform3fv(this._ActiveProgram[uniform], vector);
+		GL.uniform3fv(Shader._ActiveProgram[uniform], vector);
 	},
 
-	SetUniformMat3: function(uniform, matrix)
+	SetUniformMat3: function (uniform, matrix)
 	{
-		GL.uniformMatrix3fv(this._ActiveProgram[uniform], GL.FALSE, matrix);
+		GL.uniformMatrix3fv(Shader._ActiveProgram[uniform], GL.FALSE, matrix);
 	},
 
-	SetUniformMat4: function(uniform, matrix)
+	SetUniformMat4: function (uniform, matrix)
 	{
-		GL.uniformMatrix4fv(this._ActiveProgram[uniform], GL.FALSE, matrix);
+		GL.uniformMatrix4fv(Shader._ActiveProgram[uniform], GL.FALSE, matrix);
 	},
 
-	_CreateShader: function(source, type)
+	_ActiveProgram: null,
+
+});
+
+Shader.prototype.extend(
+{
+
+	_CreateShader: function (source, type)
 	{
 		var shader = GL.createShader(type);
 		GL.shaderSource(shader, source);

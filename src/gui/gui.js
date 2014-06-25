@@ -296,7 +296,7 @@ Gui.prototype.extend(
 	{
 		var vertexSource = ResourceLoader.getContent("gui_vertex");
 		var fragmentSource = ResourceLoader.getContent("gui_fragment");
-		this._program = Shader.CreateProgram(vertexSource, fragmentSource);
+		this._program = new Shader(vertexSource, fragmentSource);
 	},
 
 });

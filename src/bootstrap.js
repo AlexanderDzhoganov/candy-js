@@ -31,7 +31,6 @@ var ResourceLoader = new ResourceLoader(
 	
 	InputController = new InputController();	
 	Renderer = new Renderer();
-	Shader = new Shader();
 	Gui = new Gui();
 	Application = new Application();
 	Application.run(60);

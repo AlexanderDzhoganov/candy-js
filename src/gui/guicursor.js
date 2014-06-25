@@ -9,7 +9,7 @@ var GuiCursor = function (resourceName)
 
 	var vertexSource = ResourceLoader.getContent("gui_quad_vertex");
 	var fragmentSource = ResourceLoader.getContent("gui_quad_fragment");
-	this._program = Shader.CreateProgram(vertexSource, fragmentSource);
+	this._program = new Shader(vertexSource, fragmentSource);
 
 	var pixelStepX = 1.0 / Renderer.screenWidth;
 	var pixelStepY = 1.0 / Renderer.screenHeight;
