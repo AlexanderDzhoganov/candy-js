@@ -3,17 +3,12 @@ var OBJMeshProvider = function (name)
 	this.name = "OBJMeshProvider";
 	this.type = "meshProvider";
 
-	this.primitiveType = 'indexedTriangles';
-	this.vertexFormat = 'PPPNNNTT';
-	
 	var objData = this._extractDataFromOBJ(ResourceLoader.getContent(name));
-
 	var uniqueVertices = this._calculateUniqueVertices(objData.positions, objData.normals, objData.uvs, objData.faces);
-
 	var result = this._prepareVerticesIndices(uniqueVertices, objData.faces);
 
-	this.vertices = new Float32Array(result.vertices);
-	this.indices = new Uint16Array(result.indices);
+	var vertices = new Float32Array(result.vertices);
+	var indices = new Uint16Array(result.indices);
 
 	console.log
 	(
@@ -22,13 +17,22 @@ var OBJMeshProvider = function (name)
 		objData.normals.length + " normals, " +
 		objData.uvs.length + " uvs, " +
 		objData.faces.length + " faces, resulting in " +
-		(this.vertices.length / 8) + " unique vertices and " +
-		this.indices.length / 3 + " triangles"
+		(vertices.length / 8) + " unique vertices and " +
+		indices.length / 3 + " triangles"
 	);
 
-
-	this.vertexBuffer = GL.createBuffer();
-	this.indexBuffer = GL.createBuffer();
+	this.submeshes =
+	[
+		{
+			vertices: vertices,
+			indices: indices,
+			vertexBuffer: GL.createBuffer(),
+			indexBuffer: GL.createBuffer(),
+			primitiveType: 'indexedTriangles',
+			vertexFormat: 'PPPNNNTT',
+		},
+	];
+	
 	this._uploadVertexData();
 	this.renderingLayer = RENDERING_LAYER.PERSPECTIVE;
 };
@@ -45,8 +49,13 @@ OBJMeshProvider.prototype.extend(
 
 	dispose: function ()
 	{
-		GL.deleteBuffer(this.vertexBuffer);
-		GL.deleteBuffer(this.indexBuffer);
+		for(var i = 0; i < this.submeshes.length; i++)
+		{
+			var subMesh = this.submeshes[i];
+
+			GL.deleteBuffer(subMesh.vertexBuffer);
+			GL.deleteBuffer(subMesh.indexBuffer);
+		}
 	},
 
 	onInit: function ()
@@ -62,11 +71,15 @@ OBJMeshProvider.prototype.extend(
 
 	_uploadVertexData: function ()
 	{
-		GL.bindBuffer(GL.ARRAY_BUFFER, this.vertexBuffer);
-		GL.bufferData(GL.ARRAY_BUFFER, this.vertices, GL.STATIC_DRAW);
+		for(var i = 0; i < this.submeshes.length; i++)
+		{
+			var subMesh = this.submeshes[i];
+			GL.bindBuffer(GL.ARRAY_BUFFER, subMesh.vertexBuffer);
+			GL.bufferData(GL.ARRAY_BUFFER, subMesh.vertices, GL.STATIC_DRAW);
 
-		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, this.indices, GL.STATIC_DRAW);
+			GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, subMesh.indexBuffer);
+			GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, subMesh.indices, GL.STATIC_DRAW);
+		}
 	},
 
 	_extractDataFromOBJ: function (obj)
@@ -260,7 +273,7 @@ OBJMeshProvider.prototype.extend(
 	{
 		var resultNormal = vec3.create();
 
-		var calculateNormal = function (v0, v1, v2)
+		var normalForTriangle = function (v0, v1, v2)
 		{
 			var sideA = vec3.create();
 			vec3.subtract(sideA, v0, v1);
@@ -273,6 +286,8 @@ OBJMeshProvider.prototype.extend(
 			vec3.normalize(normal, crossProduct);
 			return crossProduct;
 		};
+
+		// TO DO
 
 		return resultNormal;
 	},

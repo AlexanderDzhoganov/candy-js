@@ -25,7 +25,7 @@ SceneGraph.prototype.extend(
 				var rendererComponent = this.getComponent("renderer");
 				if(rendererComponent && rendererComponent.enabled)
 				{
-					rendererComponent.renderSelf();
+					rendererComponent.onRender();
 				}
 
 				var transformComponent = this.getComponent("transform");

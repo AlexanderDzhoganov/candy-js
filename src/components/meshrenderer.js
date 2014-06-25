@@ -17,7 +17,7 @@ MeshRenderer.extend(
 MeshRenderer.prototype.extend(
 {
 
-	renderSelf: function ()
+	onRender: function ()
 	{
 		if(!this.material)
 		{
@@ -32,6 +32,7 @@ MeshRenderer.prototype.extend(
 
 		var material = this.material;
 		var program = this.material.program;
+
 		Shader.ActiveProgram(program);
 
 		var index = 0;
@@ -54,16 +55,21 @@ MeshRenderer.prototype.extend(
 			index++;
 		}
 
-		GL.bindBuffer(GL.ARRAY_BUFFER, meshProvider.vertexBuffer);
-		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, meshProvider.indexBuffer);
+		for(var i = 0; i < meshProvider.submeshes.length; i++)
+		{
+			var subMesh = meshProvider.submeshes[i];
 
-		if(meshProvider.primitiveType == 'indexedTriangleStrip')
-		{
-			Renderer.drawIndexedTriangleStrip(meshProvider.indices.length, meshProvider.vertexFormat);
-		}
-		else if(meshProvider.primitiveType == 'indexedTriangles')
-		{
-			Renderer.drawIndexedTriangles(meshProvider.indices.length, meshProvider.vertexFormat);	
+			GL.bindBuffer(GL.ARRAY_BUFFER, subMesh.vertexBuffer);
+			GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, subMesh.indexBuffer);
+
+			if(subMesh.primitiveType == 'indexedTriangleStrip')
+			{
+				Renderer.drawIndexedTriangleStrip(subMesh.indices.length, subMesh.vertexFormat);
+			}
+			else if(subMesh.primitiveType == 'indexedTriangles')
+			{
+				Renderer.drawIndexedTriangles(subMesh.indices.length, subMesh.vertexFormat);	
+			}
 		}
 
 		if(this.drawBounds)

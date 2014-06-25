@@ -4,9 +4,6 @@ var TerrainMeshProvider = function (data, size_x, size_y)
 	this.name = "TerrainMeshProvider";
 	this.type = "meshProvider";
 
-	this.primitiveType = 'indexedTriangleStrip';
-	this.vertexFormat = 'PPPNNNTT';
-
 	var vertexCount = size_x * size_y;
 	var vertices = new Float32Array(vertexCount * 8);
 
@@ -80,15 +77,22 @@ var TerrainMeshProvider = function (data, size_x, size_y)
 		}
 	}
 
-	this.vertices = vertices;
-	this.indices = indices;
 	this.size_x = size_x;
 	this.size_y = size_y;
-	this.vertexBuffer = GL.createBuffer();
-	this.indexBuffer = GL.createBuffer();
+
+	this.submeshes =
+	[
+		{
+			vertices: vertices,
+			indices: indices,
+			vertexBuffer: GL.createBuffer(),
+			indexBuffer: GL.createBuffer(),
+			primitiveType: 'indexedTriangleStrip',
+			vertexFormat: 'PPPNNNTT',
+		},
+	];
 
 	this._uploadVertexData();
-
 	this.renderingLayer = RENDERING_LAYER.PERSPECTIVE;
 };
 
@@ -104,31 +108,27 @@ TerrainMeshProvider.prototype.extend(
 
 	dispose: function ()
 	{
-		GL.deleteBuffer(this.vertexBuffer);
-		GL.deleteBuffer(this.indexBuffer);
+		for(var i = 0; i < this.submeshes.length; i++)
+		{
+			var subMesh = this.submeshes[i];
+
+			GL.deleteBuffer(subMesh.vertexBuffer);
+			GL.deleteBuffer(subMesh.indexBuffer);
+		}
 	},
 
 	_uploadVertexData: function ()
 	{
-		GL.bindBuffer(GL.ARRAY_BUFFER, this.vertexBuffer);
-		GL.bufferData(GL.ARRAY_BUFFER, this.vertices, GL.STATIC_DRAW);
+		for(var i = 0; i < this.submeshes.length; i++)
+		{
+			var subMesh = this.submeshes[i];
 
-		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, this.indices, GL.STATIC_DRAW);
+			GL.bindBuffer(GL.ARRAY_BUFFER, subMesh.vertexBuffer);
+			GL.bufferData(GL.ARRAY_BUFFER, subMesh.vertices, GL.STATIC_DRAW);
+
+			GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, subMesh.indexBuffer);
+			GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, subMesh.indices, GL.STATIC_DRAW);
+		}
 	},
-
-	/*renderSelf: function ()
-	{
-		Shader.ActiveProgram(this.program);
-		this.texture.bind();
-		GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
-		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
-		Renderer.drawIndexedTriangleStrip(this.indices.length);
-	},
-
-	getModelMatrix: function ()
-	{
-		return mat4.create();
-	},*/
 
 });
