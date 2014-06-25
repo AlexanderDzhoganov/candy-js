@@ -169,13 +169,33 @@ Gui.prototype.extend(
 
 			if (wnd._dragging)
 			{
+				if(this._activeWindow && this._activeWindow.onDeactivate)
+				{
+					this._activeWindow.onDeactivate();
+				}
+
 				this._activeWindow = wnd;
+
+				if(this._activeWindow.onActivate)
+				{
+					this._activeWindow.onActivate();
+				}
 				break;
 			}
 
 			if(wnd._resizing)
 			{
+				if(this._activeWindow && this._activeWindow.onDeactivate)
+				{
+					this._activeWindow.onDeactivate();
+				}
+
 				this._activeWindow = wnd;
+
+				if(this._activeWindow.onActivate)
+				{
+					this._activeWindow.onActivate();
+				}
 				break;
 			}
 
