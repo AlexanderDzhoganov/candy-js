@@ -165,6 +165,11 @@ Gui.prototype.extend(
 		var deltaTime = (time - this._previousTime) / 1000.0;
 		this._previousTime = time;
 
+		if(this._activeWindow && this._activeWindow.onDeactivate)
+		{
+			this._activeWindow.onDeactivate();
+		}
+
 		this._activeWindow = null;
 		var windowActivated = false;
 
@@ -178,39 +183,19 @@ Gui.prototype.extend(
 
 			if (wnd._dragging)
 			{
-				if(this._activeWindow && this._activeWindow.onDeactivate)
-				{
-					this._activeWindow.onDeactivate();
-				}
-
 				this._activeWindow = wnd;
-
-				if(this._activeWindow.onActivate)
-				{
-					this._activeWindow.onActivate();
-				}
 				break;
 			}
 
 			if(wnd._resizing)
 			{
-				if(this._activeWindow && this._activeWindow.onDeactivate)
-				{
-					this._activeWindow.onDeactivate();
-				}
-
 				this._activeWindow = wnd;
-
-				if(this._activeWindow.onActivate)
-				{
-					this._activeWindow.onActivate();
-				}
 				break;
 			}
 
 			if (PointRectTest(this._input.getCursorPosition(), wnd.position, wnd.size))
 			{
-				if(this._activeWindow != wnd && this._activeWindow && this._activeWindow.onDeactivate)
+				if(this._activeWindow && this._activeWindow.onDeactivate)
 				{
 					this._activeWindow.onDeactivate();
 				}
@@ -297,11 +282,6 @@ Gui.prototype.extend(
 				wnd.position = vec2.fromValues(wnd.dockTo.position[0], wnd.dockTo.position[1] + wnd.dockTo.size[1]);
 				wnd.size[0] = wnd.dockTo.size[0];
 			}
-		}
-
-		if(!windowActivated)
-		{
-			this._activeWindow = null;
 		}
 
 		for(var i = 0; i < this._windows.length; i++)
