@@ -24,7 +24,7 @@ Application.prototype.extend(
 
 		testMaterial.setProgram(testProgram);
 		var tex = new Texture("checker");
-		tex.setRepeat();
+		tex.setWrap(Texture.REPEAT);
 		testMaterial.addTexture("diffuse", tex);
 
 		var testObject = new GameObject("testMesh");

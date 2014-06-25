@@ -24,6 +24,9 @@ var Texture = function (name)
 Texture.extend(
 {
 	
+	WRAP_REPEAT: 0,
+	WRAP_CLAMP_TO_EDGE: 1,
+
 });
 
 Texture.prototype.extend(
@@ -34,19 +37,11 @@ Texture.prototype.extend(
 		GL.deleteTexture(this._texture);
 	},
 
-	setClampToEdge: function ()
+	setWrap: function (wrapMode)
 	{
 		GL.bindTexture(GL.TEXTURE_2D, this._texture);
-		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT); 
-		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
-		GL.bindTexture(GL.TEXTURE_2D, null);
-	},
-
-	setRepeat: function()
-	{
-		GL.bindTexture(GL.TEXTURE_2D, this._texture);
-		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, GL.REPEAT); 
-		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, GL.REPEAT);
+		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_S, wrapMode == this.WRAP_REPEAT ? GL.REPEAT : GL.CLAMP_TO_EDGE); 
+		GL.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_WRAP_T, wrapMode == this.WRAP_REPEAT ? GL.REPEAT : GL.CLAMP_TO_EDGE);
 		GL.bindTexture(GL.TEXTURE_2D, null);
 	},
 
