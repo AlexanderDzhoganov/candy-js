@@ -167,7 +167,11 @@ GuiControl.prototype.extend(
 				controlsCount++;
 				return selectedIndex;
 			}.bind(this),
-
+			dropdownmenu: function( label ) 
+			{
+				wnd.layout.prepareControl(GuiRenderer.calculateDropDownMenu(this._context, label));
+				controlsCount++;
+			}.bind(this),
 		});
 
 		wnd.layout.endPrepareLayout();
@@ -415,6 +419,72 @@ GuiControl.prototype.extend(
 				return selectedIndex;
 			}.bind(this),
 
+			dropdownmenu: function( label, items, parentWindow ) {
+				var control = this._beginControl(wnd);
+
+				if(control == null)
+				{
+					return false;
+				}
+				
+				control.label = label;
+
+				if(control.clicked) {
+					var popupPosition = vec2.fromValues(control.rect.position[0] + control.rect.size[0], control.rect.position[1]);
+					var popupLayout = new GuiLayout();
+
+					popupLayout.margin = vec2.fromValues(0, 0);
+					popupLayout.windowTopMargin = 0;
+					popupLayout.horizontalSeparatorMargin = 0;
+
+					var popupSkin = new GuiSkin();
+					popupSkin.backgroundColor = "";
+					popupSkin.border = { "hovered": "", "normal": ""};
+
+					console.log(popupSkin.backgroundColor);
+
+					var itemWidth = 0;
+					items.forEach(function( key, val ) {
+						if( key.length > itemWidth ) {
+							itemWidth = key.length;
+						}
+					}.bind(this));
+
+					var popupSize = vec2.fromValues(itemWidth * 12.0, items.size() * 16);
+
+					var dropDownWindow = new GuiWindow(popupPosition, popupSize, popupLayout, popupSkin);
+					dropDownWindow.title = "";
+					dropDownWindow.autoSize = true;
+					dropDownWindow.drawTitlebar = false;
+					dropDownWindow.resizable = false;
+
+					dropDownWindow.drawSelf = function (gui)
+					{
+						items.forEach(function( key, val ) {
+							if( typeof val === "object" && val !== null ) {
+								gui.dropdownmenu(key, val, dropDownWindow);
+							} else if( typeof val === "function" ) {
+								if(gui.button(key))
+								{
+									dropDownWindow.close();
+
+									if(parentWindow instanceof GuiWindow) {
+										parentWindow.close();
+									}
+
+									val();
+								}
+							}
+						}.bind(this));
+					};
+
+					dropDownWindow.show();
+				}
+
+				this.controlList.push(['dropdownmenu', control]);
+
+				this._endControl(wnd);
+			}.bind(this),
 		});
 
 		wnd.layout.endLayout(wnd);
@@ -464,6 +534,10 @@ GuiControl.prototype.extend(
 			else if(type == 'listbox')
 			{
 				GuiRenderer.drawListBox(this._context, wnd, control.items, control.selectedIndex, control.hoveredItem, control);
+			}
+			else if(type == 'dropdownmenu')
+			{
+				GuiRenderer.drawDropDownMenu(this._context, wnd, control.label, control);	
 			}
 
 			this._context.restore();

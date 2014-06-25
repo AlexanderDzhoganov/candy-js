@@ -377,6 +377,30 @@ var GuiRenderer =
 		}
 	},
 
+	drawDropDownMenu: function (context, wnd, label, control)
+	{
+		var rect = control.rect;
+		var state = control.state;
+
+		var metrics = context.measureText(label);
+		var textPosition = vec2.fromValues(rect.position[0] + (rect.size[0] - metrics.width) / 2, rect.position[1] + 16);
+
+		// background
+		this._drawRect(context, wnd.skin.button.background[state], rect);
+
+		// border
+		this._strokeRect(context, wnd.skin.button.border[state], rect, wnd.skin.button.borderThickness);
+
+		// text
+		this._drawText(context, label, wnd.skin.button.text[state], textPosition, wnd.layout.fontSize);
+	},
+
+	calculateDropDownMenu: function (context, wnd, label)
+	{
+		var metrics = context.measureText(label);
+		return vec2.fromValues(metrics.width + 32.0, 24.0);
+	},
+
 	_getStyle: function (context, style, position, size)
 	{
 		var fillStyle = null;

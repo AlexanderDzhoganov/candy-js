@@ -28,17 +28,8 @@ var ResourceLoader = new ResourceLoader(
 	console.log("Resources Loaded.");
 	document.getElementById('gl-canvas').width = window.innerWidth;
 	document.getElementById('gl-canvas').height = window.innerHeight;
+	
 	InputController = new InputController();	
-
-	// Tests
-	// InputController.addGlobal( InputController.modes.DOWN, function( key ) {
-	// 	console.log(key);
-	// });
-
-	// InputController.addCombo( [InputController.keys.CTRL, InputController.keys.A], function() {
-	// 	console.log("Select all");
-	// });
-
 	Renderer = new Renderer();
 	Shader = new Shader();
 	Gui = new Gui();

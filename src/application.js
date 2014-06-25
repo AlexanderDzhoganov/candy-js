@@ -53,6 +53,31 @@ Application.prototype.extend(
 		testTextBoxWindow.drawSelf = function (gui)
 		{
 			multiLineText = gui.textbox(multiLineText, 64, 16, false);
+			gui.button("nothing");
+
+			gui.dropdownmenu("MAIN MENU", {
+				"stuff1": {
+					"substuff1": function()
+					{
+						console.log("WOW");
+					},
+					"substuff2": function()
+					{
+						console.log("substufffff");
+					},
+					"substuff3": {
+						"subsubstuff1": function() {
+							console.log("spintires");
+						},
+						"SPINTIRES": function() {
+							console.log("SPINTIRES");
+						}
+					}
+				},
+				stuff2: function() {
+					console.log("shit");
+				}
+			});
 		}.bind(this);
 
 		testTextBoxWindow.show();
