@@ -19,15 +19,23 @@ Application.prototype.extend(
 	{
 		this.sceneGraph = new SceneGraph();
 
+		var testMaterial = new Material("test material");
+		var testProgram = Shader.CreateProgram(ResourceLoader.getContent("diffuse_vertex"), ResourceLoader.getContent("diffuse_fragment"));
+
+		testMaterial.setProgram(testProgram);
+		testMaterial.addTexture(new Texture("grass"));
 
 		var testObject = new GameObject("testMesh");
 		testObject.addComponent(new OBJMeshProvider("mesh"));
 		testObject.addComponent(new MeshRenderer());
-		testObject.getComponent("transform").position = vec3.fromValues(-128, -16, -120);
+		testObject.getComponent("renderer").material = testMaterial;
+
+		testObject.getComponent("transform").position = vec3.fromValues(0, 0, 0);
+
 		this.sceneGraph.insert(testObject);
 //		testObject.
 
-		var player = this._createPlayer(vec3.fromValues(-128, -16, -128));
+		var player = this._createPlayer(vec3.fromValues(0, 0, 0));
 		var editor = new GameObjectEditor(player);
 
 		//Gui.debugLayout = true;

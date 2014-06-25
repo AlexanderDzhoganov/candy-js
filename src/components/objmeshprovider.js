@@ -4,8 +4,6 @@ var OBJMeshProvider = function (name)
 	this.type = "meshProvider";
 
 	this.primitiveType = 'indexedTriangles';
-
-	var verts = [], vertNormals = [], textures = [], unpacked = {};
 	
 	var obj = ResourceLoader.getContent(name); // read file
 	var lines = obj.split('\n');
@@ -18,6 +16,7 @@ var OBJMeshProvider = function (name)
 	for(var i = 0; i < lines.length; i++)
 	{
 		var line = lines[i];
+		line = line.replace('  ', ' ');
 		var components = line.split(' ');
 
 		if(components[0] == 'v')
@@ -145,8 +144,10 @@ var OBJMeshProvider = function (name)
 		this.indices.length / 3 + " triangles"
 	);
 
-	this._uploadVertexData();
 
+	this.vertexBuffer = GL.createBuffer();
+	this.indexBuffer = GL.createBuffer();
+	this._uploadVertexData();
 	this.renderingLayer = RENDERING_LAYER.PERSPECTIVE;
 };
 
@@ -168,12 +169,6 @@ OBJMeshProvider.prototype.extend(
 
 	_uploadVertexData: function ()
 	{
-		if(!this.vertexBuffer)
-		{
-			this.vertexBuffer = GL.createBuffer();
-			this.indexBuffer = GL.createBuffer();
-		}
-
 		GL.bindBuffer(GL.ARRAY_BUFFER, this.vertexBuffer);
 		GL.bufferData(GL.ARRAY_BUFFER, this.vertices, GL.STATIC_DRAW);
 

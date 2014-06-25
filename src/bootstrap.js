@@ -1,15 +1,22 @@
 var ResourceLoader = new ResourceLoader(
 {
+	// textures
 	"heightmap": "resources/images/heightmap.png",
 	"cursor": "resources/images/cursor.png",
 	"grass": "resources/images/grass.png",
-	"mesh": "resources/meshes/teapot_lowres.obj",
+
+	// meshes
+	"mesh": "resources/meshes/newwine.obj",
+
+	// shaders
 	"terrain_vertex": "resources/shaders/terrain.vs",
 	"terrain_fragment": "resources/shaders/terrain.fs",
 	"gui_vertex": "resources/shaders/gui.vs",
 	"gui_fragment": "resources/shaders/gui.fs",
 	"gui_quad_vertex": "resources/shaders/gui_quad.vs",
 	"gui_quad_fragment": "resources/shaders/gui_quad.fs",
+	"diffuse_vertex": "resources/shaders/diffuse.vs",
+	"diffuse_fragment": "resources/shaders/diffuse.fs",
 }, function (resName, progress, final)
 {
 	// update progress bar
