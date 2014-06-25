@@ -127,9 +127,19 @@ GuiControl.prototype.extend(
 				controlsCount++;
 			}.bind(this),
 
-			button: function (label)
+			button: function (label, _args)
 			{
-				wnd.layout.prepareControl(GuiRenderer.calculateButtonSize(this._context, wnd, label));
+				var controlSize = GuiRenderer.calculateButtonSize(this._context, wnd, label);
+
+				if(_args != undefined)
+				{
+					if(_args.width != undefined)
+					{
+						controlSize[0] = _args.width;
+					}
+				}
+
+				wnd.layout.prepareControl(controlSize);
 				controlsCount++;
 				return false;
 			}.bind(this),
