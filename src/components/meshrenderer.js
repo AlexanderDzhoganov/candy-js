@@ -68,10 +68,10 @@ MeshRenderer.prototype.extend(
 
 		if(this.drawBounds)
 		{
-			var boundsProvider = this.gameObject.getComponent("boundsProvider");
+			var boundsProvider = this.gameObject.getComponent("meshBoundsProvider");
 			if(!boundsProvider)
 			{
-				console.log("MeshRenderer: drawBounds set but no boundsProvider on the gameobject");
+				console.log("MeshRenderer: drawBounds set but no meshBoundsProvider on the gameobject");
 				return;
 			}
 

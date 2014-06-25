@@ -219,12 +219,12 @@ OBJMeshProvider.prototype.extend(
 
 	onInit: function ()
 	{
-		if(!this.gameObject.getComponent("boundsProvider"))
+		if(!this.gameObject.getComponent("meshBoundsProvider"))
 		{
-			this.gameObject.addComponent(new BoundsProvider());
+			this.gameObject.addComponent(new MeshBoundsProvider());
 		}
 
-		var boundsProvider = this.gameObject.getComponent("boundsProvider");
+		var boundsProvider = this.gameObject.getComponent("meshBoundsProvider");
 		boundsProvider.recalculateMinimumAABB();
 	},
 

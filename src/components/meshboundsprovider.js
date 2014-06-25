@@ -1,18 +1,18 @@
-var BoundsProvider = function ()
+var MeshBoundsProvider = function ()
 {
-	this.name = "BoundsProvider";
-	this.type = "boundsProvider";
+	this.name = "MeshBoundsProvider";
+	this.type = "meshBoundsProvider";
 	this.aabb = new AABB();
 };
 
-BoundsProvider.prototype = new Component();
+MeshBoundsProvider.prototype = new Component();
 
-BoundsProvider.extend(
+MeshBoundsProvider.extend(
 {
 	
 });
 
-BoundsProvider.prototype.extend(
+MeshBoundsProvider.prototype.extend(
 {
 
 	dispose: function ()
@@ -35,14 +35,14 @@ BoundsProvider.prototype.extend(
 		var meshProvider = this.gameObject.getComponent("meshProvider");
 		if(!meshProvider)
 		{
-			console.log("BoundsProvider: cannot recalculate AABB as no meshProvider is present on the gameobject");
+			console.log("MeshBoundsProvider: cannot recalculate AABB as no meshProvider is present on the gameobject");
 			return;
 		}
 
 		var vertices = meshProvider.vertices;
 		if(meshProvider.vertexFormat != 'PPPNNNTT')
 		{
-			console.log("invalid vertex format, only 'PPPNNNTT' supported");
+			console.log("MeshBoundsProvider: invalid vertex format, only 'PPPNNNTT' supported");
 			return;
 		}
 
