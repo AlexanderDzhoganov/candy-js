@@ -20,12 +20,12 @@ var GuiCursor = function (resourceName)
 
 	var quad =
 	[
-		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-		sizeX, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0,
-		sizeX, sizeY, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0,
-		0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-		sizeX, sizeY, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0,
-		0.0, sizeY, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0,
+		0.0, 0.0, 0.0, 0.0, 0.0,
+		sizeX, 0.0, 0.0, 1.0, 0.0,
+		sizeX, sizeY, 0.0, 1.0, 1.0,
+		0.0, 0.0, 0.0, 0.0, 0.0,
+		sizeX, sizeY, 0.0, 1.0, 1.0,
+		0.0, sizeY, 0.0, 0.0, 1.0,
 	];
 	
 	this._vertexBuffer = GL.createBuffer();
@@ -86,7 +86,7 @@ GuiCursor.prototype.extend(
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 		GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
 
-		Renderer.drawTriangles(6);
+		Renderer.drawTriangles(6, 'PPPTT');
 	},
 
 	getModelMatrix: function ()

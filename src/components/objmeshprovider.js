@@ -4,6 +4,7 @@ var OBJMeshProvider = function (name)
 	this.type = "meshProvider";
 
 	this.primitiveType = 'indexedTriangles';
+	this.vertexFormat = 'PPPNNNTT';
 	
 	var obj = ResourceLoader.getContent(name); // read file
 	var lines = obj.split('\n');

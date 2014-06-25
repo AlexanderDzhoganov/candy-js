@@ -36,11 +36,11 @@ MeshRenderer.prototype.extend(
 
 		if(meshProvider.primitiveType == 'indexedTriangleStrip')
 		{
-			Renderer.drawIndexedTriangleStrip(meshProvider.indices.length);
+			Renderer.drawIndexedTriangleStrip(meshProvider.indices.length, meshProvider.vertexFormat);
 		}
 		else if(meshProvider.primitiveType == 'indexedTriangles')
 		{
-			Renderer.drawIndexedTriangles(meshProvider.indices.length);	
+			Renderer.drawIndexedTriangles(meshProvider.indices.length, meshProvider.vertexFormat);	
 		}
 	},
 

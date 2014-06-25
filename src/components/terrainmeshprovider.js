@@ -5,6 +5,7 @@ var TerrainMeshProvider = function (data, size_x, size_y)
 	this.type = "meshProvider";
 
 	this.primitiveType = 'indexedTriangleStrip';
+	this.vertexFormat = 'PPPNNNTT';
 
 	var vertexCount = size_x * size_y;
 	var vertices = new Float32Array(vertexCount * 8);

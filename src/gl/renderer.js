@@ -75,70 +75,24 @@ Renderer.prototype.extend(
 		}
 	},
 		
-	drawIndexedTriangleStrip: function (indicesCount)
+	drawIndexedTriangleStrip: function (indicesCount, vertexFormat)
 	{
-		if (Shader._ActiveProgram)
-		{
-			Shader.SetUniformMat4("viewProjection", this._ViewProjectionMatrix);
-			Shader.SetUniformMat4("model", mat4.create());
-			Shader.SetUniformMat4("view", this._ViewMatrix);
-			Shader.SetUniformMat4("inverseModelView", this._InverseModelViewMatrix);
-			Shader.SetUniformVec3("lightPosition", this.lightPos)
-		}
-
-		GL.enableVertexAttribArray(Shader._ActiveProgram.position);
-		GL.enableVertexAttribArray(Shader._ActiveProgram.normal);
-		GL.enableVertexAttribArray(Shader._ActiveProgram.uvs);
-
-		GL.vertexAttribPointer(Shader._ActiveProgram.position, 3, GL.FLOAT, false, 32, 0);
-		GL.vertexAttribPointer(Shader._ActiveProgram.normal, 3, GL.FLOAT, false, 32, 12);
-		GL.vertexAttribPointer(Shader._ActiveProgram.uvs, 2, GL.FLOAT, false, 32, 24);
-
+		this._setupUniforms();
+		this._setupVertexPointers(vertexFormat);
 		GL.drawElements(GL.TRIANGLE_STRIP, indicesCount, GL.UNSIGNED_SHORT, 0);
 	},
 
-	drawTriangles: function (count)
+	drawTriangles: function (count, vertexFormat)
 	{
-		if(Shader._ActiveProgram.position != undefined)
-		{
-			GL.enableVertexAttribArray(Shader._ActiveProgram.position);
-			GL.vertexAttribPointer(Shader._ActiveProgram.position, 3, GL.FLOAT, false, 32, 0);
-		}
-
-		if(Shader._ActiveProgram.normal != undefined)
-		{
-			GL.enableVertexAttribArray(Shader._ActiveProgram.normal);
-			GL.vertexAttribPointer(Shader._ActiveProgram.normal, 3, GL.FLOAT, false, 32, 12);
-		}
-
-		if(Shader._ActiveProgram.uvs != undefined)
-		{
-			GL.enableVertexAttribArray(Shader._ActiveProgram.uvs);
-			GL.vertexAttribPointer(Shader._ActiveProgram.uvs, 2, GL.FLOAT, false, 32, 24);
-		}
-
+		this._setupUniforms();
+		this._setupVertexPointers(vertexFormat);
 		GL.drawArrays(GL.TRIANGLES, 0, count);
 	},
 		
-	drawIndexedTriangles: function (indicesCount)
+	drawIndexedTriangles: function (indicesCount, vertexFormat)
 	{
-		if (Shader._ActiveProgram)
-		{
-			Shader.SetUniformMat4("viewProjection", this._ViewProjectionMatrix);
-			Shader.SetUniformMat4("model", mat4.create());
-			Shader.SetUniformMat4("view", this._ViewMatrix);
-			Shader.SetUniformMat4("inverseModelView", this._InverseModelViewMatrix);
-			Shader.SetUniformVec3("lightPosition", this.lightPos)
-		}
-
-		GL.enableVertexAttribArray(Shader._ActiveProgram.position);
-		GL.enableVertexAttribArray(Shader._ActiveProgram.normal);
-		GL.enableVertexAttribArray(Shader._ActiveProgram.uvs);
-
-		GL.vertexAttribPointer(Shader._ActiveProgram.position, 3, GL.FLOAT, false, 32, 0);
-		GL.vertexAttribPointer(Shader._ActiveProgram.normal, 3, GL.FLOAT, false, 32, 12);
-		GL.vertexAttribPointer(Shader._ActiveProgram.uvs, 2, GL.FLOAT, false, 32, 24);
-
+		this._setupUniforms();
+		this._setupVertexPointers(vertexFormat);
 		GL.drawElements(GL.TRIANGLES, indicesCount, GL.UNSIGNED_SHORT, 0);
 	},
 
@@ -172,6 +126,61 @@ Renderer.prototype.extend(
 		GL.vertexAttribPointer(0, 4, GL.FLOAT, false, 0, 0);
 
 		GL.drawArrays(GL.TRIANGLES, 0, 6);
+	},
+
+	_setupUniforms: function ()
+	{
+		if (Shader._ActiveProgram)
+		{
+			Shader.SetUniformMat4("viewProjection", this._ViewProjectionMatrix);
+			Shader.SetUniformMat4("model", mat4.create());
+			Shader.SetUniformMat4("view", this._ViewMatrix);
+			Shader.SetUniformMat4("inverseModelView", this._InverseModelViewMatrix);
+			Shader.SetUniformVec3("lightPosition", this.lightPos)
+		}
+	},
+
+	_setupVertexPointers: function (vertexFormat)
+	{
+		if(vertexFormat == 'PPPNNNTT')
+		{
+			if(Shader._ActiveProgram.position != undefined)
+			{
+				GL.enableVertexAttribArray(Shader._ActiveProgram.position);
+				GL.vertexAttribPointer(Shader._ActiveProgram.position, 3, GL.FLOAT, false, 32, 0);
+			}
+
+			if(Shader._ActiveProgram.normal != undefined)
+			{
+				GL.enableVertexAttribArray(Shader._ActiveProgram.normal);
+				GL.vertexAttribPointer(Shader._ActiveProgram.normal, 3, GL.FLOAT, false, 32, 12);
+			}
+
+			if(Shader._ActiveProgram.uvs != undefined)
+			{
+				GL.enableVertexAttribArray(Shader._ActiveProgram.uvs);
+				GL.vertexAttribPointer(Shader._ActiveProgram.uvs, 2, GL.FLOAT, false, 32, 24);
+			}
+		}
+		else if(vertexFormat == 'PPPTT')
+		{
+			if(Shader._ActiveProgram.position != undefined)
+			{
+				GL.enableVertexAttribArray(Shader._ActiveProgram.position);
+				GL.vertexAttribPointer(Shader._ActiveProgram.position, 3, GL.FLOAT, false, 20, 0);
+			}
+
+			if(Shader._ActiveProgram.uvs != undefined)
+			{
+				GL.enableVertexAttribArray(Shader._ActiveProgram.uvs);
+				GL.vertexAttribPointer(Shader._ActiveProgram.uvs, 2, GL.FLOAT, false, 20, 12);
+			}
+		}
+		else
+		{
+			console.log("invalid vertex format - " + vertexFormat);
+			return;
+		}
 	},
 		
 	clearFramebuffer: function (color)
