@@ -39,7 +39,7 @@ Application.prototype.extend(
 		this.sceneGraph.insert(testObject);
 //		testObject.
 
-		var player = this._createPlayer(vec3.fromValues(-1.5, -0.5, -3));
+		var player = this._createPlayer(vec3.fromValues(-0.15, -0.5, -6.5));
 		var editor = new GameObjectEditor(player);
 
 		//Gui.debugLayout = true;

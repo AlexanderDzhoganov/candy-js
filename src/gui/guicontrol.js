@@ -277,7 +277,7 @@ GuiControl.prototype.extend(
 				}
 				else
 				{
-					control.input = input.toString();
+					control.input = input.toString().slice(0, maxLength);
 				}
 
 				control.maxLength = maxLength;

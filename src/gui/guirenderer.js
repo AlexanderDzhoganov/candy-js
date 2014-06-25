@@ -135,7 +135,14 @@ var GuiRenderer =
 	// InputBox
 	calculateInputBoxSize: function (context, wnd, maxLength)
 	{
-		return vec2.fromValues(maxLength * 6 + 32.0, 24.0);
+		var s = '';
+		for(var i = 0; i <= maxLength; i++)
+		{
+			s += ' ';
+		}
+
+		var metrics = context.measureText(s);
+		return vec2.fromValues(8.0 + metrics.width, 24.0);
 	},
 
 	calculateInputBoxCaretIndex: function (context, wnd, input, control)

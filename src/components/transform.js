@@ -39,15 +39,17 @@ Transform.prototype.extend(
 			gui.beginHorizontalGroup();
 
 			gui.label("x:");
-			this.position[0] = gui.inputbox(this.position[0], 5);
+			this.position[0] = gui.inputbox(this.position[0], 6);
 
 			gui.label("y:");
-			this.position[1] = gui.inputbox(this.position[1], 5);
+			this.position[1] = gui.inputbox(this.position[1], 6);
 
 			gui.label("z:");
-			this.position[2] = gui.inputbox(this.position[2], 5);
+			this.position[2] = gui.inputbox(this.position[2], 6);
 
 			gui.endHorizontalGroup();
+
+			
 
 		}.bind(this);
 

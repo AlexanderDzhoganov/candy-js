@@ -35,6 +35,7 @@ var GameObjectEditor = function (gameObject)
 			{
 				var wnd = components[key].createConfigWindow();
 				wnd.dockTo = lastDockWindow;
+				lastDockWindow._dockedBy = wnd;
 				lastDockWindow = wnd;
 				wnd.show();
 				this._componentsWindows.push(wnd);

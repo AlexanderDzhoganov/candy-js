@@ -58,7 +58,7 @@ Camera.prototype.extend(
 		{
 
 			gui.label("Field of view");
-			this.fov = parseFloat(gui.inputbox(this.fov.toString(), 4));
+			this.fov = parseFloat(gui.inputbox(this.fov.toString(), 3));
 
 		}.bind(this);
 

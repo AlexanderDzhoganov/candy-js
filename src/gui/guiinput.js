@@ -76,6 +76,10 @@ GuiInput.prototype.extend(
 		if(maxLength != undefined)
 		{
 			this._keyBufferMaxLength = maxLength;
+			if(this._keyBuffer.length > this._keyBufferMaxLength)
+			{
+				this._keyBuffer = this._keyBuffer.slice(0, this._keyBufferMaxLength);
+			}
 		}
 
 		this._keyBuffer = buffer;
