@@ -174,7 +174,11 @@ MeshRenderer.prototype.extend(
 		GL.bindBuffer(GL.ARRAY_BUFFER, boundsProvider.vertexBuffer);
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, boundsProvider.indexBuffer);
 
+		GL.disable(GL.DEPTH_TEST);
+
 		Renderer.drawIndexedLines(boundsProvider.indices.length);
+
+		GL.enable(GL.DEPTH_TEST);
 	},
 
 });

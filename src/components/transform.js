@@ -49,7 +49,27 @@ Transform.prototype.extend(
 
 			gui.endHorizontalGroup();
 
-			
+			gui.label("Rotation");
+
+			var rotationsEuler = vec3.fromValues(0.0, 0.0, 0.0);
+
+			gui.beginHorizontalGroup();
+
+			gui.label("x:");
+			rotationsEuler[0] = gui.inputbox(rotationsEuler[0], 6);
+
+			gui.label("y:");
+			rotationsEuler[1] = gui.inputbox(rotationsEuler[1], 6);
+
+			gui.label("z:");
+			rotationsEuler[2] = gui.inputbox(rotationsEuler[2], 6);
+
+			gui.endHorizontalGroup();
+
+			this.orientation = quat.create();
+			quat.rotateX(this.orientation, this.orientation, rotationsEuler[0] * 0.0174532925);
+			quat.rotateY(this.orientation, this.orientation, rotationsEuler[1] * 0.0174532925);
+			quat.rotateZ(this.orientation, this.orientation, rotationsEuler[2] * 0.0174532925);
 
 		}.bind(this);
 
