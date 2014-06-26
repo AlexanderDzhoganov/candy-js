@@ -15,13 +15,14 @@ var UnitTest = function()
 	this.tests = [];
 };
 
-OBJMeshProvider.extend(
+UnitTest.extend(
 {
 
 })
 
 UnitTest.prototype.extend(
 {
+
 	addTest: function (test) 
 	{
 		this.tests.push(test); 
@@ -31,7 +32,8 @@ UnitTest.prototype.extend(
 	{ 
 		for( var i = 0; i < this.tests.length; i++)
 		{
-			this.tests[i]();
+			this.tests[i].run();
 		}
 	},
+
 })
