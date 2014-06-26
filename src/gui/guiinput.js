@@ -73,10 +73,10 @@ GuiInput.prototype.extend(
 
 	setKeyBuffer: function (buffer, maxLength)
 	{
-		if(maxLength != undefined)
+		if (maxLength != undefined)
 		{
 			this._keyBufferMaxLength = maxLength;
-			if(this._keyBuffer.length > this._keyBufferMaxLength)
+			if (this._keyBuffer.length > this._keyBufferMaxLength)
 			{
 				this._keyBuffer = this._keyBuffer.slice(0, this._keyBufferMaxLength);
 			}
@@ -134,7 +134,7 @@ GuiInput.prototype.extend(
 
 	_injectBackspace: function ()
 	{
-		if(this._keyBufferMultiline)
+		if (this._keyBufferMultiline)
 		{
 			var lines = this._keyBuffer.split('\n');
 			// var line = lines[this._caretLineIndex];
@@ -148,7 +148,7 @@ GuiInput.prototype.extend(
 			// }
 
 			// console.log(this._keyBuffer);
-			// if(this._keyBuffer.length > 0)
+			// if (this._keyBuffer.length > 0)
 			// {
 			// 	this._caretIndex--;
 			// }
@@ -157,7 +157,7 @@ GuiInput.prototype.extend(
 
 			console.log(line, this._caretIndex - 1);
 
-			if( this._caretIndex > 0 && line[this._caretIndex - 1] ) {
+			if ( this._caretIndex > 0 && line[this._caretIndex - 1] ) {
 
 				line.splice(this._caretIndex - 1, 1);
 				line = line.join("");
@@ -167,7 +167,7 @@ GuiInput.prototype.extend(
 				this._keyBuffer = lines.join("\n");
 
 				this._caretIndex--;
-			} else if( lines[this._caretLineIndex - 1] ) {
+			} else if ( lines[this._caretLineIndex - 1] ) {
 				console.log(lines[this._caretLineIndex - 1]);
 				var newLine = lines[this._caretLineIndex - 1].length;
 
@@ -182,12 +182,12 @@ GuiInput.prototype.extend(
 		}
 		else
 		{
-			if( this._caretIndex > 0 ) {
+			if ( this._caretIndex > 0 ) {
 				this._keyBuffer = this._keyBuffer.split("");
 				this._keyBuffer.splice(this._caretIndex - 1, 1);
 				this._keyBuffer = this._keyBuffer.join("");
 
-				if(this._keyBuffer.length > 0)
+				if (this._keyBuffer.length > 0)
 				{
 					this._caretIndex--;
 				}
@@ -197,7 +197,7 @@ GuiInput.prototype.extend(
 
 	_injectEnter: function ()
 	{
-		if(this._keyBufferMultiline)
+		if (this._keyBufferMultiline)
 		{
 			var lines = this._keyBuffer.split('\n');
 			var line = lines[this._caretLineIndex];
@@ -221,27 +221,27 @@ GuiInput.prototype.extend(
 
 	_injectUp: function ()
 	{
-		if(this._keyBufferMultiline)
+		if (this._keyBufferMultiline)
 		{
 			return;
 		}
 
 		this._caretLineIndex--;
-		if(this._caretLineIndex < 0)
+		if (this._caretLineIndex < 0)
 		{
 			this._caretLineIndex = 0;
 		}
 
 		var lines = this._keyBuffer.split('\n');
 		
-		if( this._caretIndex > lines[this._caretLineIndex].length) { 
+		if ( this._caretIndex > lines[this._caretLineIndex].length) { 
 			this._caretIndex = lines[this._caretLineIndex].length;
 		}
 	},
 
 	_injectDown: function ()
 	{
-		if(this._keyBufferMultiline)
+		if (this._keyBufferMultiline)
 		{
 			return;
 		}
@@ -250,27 +250,27 @@ GuiInput.prototype.extend(
 
 		var numNewLines = this._keyBuffer.match(/\n/g).length;
 
-		if(this._caretLineIndex > numNewLines)
+		if (this._caretLineIndex > numNewLines)
 		{
 			this._caretLineIndex = numNewLines;
 		}
 
 		var lines = this._keyBuffer.split('\n');
 
-		if( this._caretIndex > lines[this._caretLineIndex].length) { 
+		if ( this._caretIndex > lines[this._caretLineIndex].length) { 
 			this._caretIndex = lines[this._caretLineIndex].length;
 		}
 	},
 
 	_injectLeft: function ()
 	{
-		if(this._keyBufferMultiline)
+		if (this._keyBufferMultiline)
 		{
 			this._caretIndex--;
-			if(this._caretIndex < 0)
+			if (this._caretIndex < 0)
 			{
 				var lines = this._keyBuffer.split('\n');
-				if(this._caretLineIndex > 0)
+				if (this._caretLineIndex > 0)
 				{
 					this._caretIndex = lines[this._caretLineIndex].length + 1;
 					this._caretLineIndex--;
@@ -281,7 +281,7 @@ GuiInput.prototype.extend(
 		{
 			this._caretIndex--;
 
-			if(this._caretIndex < 0)
+			if (this._caretIndex < 0)
 			{
 				this._caretIndex = 0;
 			}
@@ -290,16 +290,16 @@ GuiInput.prototype.extend(
 
 	_injectRight: function ()
 	{
-		if(this._keyBufferMultiline)
+		if (this._keyBufferMultiline)
 		{
 			this._caretIndex++;
 			var lines = this._keyBuffer.split('\n');
 
-			if(this._caretIndex > lines[this._caretLineIndex].length)
+			if (this._caretIndex > lines[this._caretLineIndex].length)
 			{
 				this._caretIndex = lines[this._caretLineIndex].length;
 
-				if(this._caretLineIndex < lines.length)
+				if (this._caretLineIndex < lines.length)
 				{
 					this._caretLineIndex++;
 					this._caretIndex = 0;
@@ -314,12 +314,12 @@ GuiInput.prototype.extend(
 
 	_injectChar: function (e)
 	{
-		if(this._keyBuffer.length >= this._keyBufferMaxLength)
+		if (this._keyBuffer.length >= this._keyBufferMaxLength)
 		{
 			return;
 		}
 
-		if(this._keyBufferMultiline)
+		if (this._keyBufferMultiline)
 		{
 			var lines = this._keyBuffer.split('\n');
 			var line = lines[this._caretLineIndex];

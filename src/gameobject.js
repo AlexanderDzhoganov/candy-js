@@ -24,7 +24,7 @@ GameObject.prototype.extend(
 
 	addComponent: function (component)
 	{
-		if(this._components[component.type])
+		if (this._components[component.type])
 		{
 			console.log("addComponent error: component already exists on object");
 			return;
@@ -34,7 +34,7 @@ GameObject.prototype.extend(
 		this._components[component.type] = component;
 		this[component.type] = component;
 
-		if(component.onInit)
+		if (component.onInit)
 		{
 			component.onInit();
 		}

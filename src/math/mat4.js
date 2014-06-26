@@ -905,6 +905,6 @@ mat4.frob = function (a) {
 };
 
 
-if(typeof(exports) !== 'undefined') {
+if (typeof(exports) !== 'undefined') {
     exports.mat4 = mat4;
 }

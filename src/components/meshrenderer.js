@@ -36,18 +36,18 @@ MeshRenderer.prototype.extend(
 
 	onRender: function (worldModelMatrix)
 	{
-		if(!this.material)
+		if (!this.material)
 		{
 			return;
 		}
 
 		var meshProvider = this.gameObject.getComponent("meshProvider");
-		if(!meshProvider)
+		if (!meshProvider)
 		{
 			return;
 		}
 
-		if(this.wireframe)
+		if (this.wireframe)
 		{
 			for(var i = 0; i < meshProvider.submeshes.length; i++)
 			{
@@ -68,7 +68,7 @@ MeshRenderer.prototype.extend(
 			}
 		}
 
-		if(this.drawBounds)
+		if (this.drawBounds)
 		{
 			this._drawBounds(worldModelMatrix);
 		}
@@ -111,7 +111,7 @@ MeshRenderer.prototype.extend(
 				continue;
 			}
 
-			if(program[name] == undefined)
+			if (program[name] == undefined)
 			{
 				//console.log("no uniform sampler2D for texture \"" + name + "\"");
 				continue;
@@ -129,11 +129,11 @@ MeshRenderer.prototype.extend(
 		GL.bindBuffer(GL.ARRAY_BUFFER, subMesh.vertexBuffer);
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, subMesh.indexBuffer);
 
-		if(subMesh.primitiveType == Renderer.PRIMITIVE_TYPE.INDEXED_TRIANGLE_STRIP)
+		if (subMesh.primitiveType == Renderer.PRIMITIVE_TYPE.INDEXED_TRIANGLE_STRIP)
 		{
 			Renderer.drawIndexedTriangleStrip(subMesh.indices.length, subMesh.vertexFormat);
 		}
-		else if(subMesh.primitiveType == Renderer.PRIMITIVE_TYPE.INDEXED_TRIANGLES)
+		else if (subMesh.primitiveType == Renderer.PRIMITIVE_TYPE.INDEXED_TRIANGLES)
 		{
 			Renderer.drawIndexedTriangles(subMesh.indices.length, subMesh.vertexFormat);	
 		}
@@ -166,7 +166,7 @@ MeshRenderer.prototype.extend(
 	_drawBounds: function (worldModelMatrix)
 	{
 		var boundsProvider = this.gameObject.getComponent("meshBoundsProvider");
-		if(!boundsProvider)
+		if (!boundsProvider)
 		{
 			console.log("MeshRenderer: drawBounds set but no meshBoundsProvider on the gameobject");
 			return;

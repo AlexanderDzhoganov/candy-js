@@ -57,7 +57,7 @@ GuiWindow.prototype.extend(
 	{
 		this.visible = true;
 
-		if(!this._attached)
+		if (!this._attached)
 		{
 			Gui.attachWindow(this);
 			this._attached = true;
@@ -71,7 +71,7 @@ GuiWindow.prototype.extend(
 
 	close: function ()
 	{
-		if(this._attached)
+		if (this._attached)
 		{
 			Gui.detachWindow(this);
 			this._attached = false;

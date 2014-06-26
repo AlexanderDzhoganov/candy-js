@@ -597,15 +597,15 @@ vec3.forEach = (function() {
 
     return function(a, stride, offset, count, fn, arg) {
         var i, l;
-        if(!stride) {
+        if (!stride) {
             stride = 3;
         }
 
-        if(!offset) {
+        if (!offset) {
             offset = 0;
         }
         
-        if(count) {
+        if (count) {
             l = Math.min((count * stride) + offset, a.length);
         } else {
             l = a.length;
@@ -631,6 +631,6 @@ vec3.str = function (a) {
     return 'vec3(' + a[0] + ', ' + a[1] + ', ' + a[2] + ')';
 };
 
-if(typeof(exports) !== 'undefined') {
+if (typeof(exports) !== 'undefined') {
     exports.vec3 = vec3;
 }

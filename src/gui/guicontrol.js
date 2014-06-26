@@ -18,7 +18,7 @@ GuiControl.prototype.extend(
 		var controlsCount = this._calculateControlSizes(wnd);
 		this._interactControls(wnd, deltaTime);
 
-		if(this.recalculate)
+		if (this.recalculate)
 		{
 			this._calculateControlSizes(wnd);
 			this._interactControls(wnd, deltaTime);
@@ -30,13 +30,13 @@ GuiControl.prototype.extend(
 	_beginControl: function (wnd)
 	{
 		var rect = wnd.layout.beginControl(wnd);
-		if(rect == null)
+		if (rect == null)
 		{
 			this.recalculate = true;
 			return null;
 		}
 
-		if(Gui.debugLayout)
+		if (Gui.debugLayout)
 		{
 			this.debugLayoutLastRect = rect;
 		}
@@ -47,7 +47,7 @@ GuiControl.prototype.extend(
 		var hovered = PointRectTest(this._input.getCursorPosition(), rect.position, rect.size) && Gui._activeWindow == wnd;
 		var clicked = hovered && this._input._mouseDown;
 
-		if(wnd._resizing || wnd._dragging)
+		if (wnd._resizing || wnd._dragging)
 		{
 			hovered = false;
 			clicked = false;
@@ -131,9 +131,9 @@ GuiControl.prototype.extend(
 			{
 				var controlSize = GuiRenderer.calculateButtonSize(this._context, wnd, label);
 
-				if(_args != undefined)
+				if (_args != undefined)
 				{
-					if(_args.width != undefined)
+					if (_args.width != undefined)
 					{
 						controlSize[0] = _args.width;
 					}
@@ -181,9 +181,9 @@ GuiControl.prototype.extend(
 			{
 				var controlSize = GuiRenderer.calculateDropDownMenu(this._context, label);
 
-				if(_args != undefined)
+				if (_args != undefined)
 				{
-					if(_args.width != undefined)
+					if (_args.width != undefined)
 					{
 						controlSize[0] = _args.width;
 					}
@@ -221,7 +221,7 @@ GuiControl.prototype.extend(
 			horizontalSeparator: function ()
 			{
 				var control = this._beginControl(wnd);
-				if(control == null)
+				if (control == null)
 				{
 					return;
 				}
@@ -233,7 +233,7 @@ GuiControl.prototype.extend(
 			label: function (message)
 			{
 				var control = this._beginControl(wnd);
-				if(control == null)
+				if (control == null)
 				{
 					return;
 				}
@@ -247,7 +247,7 @@ GuiControl.prototype.extend(
 			button: function (label)
 			{
 				var control = this._beginControl(wnd);
-				if(control == null)
+				if (control == null)
 				{
 					return false;
 				}
@@ -268,7 +268,7 @@ GuiControl.prototype.extend(
 			inputbox: function (input, maxLength)
 			{
 				var control = this._beginControl(wnd);
-				if(control == null)
+				if (control == null)
 				{
 					return input;
 				}
@@ -279,7 +279,7 @@ GuiControl.prototype.extend(
 					this._input.setKeyBuffer(input.toString(), maxLength);
 					var caretIndex = GuiRenderer.calculateInputBoxCaretIndex(this._context, wnd, this._input.getKeyBuffer(), control);
 
-					if(caretIndex > input.length)
+					if (caretIndex > input.length)
 					{
 						caretIndex = input.length;
 					}
@@ -290,11 +290,11 @@ GuiControl.prototype.extend(
 
 				this._endControl(wnd);
 
-				if(control.active)
+				if (control.active)
 				{
 					control.input = this._input.getKeyBuffer();
 
-					if(control.input.length > maxLength)
+					if (control.input.length > maxLength)
 					{
 						control.input = control.input.slice(0, maxLength);
 						this._input.setKeyBuffer(control.input);
@@ -315,7 +315,7 @@ GuiControl.prototype.extend(
 					Gui._activeControlPosition = vec2.create();
 					Gui._activeControlSize = vec2.create();
 
-					if(typeof input === 'number')
+					if (typeof input === 'number')
 					{
 						return parseFloat(this._input.getKeyBuffer());
 					}
@@ -329,7 +329,7 @@ GuiControl.prototype.extend(
 			textbox: function (input, rows, cols, readonly)
 			{
 				var control = this._beginControl(wnd);
-				if(control == null)
+				if (control == null)
 				{
 					return input;
 				}
@@ -351,7 +351,7 @@ GuiControl.prototype.extend(
 
 				this._endControl(wnd);
 
-				if(control.active)
+				if (control.active)
 				{
 					var newInput = this._input.getKeyBuffer();
 					return newInput;
@@ -363,7 +363,7 @@ GuiControl.prototype.extend(
 			image: function (resourceName, width, height)
 			{
 				var control = this._beginControl(wnd);
-				if(control == null)
+				if (control == null)
 				{
 					return;
 				}
@@ -380,7 +380,7 @@ GuiControl.prototype.extend(
 			checkbox: function (checked)
 			{
 				var control = this._beginControl(wnd);
-				if(control == null)
+				if (control == null)
 				{
 					return checked;
 				}
@@ -400,7 +400,7 @@ GuiControl.prototype.extend(
 			listbox: function (items, width, height, selectedIndex)
 			{
 				var control = this._beginControl(wnd);
-				if(control == null)
+				if (control == null)
 				{
 					return selectedIndex;
 				}
@@ -411,21 +411,21 @@ GuiControl.prototype.extend(
 				control.selectedIndex = selectedIndex;
 				var hoveredItem = null;
 
-				if(control.hovered)
+				if (control.hovered)
 				{
 					hoveredItem = Math.floor(control.relativeMousePosition[1] / ptsToPixels(wnd.layout.fontSize));
 
-					if(control.clicked)
+					if (control.clicked)
 					{
 						selectedIndex = hoveredItem;
 
-						if(selectedIndex >= items.length)
+						if (selectedIndex >= items.length)
 						{
 							selectedIndex = null; 
 						}
 					}
 
-					if(hoveredItem >= items.length)
+					if (hoveredItem >= items.length)
 					{
 						hoveredItem = null;
 					}
@@ -440,20 +440,22 @@ GuiControl.prototype.extend(
 				return selectedIndex;
 			}.bind(this),
 
-			dropdownmenu: function( label, items, parentWindows ) {
+			dropdownmenu: function(label, items, parentWindows)
+			{
 				var control = this._beginControl(wnd);
 
-				if(control == null)
+				if (control == null)
 				{
 					return false;
 				}
 				
 				control.label = label;
 
-				if(control.clicked) {
+				if (control.clicked)
+				{
 					var popupPosition;
 
-					if( !parentWindows )
+					if ( !parentWindows )
 					{
 						popupPosition = vec2.fromValues(control.rect.position[0] + control.rect.size[0], control.rect.position[1]);
 					} 
@@ -465,7 +467,7 @@ GuiControl.prototype.extend(
 					var itemLength = 0;
 
 					items.forEach(function( key, val ) {
-						if( key.length > itemLength ) {
+						if ( key.length > itemLength ) {
 							itemLength = key.length;
 						}
 					}.bind(this));
@@ -493,10 +495,10 @@ GuiControl.prototype.extend(
 					dropDownWindow.drawSelf = function (gui)
 					{
 						items.forEach(function( key, val ) {
-							if( typeof val === "object" && val !== null ) {
+							if ( typeof val === "object" && val !== null ) {
 								gui.dropdownmenu(key, val, parentWindows, {"width": itemWidth});
-							} else if( typeof val === "function" ) {
-								if(gui.button(key, {"width": itemWidth}))
+							} else if ( typeof val === "function" ) {
+								if (gui.button(key, {"width": itemWidth}))
 								{
 									for( var i = parentWindows.length - 1; i >= 0 ; i-- ) {
 										parentWindows[i].close();
@@ -508,7 +510,7 @@ GuiControl.prototype.extend(
 						}.bind(this));
 					}.bind(this);
 
-					if( !parentWindows )
+					if ( !parentWindows )
 					{
 						parentWindows = [];
 					}
@@ -523,7 +525,7 @@ GuiControl.prototype.extend(
 						// closeTimeout = setTimeout(function() {
 							console.log(inStack, parentWindows.length);
 
-							if( inStack === parentWindows.length )
+							if ( inStack === parentWindows.length )
 							{
 								for(var i = 0; i < parentWindows.length; i++)
 								{
@@ -534,11 +536,11 @@ GuiControl.prototype.extend(
 					}.bind(this);
 
 					dropDownWindow.activate = function() {
-						if( closeTimeout ) {
+						if ( closeTimeout ) {
 							clearTimeout(closeTimeout);
 						}
 
-						if( control.activeWindow != inStack ) {
+						if ( control.activeWindow != inStack ) {
 							control.activeWindow = inStack;
 							console.log(control.activeWindow);	
 						}
@@ -569,46 +571,46 @@ GuiControl.prototype.extend(
 			this._context.rect(rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
 			this._context.clip();
 
-			if(type == 'horizontalSeparator')
+			if (type == 'horizontalSeparator')
 			{
 				GuiRenderer.drawHorizontalSeparator(this._context, wnd, control.rect);
 			}
-			else if(type == 'label')
+			else if (type == 'label')
 			{
 				GuiRenderer.drawLabel(this._context, wnd, control.message, "white", control);
 			}
-			else if(type == 'button')
+			else if (type == 'button')
 			{
 				GuiRenderer.drawButton(this._context, wnd, control.label, control);
 			}
-			else if(type == 'inputbox')
+			else if (type == 'inputbox')
 			{
 				GuiRenderer.drawInputBox(this._context, wnd, control.input, control);
 			}
-			else if(type == 'textbox')
+			else if (type == 'textbox')
 			{
 				GuiRenderer.drawTextBox(this._context, wnd, control.input, control.rows, control.cols, control);
 			}
-			else if(type == 'image')
+			else if (type == 'image')
 			{
 				GuiRenderer.drawImage(this._context, wnd, control.image, control);
 			}
-			else if(type == 'checkbox')
+			else if (type == 'checkbox')
 			{
 				GuiRenderer.drawCheckBox(this._context, wnd, control.checked, control);
 			}
-			else if(type == 'listbox')
+			else if (type == 'listbox')
 			{
 				GuiRenderer.drawListBox(this._context, wnd, control.items, control.selectedIndex, control.hoveredItem, control);
 			}
-			else if(type == 'dropdownmenu')
+			else if (type == 'dropdownmenu')
 			{
 				GuiRenderer.drawDropDownMenu(this._context, wnd, control.label, control);	
 			}
 
 			this._context.restore();
 
-			if(this.debugLayout)
+			if (this.debugLayout)
 			{
 				var rect = this.debugLayoutLastRect;
 				this._context.strokeStyle = 'green';

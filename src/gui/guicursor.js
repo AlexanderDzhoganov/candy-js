@@ -41,7 +41,7 @@ var GuiCursor = function (resourceName)
 		this.position[0] += dx;
 		this.position[1] -= dy;
 
-		if(this.position[0] < 0)
+		if (this.position[0] < 0)
 		{
 			this.position[0] = 0;
 		}
@@ -50,7 +50,7 @@ var GuiCursor = function (resourceName)
 			this.position[0] = Renderer.screenWidth;
 		}
 
-		if(this.position[1] < 0)
+		if (this.position[1] < 0)
 		{
 			this.position[1] = 0;
 		}

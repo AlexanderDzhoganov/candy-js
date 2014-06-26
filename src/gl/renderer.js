@@ -119,7 +119,7 @@ Renderer.prototype.extend(
 
 	drawFullscreenQuad: function ()
 	{	
-		if(!this.fullscreenQuadVertexBuffer)
+		if (!this.fullscreenQuadVertexBuffer)
 		{
 			var FULLSCREEN_QUAD_VERTICES =
 			[
@@ -136,7 +136,7 @@ Renderer.prototype.extend(
 			GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(FULLSCREEN_QUAD_VERTICES), GL.STATIC_DRAW);
 		}
 
-		if(Shader._ActiveProgram)
+		if (Shader._ActiveProgram)
 		{
 			Shader.setUniformVec2("windowSize", vec2.fromValues(this.screenWidth, this.screenHeight));
 		}
@@ -152,7 +152,7 @@ Renderer.prototype.extend(
 
 	drawLines: function (count, vertexFormat)
 	{
-		if(vertexFormat == undefined)
+		if (vertexFormat == undefined)
 		{
 			vertexFormat = Renderer.VERTEX_FORMAT.PPP;
 		}
@@ -166,7 +166,7 @@ Renderer.prototype.extend(
 
 	drawIndexedLines: function (indicesCount, vertexFormat)
 	{
-		if(vertexFormat == undefined)
+		if (vertexFormat == undefined)
 		{
 			vertexFormat = Renderer.VERTEX_FORMAT.PPP;
 		}
@@ -195,51 +195,51 @@ Renderer.prototype.extend(
 		GL.disableVertexAttribArray(2);
 		GL.disableVertexAttribArray(3);
 
-		if(vertexFormat == Renderer.VERTEX_FORMAT.PPPNNNTT)
+		if (vertexFormat == Renderer.VERTEX_FORMAT.PPPNNNTT)
 		{
-			if(Shader._ActiveProgram.position != undefined)
+			if (Shader._ActiveProgram.position != undefined)
 			{
 				GL.enableVertexAttribArray(Shader._ActiveProgram.position);
 				GL.vertexAttribPointer(Shader._ActiveProgram.position, 3, GL.FLOAT, false, 32, 0);
 			}
 
-			if(Shader._ActiveProgram.normal != undefined)
+			if (Shader._ActiveProgram.normal != undefined)
 			{
 				GL.enableVertexAttribArray(Shader._ActiveProgram.normal);
 				GL.vertexAttribPointer(Shader._ActiveProgram.normal, 3, GL.FLOAT, false, 32, 12);
 			}
 
-			if(Shader._ActiveProgram.uvs != undefined)
+			if (Shader._ActiveProgram.uvs != undefined)
 			{
 				GL.enableVertexAttribArray(Shader._ActiveProgram.uvs);
 				GL.vertexAttribPointer(Shader._ActiveProgram.uvs, 2, GL.FLOAT, false, 32, 24);
 			}
 		}
-		else if(vertexFormat == Renderer.VERTEX_FORMAT.PPPTT)
+		else if (vertexFormat == Renderer.VERTEX_FORMAT.PPPTT)
 		{
-			if(Shader._ActiveProgram.position != undefined)
+			if (Shader._ActiveProgram.position != undefined)
 			{
 				GL.enableVertexAttribArray(Shader._ActiveProgram.position);
 				GL.vertexAttribPointer(Shader._ActiveProgram.position, 3, GL.FLOAT, false, 20, 0);
 			}
 
-			if(Shader._ActiveProgram.uvs != undefined)
+			if (Shader._ActiveProgram.uvs != undefined)
 			{
 				GL.enableVertexAttribArray(Shader._ActiveProgram.uvs);
 				GL.vertexAttribPointer(Shader._ActiveProgram.uvs, 2, GL.FLOAT, false, 20, 12);
 			}
 		}
-		else if(vertexFormat == Renderer.VERTEX_FORMAT.PPP)
+		else if (vertexFormat == Renderer.VERTEX_FORMAT.PPP)
 		{
-			if(Shader._ActiveProgram.position != undefined)
+			if (Shader._ActiveProgram.position != undefined)
 			{
 				GL.enableVertexAttribArray(Shader._ActiveProgram.position);
 				GL.vertexAttribPointer(Shader._ActiveProgram.position, 3, GL.FLOAT, false, 12, 0);
 			}
 		}
-		else if(vertexFormat == Renderer.VERTEX_FORMAT.PPPXXXXX)
+		else if (vertexFormat == Renderer.VERTEX_FORMAT.PPPXXXXX)
 		{
-			if(Shader._ActiveProgram.position != undefined)
+			if (Shader._ActiveProgram.position != undefined)
 			{
 				GL.enableVertexAttribArray(Shader._ActiveProgram.position);
 				GL.vertexAttribPointer(Shader._ActiveProgram.position, 3, GL.FLOAT, false, 32, 0);

@@ -63,7 +63,7 @@ Gui.prototype.extend(
 		this.detachWindow(wnd);
 		this.attachWindow(wnd);
 
-		while(wnd._dockedBy != null)
+		while (wnd._dockedBy != null)
 		{
 			this.detachWindow(wnd._dockedBy);
 			this.attachWindow(wnd._dockedBy);
@@ -133,7 +133,7 @@ Gui.prototype.extend(
 		if (active && headerHovered && this._input._mouseDown && !wnd._dragging)
 		{
 			wnd._dragging = true;
-			if(wnd.dockTo)
+			if (wnd.dockTo)
 			{
 				wnd.dockTo._dockedBy = null;
 				wnd.size = wnd.beforeDockSize;
@@ -143,7 +143,7 @@ Gui.prototype.extend(
 			vec2.subtract(wnd._dragAnchor, wnd.position, this._input.getCursorPosition());
 		}
 
-		if(active && resizeButtonHovered && this._input._mouseDown && !wnd._resizing)
+		if (active && resizeButtonHovered && this._input._mouseDown && !wnd._resizing)
 		{
 			wnd._resizing = true;
 			var corner = vec2.create();
@@ -164,7 +164,7 @@ Gui.prototype.extend(
 		var deltaTime = (time - this._previousTime) / 1000.0;
 		this._previousTime = time;
 
-		if(
+		if (
 			this._activeWindow && 
 			this._activeWindow.onDeactivate && 
 			!this._activeWindow.resizing &&
@@ -186,14 +186,14 @@ Gui.prototype.extend(
 
 			if (PointRectTest(this._input.getCursorPosition(), wnd.position, wnd.size))
 			{
-				if(this._activeWindow && this._activeWindow.onDeactivate)
+				if (this._activeWindow && this._activeWindow.onDeactivate)
 				{
 					this._activeWindow.onDeactivate();
 				}
 
 				this._activeWindow = wnd;
 
-				if(this._activeWindow.onActivate)
+				if (this._activeWindow.onActivate)
 				{
 					this._activeWindow.onActivate();
 				}
@@ -207,9 +207,9 @@ Gui.prototype.extend(
 			this._activeWindow.position[0] = Clamp(this._activeWindow.position[0], 0.0, Renderer.screenWidth - this._activeWindow.size[0]);
 			this._activeWindow.position[1] = Clamp(this._activeWindow.position[1], 0.0, Renderer.screenHeight - this._activeWindow.size[1]);
 		}
-		else if(this._activeWindow)
+		else if (this._activeWindow)
 		{
-			if(this._activeWindow._dragging)
+			if (this._activeWindow._dragging)
 			{
 				this._activeWindow._dragging = false;
 
@@ -217,15 +217,15 @@ Gui.prototype.extend(
 				{
 					var other = this._windows[i];
 
-					if(this._activeWindow == other)
+					if (this._activeWindow == other)
 					{
 						continue;
 					}
 
 					var dockPosition = vec2.fromValues(other.position[0], other.position[1] + other.size[1] - 16.0);
-					if(PointRectTest(this._input.getCursorPosition(), dockPosition, vec2.fromValues(other.size[0], 16.0)))
+					if (PointRectTest(this._input.getCursorPosition(), dockPosition, vec2.fromValues(other.size[0], 16.0)))
 					{
-						if(other._dockedBy)
+						if (other._dockedBy)
 						{
 							continue;
 						}
@@ -240,7 +240,7 @@ Gui.prototype.extend(
 		}
 
 		// apply resizing
-		if(this._activeWindow && this._activeWindow._resizing && this._input._mouseDown)
+		if (this._activeWindow && this._activeWindow._resizing && this._input._mouseDown)
 		{
 			var corner = vec2.create();
 			vec2.add(corner, this._activeWindow._resizeAnchor, this._input.getCursorPosition());
@@ -248,16 +248,16 @@ Gui.prototype.extend(
 			vec2.subtract(size, corner, this._activeWindow.position);
 			this._activeWindow.size = size;
 
-			if(this._activeWindow.size[0] < this._activeWindow.minimumSize[0])
+			if (this._activeWindow.size[0] < this._activeWindow.minimumSize[0])
 			{
 				this._activeWindow.size[0] = this._activeWindow.minimumSize[0];
 			}
-			if(this._activeWindow.size[1] < this._activeWindow.minimumSize[1])
+			if (this._activeWindow.size[1] < this._activeWindow.minimumSize[1])
 			{
 				this._activeWindow.size[1] = this._activeWindow.minimumSize[1];
 			}
 		}
-		else if(this._activeWindow)
+		else if (this._activeWindow)
 		{
 			this._activeWindow._resizing = false;
 		}
@@ -267,22 +267,22 @@ Gui.prototype.extend(
 		{
 			var wnd = this._windows[i];
 
-			if(!wnd.beforeDockSize)
+			if (!wnd.beforeDockSize)
 			{
 				wnd.beforeDockSize = wnd.size;
 			}
 
-			if(wnd.dockTo)
+			if (wnd.dockTo)
 			{
 				wnd.position = vec2.fromValues(wnd.dockTo.position[0], wnd.dockTo.position[1] + wnd.dockTo.size[1]);
 				wnd.size[0] = wnd.dockTo.size[0];
 			}
 		}
 
-		for(var i = 0; i < this._windows.length; i++)
+		for (var i = 0; i < this._windows.length; i++)
 		{
 			var wnd = this._windows[i];
-			if(!wnd.visible)
+			if (!wnd.visible)
 			{
 				continue;
 			}

@@ -1,6 +1,6 @@
 var PointRectTest = function (point, position, size)
 {
-	if(point[0] > position[0] && point[0] < position[0] + size[0] && point[1] > position[1] && point[1] < position[1] + size[1])
+	if (point[0] > position[0] && point[0] < position[0] + size[0] && point[1] > position[1] && point[1] < position[1] + size[1])
 	{
 		return true;
 	}
@@ -82,12 +82,12 @@ var QuatToEuler = function(q)
 
 var Clamp = function (x, min, max)
 {
-	if(x < min)
+	if (x < min)
 	{
 		x = min;
 	}
 
-	if(x > max)
+	if (x > max)
 	{
 		x = max;
 	}

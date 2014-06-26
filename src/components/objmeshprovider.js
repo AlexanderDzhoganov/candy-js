@@ -67,7 +67,7 @@ OBJMeshProvider.prototype.extend(
 
 	onInit: function ()
 	{
-		if(!this.gameObject.getComponent("meshBoundsProvider"))
+		if (!this.gameObject.getComponent("meshBoundsProvider"))
 		{
 			this.gameObject.addComponent(new MeshBoundsProvider());
 		}
@@ -109,7 +109,7 @@ OBJMeshProvider.prototype.extend(
 
 			var components = line.trim().split(' ');
 
-			if(components[0] == 'v')
+			if (components[0] == 'v')
 			{
 				positions.push
 				(
@@ -121,7 +121,7 @@ OBJMeshProvider.prototype.extend(
 					)
 				);
 			}
-			else if(components[0] == 'vn')
+			else if (components[0] == 'vn')
 			{
 				normals.push
 				(
@@ -133,7 +133,7 @@ OBJMeshProvider.prototype.extend(
 					)
 				);
 			}
-			else if(components[0] == 'vt')
+			else if (components[0] == 'vt')
 			{
 				uvs.push
 				(
@@ -144,9 +144,9 @@ OBJMeshProvider.prototype.extend(
 					)
 				);
 			}
-			else if(components[0] == 'f')
+			else if (components[0] == 'f')
 			{
-				if(components.length == 4)
+				if (components.length == 4)
 				{
 					// triangle
 					faces.push
@@ -156,7 +156,7 @@ OBJMeshProvider.prototype.extend(
 						components[3]
 					]);
 				}
-				else if(components.length == 5)
+				else if (components.length == 5)
 				{
 					// quad
 					faces.push
@@ -191,7 +191,7 @@ OBJMeshProvider.prototype.extend(
 			for(var q = 0; q < verts.length; q++)
 			{
 				var vert = verts[q];
-				if(vert in uniqueVertices)
+				if (vert in uniqueVertices)
 				{
 					continue;
 				}
@@ -202,7 +202,7 @@ OBJMeshProvider.prototype.extend(
 				var nidx = null;
 				var uvidx = null;
 
-				if(vertSplit.length == 3)
+				if (vertSplit.length == 3)
 				{
 					pidx = parseInt(vertSplit[0]) - 1;
 					nidx = parseInt(vertSplit[2]) - 1;
@@ -218,7 +218,7 @@ OBJMeshProvider.prototype.extend(
 				var position = positions[pidx];
 				var normal = normals[nidx];
 
-				if(!normal || !nidx || forceRecalculateNormals)
+				if (!normal || !nidx || forceRecalculateNormals)
 				{
 					normal = this._calculateNormal(pidx, positions, faces);
 					//console.log("call");
@@ -251,7 +251,7 @@ OBJMeshProvider.prototype.extend(
 		var currentIndex = 0;
 		for(var vertex in uniqueVertices)
 		{
-			if(typeof uniqueVertices[vertex] != 'object')
+			if (typeof uniqueVertices[vertex] != 'object')
 			{
 				continue;
 			}

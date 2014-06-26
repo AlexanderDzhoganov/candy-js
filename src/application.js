@@ -114,11 +114,11 @@ Application.prototype.extend(
 				}
 			});
 
-			if( testShowButton ) {
+			if ( testShowButton ) {
 				gui.button("WHY AM I HERE")
 			}
 
-			if( testSpinTires ) {
+			if ( testSpinTires ) {
 				gui.beginHorizontalGroup();
 				gui.button("SPINTIRES!");
 				gui.button("SPINTIRES!");
@@ -154,13 +154,13 @@ Application.prototype.extend(
 
 			gui.label("horizontal group");
 
-			if(gui.button("click me"))
+			if (gui.button("click me"))
 			{
 				testClicked = true;
 				console.log("click me");				
 			}
 
-			if(testClicked && gui.button("click me too"))
+			if (testClicked && gui.button("click me too"))
 			{
 				testClicked = false;
 			}
@@ -171,12 +171,12 @@ Application.prototype.extend(
 
 			gui.beginHorizontalGroup();
 
-			if(gui.button("test"))
+			if (gui.button("test"))
 			{
 				console.log("test");				
 			}
 
-			if(gui.button("1234"))
+			if (gui.button("1234"))
 			{
 				console.log("1234");				
 			}
@@ -247,7 +247,7 @@ Application.prototype.extend(
 			previousTime = time;
 
 			timeUntilNextTick -= dt;
-			if(timeUntilNextTick <= 0.0)
+			if (timeUntilNextTick <= 0.0)
 			{
 				this.update(dt);
 				timeUntilNextTick = 1.0 / tickRate + timeUntilNextTick;
@@ -255,7 +255,7 @@ Application.prototype.extend(
 
 			Renderer.beginFrame();
 			this.render();
-			if(!this.doStop)
+			if (!this.doStop)
 			{
 				window.requestAnimationFrame(doFrame);
 			}
@@ -332,7 +332,7 @@ Application.prototype.extend(
 
 		for(var key in resources)
 		{
-			if(resources[key].type == 'image')
+			if (resources[key].type == 'image')
 			{
 				resourceArray.push(resources[key]);
 			}
@@ -346,9 +346,9 @@ Application.prototype.extend(
 
 			selectedResource = gui.listbox(resourceArray, 140, 240, selectedResource);
 			
-			if(selectedResource != undefined)
+			if (selectedResource != undefined)
 			{
-				if(resourceArray[selectedResource])
+				if (resourceArray[selectedResource])
 				{
 					gui.image(resourceArray[selectedResource].name, 240, 240);
 				}

@@ -258,6 +258,6 @@ mat2.LDU = function (L, D, U, a) {
     return [L, D, U];       
 }; 
 
-if(typeof(exports) !== 'undefined') {
+if (typeof(exports) !== 'undefined') {
     exports.mat2 = mat2;
 }

@@ -486,15 +486,15 @@ vec2.forEach = (function() {
 
     return function(a, stride, offset, count, fn, arg) {
         var i, l;
-        if(!stride) {
+        if (!stride) {
             stride = 2;
         }
 
-        if(!offset) {
+        if (!offset) {
             offset = 0;
         }
         
-        if(count) {
+        if (count) {
             l = Math.min((count * stride) + offset, a.length);
         } else {
             l = a.length;
@@ -520,6 +520,6 @@ vec2.str = function (a) {
     return 'vec2(' + a[0] + ', ' + a[1] + ')';
 };
 
-if(typeof(exports) !== 'undefined') {
+if (typeof(exports) !== 'undefined') {
     exports.vec2 = vec2;
 }

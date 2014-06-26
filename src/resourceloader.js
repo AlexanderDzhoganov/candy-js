@@ -89,7 +89,7 @@ ResourceLoader.prototype.extend(
 		{
 			val.forEach(function( el, ind )
 			{
-				if( el === ext )
+				if ( el === ext )
 				{
 					type = key;
 				}
@@ -115,7 +115,7 @@ ResourceLoader.prototype.extend(
 	{
 		var elementKey = elements[0];
 
-		if(elementKey)
+		if (elementKey)
 		{
 			var elementObject = this.resources[elementKey];
 			this.resources[elementKey].name = elementKey;
@@ -127,7 +127,7 @@ ResourceLoader.prototype.extend(
 
 			this.resources[elementKey].type = elementObject.type;
 
-			if(elementObject.type == "image")
+			if (elementObject.type == "image")
 			{
 				var img = new Image();
 
@@ -142,7 +142,7 @@ ResourceLoader.prototype.extend(
 
 				img.src = elementObject.path;
 			}
-			else if(elementObject.type == "text")
+			else if (elementObject.type == "text")
 			{
 				this.xmlHttp.onreadystatechange = function ()
 				{
@@ -208,7 +208,7 @@ ResourceLoader.prototype.extend(
 	{
 		this.progress++;
 
-		if(failed)
+		if (failed)
 		{
 			console.log("Resource '" + resName + "' not loaded: " + this.progress + "/" + this.numElements);
 		}

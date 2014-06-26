@@ -49,12 +49,12 @@ var SubMesh = function (name)
             // corresponding triangles:
             //      'f v0/t0/vn0 v1/t1/vn1 v2/t2/vn2'
             //      'f v2/t2/vn2 v3/t3/vn3 v0/t0/vn0'
-            if(j === 3 && !quad) {
+            if (j === 3 && !quad) {
                 // add v2/t2/vn2 in again before continuing to 3
                 j = 2;
                 quad = true;
             }
-            if(line[j] in unpacked.hashindices){
+            if (line[j] in unpacked.hashindices){
                 unpacked.indices.push(unpacked.hashindices[line[j]]);
             }
             else{
@@ -109,7 +109,7 @@ var SubMesh = function (name)
                 // increment the counter
                 unpacked.index += 1;
             }
-            if(j === 3 && quad) {
+            if (j === 3 && quad) {
                 // add v0/t0/vn0 onto the second triangle
                 unpacked.indices.push( unpacked.hashindices[line[0]]);
             }

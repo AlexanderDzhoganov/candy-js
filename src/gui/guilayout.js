@@ -71,7 +71,7 @@ GuiLayout.prototype.extend(
 		// reset cursor
 		this._currentPosition = vec2.fromValues(this.margin[0], this.windowTopMargin + this.windowHeaderSize);
 
-		if(!wnd.drawTitlebar)
+		if (!wnd.drawTitlebar)
 		{
 			this._currentPosition[1] = this.windowTopMargin;
 		}
@@ -95,7 +95,7 @@ GuiLayout.prototype.extend(
 		this._currentPosition[1] += this._horizontalGroupMaxHeight + this.margin[1];
 
 		// resize window to fit
-		if(this._currentPosition[1] >= wnd.size[1] - this.margin[1] && wnd.autoSize)
+		if (this._currentPosition[1] >= wnd.size[1] - this.margin[1] && wnd.autoSize)
 		{	
 			wnd.size[1] = this._currentPosition[1] + this.margin[1];
 		}
@@ -112,7 +112,7 @@ GuiLayout.prototype.extend(
 	{
 		this._controlSizes.push(controlSize);
 		
-		if(controlSize[1] > this._horizontalGroupMaxHeight)
+		if (controlSize[1] > this._horizontalGroupMaxHeight)
 		{
 			this._horizontalGroupMaxHeight = controlSize[1];
 		}
@@ -122,7 +122,7 @@ GuiLayout.prototype.extend(
 
 	beginControl: function (wnd)
 	{
-		if(this._controlSizes.length <= this._controlId)
+		if (this._controlSizes.length <= this._controlId)
 		{
 			return null;
 		}
@@ -137,16 +137,16 @@ GuiLayout.prototype.extend(
 		vec2.add(rect.position, wnd.position, this._currentPosition);
 
 		// clip control to window
-		if(rect.size[0] > wnd.size[0] - this.margin[0])
+		if (rect.size[0] > wnd.size[0] - this.margin[0])
 		{
 			rect.size[0] = wnd.size[0] - this.margin[0] * 2.0;
 		}
 
 		// if in horizontal group
-		if(this._horizontal)
+		if (this._horizontal)
 		{
 			// wrap controls if horizontal space is not enough
-			if(this._currentPosition[0] + rect.size[0] >= wnd.size[0] - this.margin[0])
+			if (this._currentPosition[0] + rect.size[0] >= wnd.size[0] - this.margin[0])
 			{
 				this._currentPosition[1] += this._horizontalGroupMaxHeight + this.margin[1];
 				this._currentPosition[0] = this.margin[0];
@@ -155,7 +155,7 @@ GuiLayout.prototype.extend(
 			}
 
 			// increase horizontal group size if control is larger
-			if(rect.size[1] > this._horizontalGroupMaxHeight)
+			if (rect.size[1] > this._horizontalGroupMaxHeight)
 			{
 				this._horizontalGroupMaxHeight = rect.size[1];
 			}
@@ -164,7 +164,7 @@ GuiLayout.prototype.extend(
 			this._currentPosition[0] += rect.size[0] + this.margin[0];
 
 			// center control vertically in horizontal group
-			if(rect.size[1] < this._horizontalGroupHeights[this._horizontalGroupId])
+			if (rect.size[1] < this._horizontalGroupHeights[this._horizontalGroupId])
 			{
 				rect.position[1] += (this._horizontalGroupHeights[this._horizontalGroupId] - rect.size[1]) * 0.5;
 			}
@@ -177,7 +177,7 @@ GuiLayout.prototype.extend(
 		}
 
 		// resize window to fit controls
-		if(this._currentPosition[1] >= wnd.size[1] - this.margin[1] && wnd.autoSize)
+		if (this._currentPosition[1] >= wnd.size[1] - this.margin[1] && wnd.autoSize)
 		{
 			wnd.size[1] = this._currentPosition[1] + this.margin[1];
 			wnd.minimumSize[1] = this._currentPosition[1] + this.margin[1];

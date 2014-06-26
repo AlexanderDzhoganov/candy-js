@@ -13,7 +13,7 @@ var GuiRenderer =
 		// draw background
 		this._drawRect(context, wnd.skin.window.backgroundColor, { position: wnd.position, size: wnd.size });
 
-		if(wnd.drawTitlebar)
+		if (wnd.drawTitlebar)
 		{
 			var headerRect = { position: wnd.position, size: vec2.fromValues(wnd.size[0], wnd.layout.windowHeaderSize) };
 			var headerTextPosition = vec2.fromValues(wnd.position[0] + 2.0, wnd.position[1] + wnd.layout.windowHeaderSize / 2.0 + wnd.layout.fontSize / 2.0);
@@ -24,7 +24,7 @@ var GuiRenderer =
 				this._drawRect(context, wnd.skin.window.header.hovered, headerRect);
 				this._drawText(context, wnd.title, wnd.skin.window.headerText.hovered, headerTextPosition, wnd.layout.fontSize);
 			}
-			else if(wnd.dockTo)
+			else if (wnd.dockTo)
 			{
 				this._drawRect(context, wnd.skin.window.header.docked, headerRect);
 				this._drawText(context, wnd.title, wnd.skin.window.headerText.docked, headerTextPosition, wnd.layout.fontSize);
@@ -44,7 +44,7 @@ var GuiRenderer =
 				position: vec2.fromValues(wnd.position[0] + wnd.size[0] - wnd.layout.windowCloseButtonSize[0] - wnd.layout.margin[0], wnd.position[1]),
 				size: wnd.layout.windowCloseButtonSize };
 
-			if(closeButtonHovered)
+			if (closeButtonHovered)
 			{
 				this._drawRect(context, wnd.skin.window.closeButton.hovered, closeButtonRect);
 			}
@@ -54,13 +54,13 @@ var GuiRenderer =
 			}
 		}
 
-		if(wnd.resizable)
+		if (wnd.resizable)
 		{
 			var v0 = vec2.fromValues(wnd.position[0] + wnd.size[0] - wnd.layout.margin[0] * 2.0, wnd.position[1] + wnd.size[1]);
 			var v1 = vec2.fromValues(wnd.position[0] + wnd.size[0], wnd.position[1] + wnd.size[1]);
 			var v2 = vec2.fromValues(wnd.position[0] + wnd.size[0], wnd.position[1] + wnd.size[1] - wnd.layout.margin[0] * 2.0);
 
-			if(resizeHovered)
+			if (resizeHovered)
 			{
 				this._drawTriangle(context, wnd.skin.window.resizeButton.hovered, v0, v1, v2);
 			}
@@ -203,12 +203,12 @@ var GuiRenderer =
 		var index = Math.floor(difference[1] / (wnd.layout.fontSize + 2.0));
 		var lines = input.split('\n');
 
-		if(index >= lines.length)
+		if (index >= lines.length)
 		{
 			index = lines.length - 1;
 			return [ lines[index].length, index ];
 		}
-		else if(index < 0)
+		else if (index < 0)
 		{
 			index = 0;
 		}
@@ -268,12 +268,12 @@ var GuiRenderer =
 	// Image
 	calculateImageSize: function (context, wnd, image, width, height)
 	{
-		if(width && height)
+		if (width && height)
 		{
 			return vec2.fromValues(width, height);
 		}
 
-		if(!image)
+		if (!image)
 		{
 			return vec2.fromValues(128.0, 128.0);
 		}
@@ -285,7 +285,7 @@ var GuiRenderer =
 	{
 		var rect = control.rect;
 
-		if(image)
+		if (image)
 		{
 			// draw image
 			context.drawImage(image, 0, 0, image.width, image.height, rect.position[0], rect.position[1], rect.size[0], rect.size[1]);
@@ -319,7 +319,7 @@ var GuiRenderer =
 		// border
 		this._strokeRect(context, wnd.skin.checkbox.border[state], rect, wnd.skin.button.borderThickness);
 
-		if(checked)
+		if (checked)
 		{
 			this._drawRect
 			(
@@ -329,7 +329,7 @@ var GuiRenderer =
 					position: vec2.fromValues(rect.position[0] + 2.0, rect.position[1] + 2.0),
 					size: vec2.fromValues(rect.size[0] - 4.0, rect.size[1] - 4.0)
 				}
-			);
+			);	
 		}
 	},
 
@@ -358,12 +358,12 @@ var GuiRenderer =
 			};
 
 			var itemState = "normal";
-			if(hoveredIndex == i)
+			if (hoveredIndex == i)
 			{
 				itemState = "hovered";
 			}
 
-			if(selectedIndex == i)
+			if (selectedIndex == i)
 			{
 				itemState = "selected";
 			}
@@ -372,7 +372,7 @@ var GuiRenderer =
 
 			var label = null;
 
-			if(items[i].toString)
+			if (items[i].toString)
 			{
 				label = items[i].toString();
 			}

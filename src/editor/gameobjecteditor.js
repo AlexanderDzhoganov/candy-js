@@ -29,9 +29,9 @@ var GameObjectEditor = function (gameObject)
 
 	for(var key in components)
 	{
-		if(components[key] instanceof Component);
+		if (components[key] instanceof Component);
 		{
-			if(components[key].createConfigWindow)
+			if (components[key].createConfigWindow)
 			{
 				var wnd = components[key].createConfigWindow();
 				wnd.dockTo = lastDockWindow;

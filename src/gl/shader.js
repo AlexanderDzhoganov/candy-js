@@ -1,6 +1,6 @@
 var Shader = function (vertexSource, fragmentSource)
 {
-	if(vertexSource == undefined || fragmentSource == undefined)
+	if (vertexSource == undefined || fragmentSource == undefined)
 	{
 		debugger;
 	}

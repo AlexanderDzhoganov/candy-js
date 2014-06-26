@@ -39,7 +39,7 @@ MeshBoundsProvider.prototype.extend(
 	recalculateMinimumAABB: function ()
 	{
 		var meshProvider = this.gameObject.getComponent("meshProvider");
-		if(!meshProvider)
+		if (!meshProvider)
 		{
 			console.log("MeshBoundsProvider: cannot recalculate AABB as no meshProvider is present on the gameobject");
 			return;
@@ -49,7 +49,7 @@ MeshBoundsProvider.prototype.extend(
 		{
 			var subMesh = meshProvider.submeshes[i];
 
-			if(subMesh.vertexFormat != Renderer.VERTEX_FORMAT.PPPNNNTT)
+			if (subMesh.vertexFormat != Renderer.VERTEX_FORMAT.PPPNNNTT)
 			{
 				console.log("MeshBoundsProvider: invalid vertex format, only 'PPPNNNTT' supported");
 				return;
@@ -69,32 +69,32 @@ MeshBoundsProvider.prototype.extend(
 					vertices[i * 8 + 2]
 				);
 
-				if(position[0] < min[0])
+				if (position[0] < min[0])
 				{
 					min[0] = position[0];
 				}
 
-				if(position[0] > max[0])
+				if (position[0] > max[0])
 				{
 					max[0] = position[0];
 				}
 
-				if(position[1] < min[1])
+				if (position[1] < min[1])
 				{
 					min[1] = position[1];
 				}
 
-				if(position[1] > max[1])
+				if (position[1] > max[1])
 				{
 					max[1] = position[1];
 				}
 
-				if(position[2] < min[2])
+				if (position[2] < min[2])
 				{
 					min[2] = position[2];
 				}
 
-				if(position[2] > max[2])
+				if (position[2] > max[2])
 				{
 					max[2] = position[2];
 				}

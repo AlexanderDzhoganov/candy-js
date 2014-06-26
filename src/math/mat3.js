@@ -484,6 +484,6 @@ mat3.frob = function (a) {
 };
 
 
-if(typeof(exports) !== 'undefined') {
+if (typeof(exports) !== 'undefined') {
     exports.mat3 = mat3;
 }

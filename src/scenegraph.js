@@ -22,7 +22,7 @@ SceneGraph.prototype.extend(
 		{
 			sceneNode._Render = function (parentModelMatrix)
 			{
-				if(!this.enabled)
+				if (!this.enabled)
 				{
 					return;
 				}
@@ -33,7 +33,7 @@ SceneGraph.prototype.extend(
 				mat4.multiply(modelMatrix, parentModelMatrix, modelMatrix);
 				
 				var rendererComponent = this.getComponent("renderer");
-				if(rendererComponent && rendererComponent.enabled)
+				if (rendererComponent && rendererComponent.enabled)
 				{
 					rendererComponent.onRender(modelMatrix);
 				}
@@ -46,19 +46,19 @@ SceneGraph.prototype.extend(
 
 			sceneNode._Update = function (deltaTime)
 			{
-				if(!this.enabled)
+				if (!this.enabled)
 				{
 					return;
 				}
 				
 				var scriptComponent = this.getComponent("script");
-				if(scriptComponent && scriptComponent.onUpdate && scriptComponent.enabled)
+				if (scriptComponent && scriptComponent.onUpdate && scriptComponent.enabled)
 				{
 					scriptComponent.onUpdate(deltaTime);
 				}
 
 				var animationComponent = this.getComponent("animationController");
-				if(animationComponent && animationComponent.onUpdate && animationComponent.enabled)
+				if (animationComponent && animationComponent.onUpdate && animationComponent.enabled)
 				{
 					animationComponent.onUpdate(deltaTime);
 				}
@@ -106,7 +106,7 @@ SceneGraph.prototype.extend(
 	{
 		for (var i = 0; i < this._SceneNodes.length; i++)
 		{
-			if(this._SceneNodes[i].enabled)
+			if (this._SceneNodes[i].enabled)
 			{
 				this._SceneNodes[i]._Update(deltaTime);
 			}

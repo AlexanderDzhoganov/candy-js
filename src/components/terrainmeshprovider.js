@@ -17,7 +17,7 @@ var TerrainMeshProvider = function (data, size_x, size_y)
 			var hU = data[x + (y + 1) * size_x] / 255.0;
 
 			var normal = vec3.create();
-			if(hL && hR && hD && hU)
+			if (hL && hR && hD && hU)
 			{
 				normal[0] = hL - hR;
 				normal[1] = hD - hU;

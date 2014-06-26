@@ -2,7 +2,7 @@ var Texture = function (name)
 {
 	var image = ResourceLoader.getContent(name);
 
-	if(!image)
+	if (!image)
 	{
 		console.error("No resource found with the name '" + name + "'");
 		return;

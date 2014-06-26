@@ -11,7 +11,7 @@ AABB.extend(
 	
 	fromVertices: function (vertices, stride)
 	{
-		if(stride == undefined)
+		if (stride == undefined)
 		{
 			stride = 3;
 		}
@@ -28,32 +28,32 @@ AABB.extend(
 				vertices[i * stride + 2]
 			);
 
-			if(position[0] < min[0])
+			if (position[0] < min[0])
 			{
 				min[0] = position[0];
 			}
 
-			if(position[0] > max[0])
+			if (position[0] > max[0])
 			{
 				max[0] = position[0];
 			}
 
-			if(position[1] < min[1])
+			if (position[1] < min[1])
 			{
 				min[1] = position[1];
 			}
 
-			if(position[1] > max[1])
+			if (position[1] > max[1])
 			{
 				max[1] = position[1];
 			}
 
-			if(position[2] < min[2])
+			if (position[2] < min[2])
 			{
 				min[2] = position[2];
 			}
 
-			if(position[2] > max[2])
+			if (position[2] > max[2])
 			{
 				max[2] = position[2];
 			}

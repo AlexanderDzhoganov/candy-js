@@ -87,21 +87,21 @@ InputController.prototype.extend(
 {
 	add: function (key, mode, listenerFunc)
 	{
-		if(!key)
+		if (!key)
 		{
 			console.error("Invalid key");
 			return;
 		}
 
-		if(typeof listenerFunc != "function")
+		if (typeof listenerFunc != "function")
 		{
 			console.error("Listener is not a function");
 			return;
 		}
 
-		if(mode === "keydown" || mode === "keyup")
+		if (mode === "keydown" || mode === "keyup")
 		{
-			if(!this.listeners[mode][key])
+			if (!this.listeners[mode][key])
 			{
 				this.listeners[mode][key] = [listenerFunc];
 			}
@@ -177,7 +177,7 @@ InputController.prototype.extend(
 
 		if (mode === "keydown" || mode === "keyup")
 		{
-			if(!this.listenersOnce[mode][key])
+			if (!this.listenersOnce[mode][key])
 			{
 				this.listenersOnce[mode][key] = [listenerFunc];
 			}
@@ -335,11 +335,11 @@ InputController.prototype.extend(
 			this.listenersOnce[e.type][keyCode] = [];
 		}
 
-		if(e.type == "keyup")
+		if (e.type == "keyup")
 		{
 			for(var i = 0; i < this.keyPressStack.length; i++)
 			{
-				if(this.keyPressStack[i] == keyCode)
+				if (this.keyPressStack[i] == keyCode)
 				{
 					this.keyPressStack.splice(i, 1);
 				}
