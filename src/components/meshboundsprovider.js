@@ -44,7 +44,7 @@ MeshBoundsProvider.prototype.extend(
 		{
 			var subMesh = meshProvider.submeshes[i];
 
-			if(subMesh.vertexFormat != 'PPPNNNTT')
+			if(subMesh.vertexFormat != Renderer.VERTEX_FORMAT.PPPNNNTT)
 			{
 				console.log("MeshBoundsProvider: invalid vertex format, only 'PPPNNNTT' supported");
 				return;
@@ -149,11 +149,6 @@ MeshBoundsProvider.prototype.extend(
 		this.vertexBuffer = GL.createBuffer();
 		this.indexBuffer = GL.createBuffer();
 
-		this._uploadVertexData();
-	},
-
-	_uploadVertexData: function ()
-	{
 		GL.bindBuffer(GL.ARRAY_BUFFER, this.vertexBuffer);
 		GL.bufferData(GL.ARRAY_BUFFER, this.vertices, GL.STATIC_DRAW);
 

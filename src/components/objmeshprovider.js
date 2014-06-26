@@ -36,8 +36,8 @@ var OBJMeshProvider = function (name, forceRecalculateNormals)
 			indices: indices,
 			vertexBuffer: GL.createBuffer(),
 			indexBuffer: GL.createBuffer(),
-			primitiveType: 'indexedTriangles',
-			vertexFormat: 'PPPNNNTT',
+			primitiveType: Renderer.PRIMITIVE_TYPE.INDEXED_TRIANGLES,
+			vertexFormat: Renderer.VERTEX_FORMAT.PPPNNNTT,
 		},
 	];
 	

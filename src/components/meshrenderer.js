@@ -129,11 +129,11 @@ MeshRenderer.prototype.extend(
 		GL.bindBuffer(GL.ARRAY_BUFFER, subMesh.vertexBuffer);
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, subMesh.indexBuffer);
 
-		if(subMesh.primitiveType == 'indexedTriangleStrip')
+		if(subMesh.primitiveType == Renderer.PRIMITIVE_TYPE.INDEXED_TRIANGLE_STRIP)
 		{
 			Renderer.drawIndexedTriangleStrip(subMesh.indices.length, subMesh.vertexFormat);
 		}
-		else if(subMesh.primitiveType == 'indexedTriangles')
+		else if(subMesh.primitiveType == Renderer.PRIMITIVE_TYPE.INDEXED_TRIANGLES)
 		{
 			Renderer.drawIndexedTriangles(subMesh.indices.length, subMesh.vertexFormat);	
 		}
@@ -156,11 +156,11 @@ MeshRenderer.prototype.extend(
 		var lineIndexBuffer = GL.createBuffer();
 
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, lineIndexBuffer);
-		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(lineIndices), GL.STREAM_DRAW);
+		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(lineIndices), GL.STATIC_DRAW);
 
 		GL.bindBuffer(GL.ARRAY_BUFFER, subMesh.vertexBuffer);
 
-		Renderer.drawIndexedLines(lineIndices.length, "PPPXXXXX");
+		Renderer.drawIndexedLines(lineIndices.length, Renderer.VERTEX_FORMAT.PPPXXXXX);
 	},
 
 	_drawBounds: function (worldModelMatrix)

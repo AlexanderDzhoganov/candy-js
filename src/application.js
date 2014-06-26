@@ -19,6 +19,10 @@ Application.prototype.extend(
 	{
 		this.sceneGraph = new SceneGraph();
 
+		var grid = new GameObject("Grid");
+		grid.addComponent(new GridRenderer());
+		this.sceneGraph.insert(grid);
+
 		var testMaterial = new Material("test material");
 		var testProgram = new Shader(ResourceLoader.getContent("show_normals_vertex"), ResourceLoader.getContent("show_normals_fragment"));
 
@@ -29,32 +33,39 @@ Application.prototype.extend(
 
 		var testObject = new GameObject("testMesh");
 		testObject.addComponent(new OBJMeshProvider("mesh", false));
-
 		testObject.addComponent(new MeshRenderer());
 		testObject.renderer.material = testMaterial;
 
-		testObject.transform.position = vec3.fromValues(0, 0, 0);
-
 		testObject.addComponent(new AnimationController());
+
 		var time = 0.0;
 		testObject.animationController.setAnimate(function (gameObject, deltaTime)
 		{
 			time += deltaTime * 4.0;
 
-			var orientationEuler = vec3.fromValues(0, time, 0);
 			var orientation = quat.create();
-			quat.rotateX(orientation, orientation, orientationEuler[0] * 0.0174532925);
-			quat.rotateY(orientation, orientation, orientationEuler[1] * 0.0174532925);
-			quat.rotateZ(orientation, orientation, orientationEuler[2] * 0.0174532925);
+			quat.rotateY(orientation, orientation, time * 0.0174532925);
 			quat.normalize(orientation, orientation);
-
 			gameObject.transform.orientation = orientation;
+			gameObject.transform.orientationEuler[1] = time * 0.0174532925;
 		});
 
 		this.sceneGraph.insert(testObject);
 
-		var player = this._createPlayer(vec3.fromValues(-0.15, -0.5, -6.5));
+		var player = this._createPlayer(vec3.fromValues(-0.15, -1.5, -6.5));
 		var editor = new GameObjectEditor(testObject);
+
+		var frameStatsWindow = this._createWindow("Frame stats", vec2.fromValues(0, 0), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
+		frameStatsWindow.autoSize = true;
+		frameStatsWindow.resizable = false;
+
+		frameStatsWindow.drawSelf = function (gui)
+		{
+			gui.label("tris: " + Renderer.frameStats.numberOfTrianglesDrawn);
+			gui.label("lines: " + Renderer.frameStats.numberOfLinesDrawn);
+		};
+
+		frameStatsWindow.show();
 
 		//Gui.debugLayout = true;
 
@@ -204,8 +215,8 @@ Application.prototype.extend(
 		testWindow.show();
 
 		Gui.bringToFront(testTextBoxWindow);
-*/
-		var terrainGameObject = this._createTerrain();
+
+		var terrainGameObject = this._createTerrain();*/
 	},
 
 	update: function(deltaTime)
@@ -258,6 +269,7 @@ Application.prototype.extend(
 
 		return newWindow;
 	},
+
 	_createPlayer: function(position)
 	{
 		var newPlayer = new GameObject("FPS Controller");

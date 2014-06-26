@@ -87,8 +87,8 @@ var TerrainMeshProvider = function (data, size_x, size_y)
 			indices: indices,
 			vertexBuffer: GL.createBuffer(),
 			indexBuffer: GL.createBuffer(),
-			primitiveType: 'indexedTriangleStrip',
-			vertexFormat: 'PPPNNNTT',
+			primitiveType: Renderer.PRIMITIVE_TYPE.INDEXED_TRIANGLE_STRIP,
+			vertexFormat: Renderer.VERTEX_FORMAT.PPPNNNTT,
 		},
 	];
 

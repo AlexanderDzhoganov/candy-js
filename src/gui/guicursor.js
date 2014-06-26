@@ -88,7 +88,7 @@ GuiCursor.prototype.extend(
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 		GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
 
-		Renderer.drawTriangles(6, 'PPPTT');
+		Renderer.drawTriangles(6, Renderer.VERTEX_FORMAT.PPPTT);
 	},
 
 	getModelMatrix: function ()
