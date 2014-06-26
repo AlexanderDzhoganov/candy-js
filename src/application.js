@@ -54,8 +54,10 @@ Application.prototype.extend(
 			var dir = vec3.create();
 			vec3.subtract(dir, farPoint, nearPoint);
 			vec3.normalize(dir, dir);
+			console.log(dir);
 
 			var ray = new Ray(nearPoint, dir);
+			console.log(ray);
 			var result = this.sceneGraph.intersectRay(ray);
 			console.log(result);
 		}.bind(this));
