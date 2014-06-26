@@ -36,6 +36,11 @@ Application.prototype.extend(
 		testObject.addComponent(new MeshRenderer());
 		testObject.renderer.material = testMaterial;
 
+		var Test = new UnitTest();
+		var Test1 = rayBBintersectTest();
+		Test.addTest(Test1);
+		Test.runTests();
+
 		testObject.addComponent(new AnimationController());
 
 		var time = 0.0;

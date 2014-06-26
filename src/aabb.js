@@ -109,7 +109,53 @@ AABB.prototype.extend(
 
 	intersectRay: function (ray)
 	{
+		//acquire bbox min and max bounds
+		var vmin = vec3.create();
+		var vmax = vec3.create();
+		vec3.subtract(vmin, this.center, this.extents);
+		vec3.add(vmax, this.center, this.extents);
 
+		var T_nearDist = T_farDist = vec3.create();; // vectors to hold the T-values for every direction
+    	var t_near = Number.MIN_VALUE; // limits as defined; 
+    	var t_far = Number.MAX_VALUE;
+
+		for (var i = 0; i < 3; i++)
+		{ 
+		//we test slabs in every direction
+    	    if (ray.direction[i] == 0)
+        	{ // ray parallel to planes in this direction
+            	if ((ray.origin[i] < vmin[i]) || (ray.origin[i] > vmax[i]))
+            	{
+            	    return { hit:false, nearDistance: 0.0}; // parallel AND outside box : no intersection possible
+           	 	}
+        	}
+        	else 
+        	{ // ray not parallel to planes in this direction
+            	T_nearDist[i] = (vmin[i] - ray.origin[i]) / ray.direction[i];
+            	T_farDist[i] = (vmax[i] - ray.origin[i]) / ray.direction[i];
+
+  	          if(T_nearDist[i] > T_farDist[i])
+  	          {
+  	          	var temp = vec3.clone(T_farDist);
+                vec3.copy(T_farDist, T_nearDist);
+                vec3.copy(T_nearDist, temp);
+  	          } // we want T_nearDist to hold values for intersection with near plane
+            	if (T_nearDist[i] > t_near)
+            	{
+              		t_near = T_nearDist[i];
+           		}
+            	if (T_farDist[i] < t_far)
+            	{
+                	t_far = T_farDist[i];
+            	}
+            	if((t_near > t_far) || (t_far < 0) )
+            	{
+                	return {hit:false, nearDistance: 0.0};
+            	}
+       		 }
+   		}
+   		//debugger;
+		return {hit: true, nearDistance: vec3.length(T_nearDist)};
 	},
 
 	// expands the AABB to fit another AABB
