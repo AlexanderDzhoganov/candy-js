@@ -21,6 +21,8 @@ var Gui = function ()
 	this._controls = new GuiControl(this._input, this._context);
 
 	this._previousTime = 0.0;
+
+	this._mouseClickCallbacks = [];
 };
 
 Gui.extend(
@@ -86,6 +88,11 @@ Gui.prototype.extend(
 	getModelMatrix: function ()
 	{
 		return mat4.create();
+	},
+
+	addMouseClickCallback: function (callback)
+	{
+		this._mouseClickCallbacks.push(callback);
 	},
 
 	// private

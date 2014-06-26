@@ -6,7 +6,7 @@ var expect = function (real, expected)
 	}
 	else
 	{
-		console.log("Succes! - expected " + expected.toString() + " and got " + real.toString());
+		//console.log("Success! - expected " + expected.toString() + " and got " + real.toString());
 	}
 };
 

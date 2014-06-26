@@ -17,6 +17,12 @@ var GuiInput = function ()
 	{
 		this._mouseDown = true;
 		this._mouseUp = false;
+
+		for(var i = 0; i < Gui._mouseClickCallbacks.length; i++)
+		{
+			var callback = Gui._mouseClickCallbacks[i];
+			callback(this._cursor.position[0], this._cursor.position[1]);
+		}
 	}.bind(this);
 
 	document.onmouseup = function ()
@@ -25,39 +31,39 @@ var GuiInput = function ()
 		this._mouseUp = true;
 	}.bind(this);
 
-	InputController.add(InputController.keys.BACKSPACE, InputController.modes.DOWN, function(key)
+	InputController.add(InputController.keys.BACKSPACE, InputController.modes.DOWN, function (key)
 	{
 	 	this._injectBackspace();
 	}.bind(this));
 
-	InputController.add(InputController.keys.ENTER, InputController.modes.DOWN, function(key)
+	InputController.add(InputController.keys.ENTER, InputController.modes.DOWN, function (key)
 	{
 	 	this._injectEnter();
 	 	this._enterDown = true;
 	}.bind(this));
 
-	InputController.add(InputController.keys.LEFTARROW, InputController.modes.DOWN, function(key)
+	InputController.add(InputController.keys.LEFTARROW, InputController.modes.DOWN, function (key)
 	{
 	 	this._injectLeft();
 	}.bind(this));
 
-	InputController.add(InputController.keys.RIGHTARROW, InputController.modes.DOWN, function(key)
+	InputController.add(InputController.keys.RIGHTARROW, InputController.modes.DOWN, function (key)
 	{
 	 	this._injectRight();
 	}.bind(this));
 
-	InputController.add(InputController.keys.UPARROW, InputController.modes.DOWN, function(key)
+	InputController.add(InputController.keys.UPARROW, InputController.modes.DOWN, function (key)
 	{
 	 	this._injectUp();
 	}.bind(this));
 
-	InputController.add(InputController.keys.DOWNARROW, InputController.modes.DOWN, function(key)
+	InputController.add(InputController.keys.DOWNARROW, InputController.modes.DOWN, function (key)
 	{
 	 	this._injectDown();
 	}.bind(this));
 
-	InputController.addGlobal( InputController.modes.DOWN, function( key ) {
-
+	InputController.addGlobal(InputController.modes.DOWN, function (key)
+	{
 		this._injectChar(key);
 	}.bind(this));
 };
@@ -126,7 +132,7 @@ GuiInput.prototype.extend(
 		this._caretLineIndex = lineIndex;
 	},
 
-	setMultiline: function( multi ) {
+	setMultiline: function ( multi ) {
 		this._keyBufferMultiline = multi;
 	},
 
@@ -142,7 +148,7 @@ GuiInput.prototype.extend(
 			// lines[this._caretLineIndex] = line;
 
 			// this._keyBuffer = "";
-			// for(var i = 0; i < lines.length; i++)
+			// for (var i = 0; i < lines.length; i++)
 			// {
 			// 	this._keyBuffer += lines[i] + '\n';
 			// }
@@ -207,7 +213,7 @@ GuiInput.prototype.extend(
 			this._caretIndex = 0;
 
 			this._keyBuffer = "";
-			for(var i = 0; i < lines.length; i++)
+			for (var i = 0; i < lines.length; i++)
 			{
 				this._keyBuffer += lines[i] + '\n';
 			}
@@ -327,7 +333,7 @@ GuiInput.prototype.extend(
 			lines[this._caretLineIndex] = line;
 
 			this._keyBuffer = "";
-			for(var i = 0; i < lines.length; i++)
+			for (var i = 0; i < lines.length; i++)
 			{
 				this._keyBuffer += lines[i] + '\n';
 			}

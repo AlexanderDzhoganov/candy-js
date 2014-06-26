@@ -40,6 +40,12 @@ Application.prototype.extend(
 		unitTest.addTest(new AABBTests());
 		unitTest.runTests();
 
+		Gui.addMouseClickCallback(function (x, y)
+		{
+			var origin = Renderer._activeCamera.unproject(vec3.fromValues(0.0, 0.0, 0.0));
+			console.log("unprojected origin " + vec4.str(origin));	
+		});
+
 		testObject.addComponent(new AnimationController());
 
 		var time = 0.0;

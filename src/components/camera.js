@@ -48,6 +48,19 @@ Camera.prototype.extend(
 		return new Frustum(this.fov, this.width / this.height, this.near, this.far);
 	},
 
+	unproject: function (vertex)
+	{
+		var projection = this.getProjectionMatrix();
+		var view = this.getViewMatrix();
+		var inverseViewProjection = mat4.create();
+		mat4.multiply(inverseViewProjection, view, projection);
+		mat4.invert(inverseViewProjection, inverseViewProjection);
+
+		var result = vec4.fromValues(vertex[0], vertex[1], vertex[2], 1.0);
+		vec4.transformMat4(result, result, inverseViewProjection);
+		return result;
+	},
+
 	createConfigWindow: function ()
 	{
 		var wnd = new GuiWindow(vec2.fromValues(0.0, 0.0), vec2.fromValues(400.0, 0.0), new GuiLayout(), new GuiSkin());
