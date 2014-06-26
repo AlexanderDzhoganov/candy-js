@@ -3,20 +3,23 @@ var GridRenderer = function ()
 	this.name = "GridRenderer";
 	this.type = "renderer";
 
+	this.size = 4.0;
+	this.lineColor = vec3.fromValues(0.2, 0.2, 0.2);
+
 	var program = new Shader 
 	(
 		ResourceLoader.getContent("wireframe_vertex"),
 		ResourceLoader.getContent("wireframe_fragment")
 	);
 
-	this.material = new Material("GridMaterial");
-	this.material.program = program;
+	this._material = new Material("GridMaterial");
+	this._material.program = program;
 
-	this.vertices = [];
-	this.indices = [];
+	this._vertices = [];
+	this._indices = [];
 
-	this.vertexBuffer = GL.createBuffer();
-	this.indexBuffer = GL.createBuffer();
+	this._vertexBuffer = GL.createBuffer();
+	this._indexBuffer = GL.createBuffer();
 
 	this._setupMesh();
 };
@@ -33,14 +36,14 @@ GridRenderer.prototype.extend(
 
 	onRender: function (worldModelMatrix)
 	{
-		Shader.setActiveProgram(this.material.program);
-		Shader.setUniformVec3("wireframeColor", vec3.fromValues(0.2, 0.2, 0.2));
+		Shader.setActiveProgram(this._material.program);
+		Shader.setUniformVec3("wireframeColor", this.lineColor);
 		Shader.setUniformMat4("model", worldModelMatrix);
 
-		GL.bindBuffer(GL.ARRAY_BUFFER, this.vertexBuffer);
-		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+		GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
+		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 
-		Renderer.drawIndexedLines(this.indices.length, Renderer.VERTEX_FORMAT.PPP);
+		Renderer.drawIndexedLines(this._indices.length, Renderer.VERTEX_FORMAT.PPP);
 	},
 
 	_setupMesh: function ()
@@ -71,7 +74,7 @@ GridRenderer.prototype.extend(
 		var zStart = -100.0;
 		var zEnd = 100.0;
 
-		var step = 8.0;
+		var step = this.size;
 
 		for(var x = xStart; x <= xEnd; x += step)
 		{
@@ -83,14 +86,14 @@ GridRenderer.prototype.extend(
 			pushLine(xStart, y, z, xEnd, y, z);
 		}
 
-		this.vertices = new Float32Array(vertices);
-		this.indices = new Uint16Array(indices);
+		this._vertices = new Float32Array(vertices);
+		this._indices = new Uint16Array(indices);
 
-		GL.bindBuffer(GL.ARRAY_BUFFER, this.vertexBuffer);
-		GL.bufferData(GL.ARRAY_BUFFER, this.vertices, GL.STATIC_DRAW);
+		GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
+		GL.bufferData(GL.ARRAY_BUFFER, this._vertices, GL.STATIC_DRAW);
 
-		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, this.indices, GL.STATIC_DRAW);
+		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
+		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, this._indices, GL.STATIC_DRAW);
 	},
 
 });
