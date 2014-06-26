@@ -42,8 +42,14 @@ Application.prototype.extend(
 
 		Gui.addMouseClickCallback(function (x, y)
 		{
-			var origin = Renderer._activeCamera.unproject(vec3.fromValues(0.0, 0.0, 0.0));
-			console.log("unprojected origin " + vec4.str(origin));	
+			var origin = Renderer._activeCamera.gameObject.transform.position;
+			var farPoint = Renderer._activeCamera.unproject(vec3.fromValues(0.0, 0.0, 1.0));
+
+			var dir = vec3.create();
+			vec3.subtract(dir, farPoint, origin);
+			vec3.normalize(dir, dir);
+
+			console.log("direction " + vec3.str(dir));	
 		});
 
 		testObject.addComponent(new AnimationController());
