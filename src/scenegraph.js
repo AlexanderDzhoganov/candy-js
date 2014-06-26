@@ -1,4 +1,4 @@
-var SceneGraph = function()
+var SceneGraph = function ()
 {
 	this._SceneNodes = [];
 };
@@ -63,7 +63,7 @@ SceneGraph.prototype.extend(
 					animationComponent.onUpdate(deltaTime);
 				}
 
-				for(var i = 0; i < this._ChildNodes.length; i++)
+				for (var i = 0; i < this._ChildNodes.length; i++)
 				{
 					this._ChildNodes._Update(deltaTime);
 				}
@@ -111,6 +111,60 @@ SceneGraph.prototype.extend(
 				this._SceneNodes[i]._Update(deltaTime);
 			}
 		}
+	},
+
+	intersectRay: function (ray)
+	{
+		var recursiveIntersect = function (gameObject, ray, parentModelMatrix)
+		{
+			if(!parentModelMatrix)
+			{
+				parentModelMatrix = mat4.create();
+			}
+
+			var model = gameObject.transform.getModelMatrix();
+			mat4.multiply(model, parentModelMatrix, model);
+
+			var boundsProvider = gameObject.boundsProvider;
+			if(boundsProvider)
+			{
+				var aabb = boundsProvider.aabb.transform(model);
+				var result = aabb.intersectRay(ray);
+				if(result.hit)
+				{
+					return gameObject;
+				}
+			}
+
+			var children = gameObject.getChildren();
+			for(var i = 0; i < children.length; i++)
+			{
+				var hit = recursiveIntersect(children[i], ray, model);
+				if(hit)
+				{
+					return hit;
+				}
+			}
+
+			return null;
+		};
+
+		for (var i = 0; i < this._SceneNodes.length; i++)
+		{
+			if (!this._SceneNodes[i].enabled)
+			{
+				continue;
+			}
+
+			var gameObject = this._SceneNodes[i];
+			var hit = recursiveIntersect(gameObject, ray);
+			if(hit)
+			{
+				return hit;
+			}
+		}
+
+		return null;
 	},
 
 });

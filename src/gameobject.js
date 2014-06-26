@@ -43,6 +43,12 @@ GameObject.prototype.extend(
 	removeComponent: function (componentType)
 	{
 		var component = this._components[componentType];
+
+		if (component.dispose)
+		{
+			component.dispose();
+		}
+
 		this._components[componentType] = null;
 		this[componentType] = null;
 		component.gameObject = null;

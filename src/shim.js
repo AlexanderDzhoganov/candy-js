@@ -40,7 +40,7 @@ var PointRectTest = function (point, position, size)
     }
 }*/
 
-var QuatToEuler = function(q)
+var QuatToEuler = function (q)
 {
 	var w2 = q[3] * q[3];
 	var x2 = q[0] * q[0];
@@ -95,12 +95,12 @@ var Clamp = function (x, min, max)
 	return x;
 }
 
-var ptsToPixels = function( pts ) {
+var ptsToPixels = function ( pts ) {
 	return pts * 1.333333;
 }
 
 // Automatic eXtend of object and override of existing ones
-Object.extend = Object.prototype.extend = function(destination, props) 
+Object.extend = Object.prototype.extend = function (destination, props) 
 {
 	if (props === undefined) 
 	{
@@ -112,50 +112,63 @@ Object.extend = Object.prototype.extend = function(destination, props)
 	{
 		if (props.hasOwnProperty(prop)) 
 	{
-			destination[ prop ] = props[ prop ];
+			destination[prop] = props[prop];
 		}
 	}
 
 	return destination;
 };
 
-Object.prototype.size = function() {
-    var obj = this,
-		size = 0, 
-    	key;
-    for (key in obj) {
-        if (obj.hasOwnProperty(key)) size++;
+Object.prototype.size = function ()
+{
+    var obj = this;
+	var size = 0;
+	var	key;
+    for (key in obj)
+    {
+        if (obj.hasOwnProperty(key))
+        {
+        	size++;
+        }
     }
 
     return size;
 };
 
-Object.prototype.forEach = function( func ) {
-	var obj = this,
-		key;
+Object.prototype.forEach = function (func)
+{
+	var obj = this;
+	var key;
 
-	for( key in obj ) {
-		if (obj.hasOwnProperty(key)) {
-			func.call( null, key, obj[key] );
+	for (key in obj)
+	{
+		if (obj.hasOwnProperty(key))
+		{
+			func.call(null, key, obj[key]);
 		}
 	}
 };
 
-Object.prototype.first = function() {
+Object.prototype.first = function ()
+{
 	var obj = this;
 
-	for( key in obj ) {
-		if (obj.hasOwnProperty(key)) {
+	for (key in obj)
+	{
+		if (obj.hasOwnProperty(key))
+		{
 			return obj[key];
 		}
 	}
 };
 
- if (typeof String.prototype.startsWith !== 'function') {
-    String.prototype.startsWith = function (str) {
-      return this.slice(0, str.length) === str;
-    };
-  }
+if (typeof String.prototype.startsWith !== 'function')
+{
+	String.prototype.startsWith = function (str)
+	{
+	  return this.slice(0, str.length) === str;
+	};
+}
   
 window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
 
