@@ -1,7 +1,5 @@
 var GuiCursor = function (resourceName)
 {
-	this.renderingLayer = RENDERING_LAYER.GUI;
-	this.zOrder = 255;
 	this.position = vec2.fromValues(0.0, 0.0);
 	this.delta = vec2.fromValues(0.0, 0.0);
 

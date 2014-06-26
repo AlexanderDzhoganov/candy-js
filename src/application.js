@@ -20,7 +20,7 @@ Application.prototype.extend(
 		this.sceneGraph = new SceneGraph();
 
 		var grid = new GameObject("Grid");
-		grid.addComponent(new GridRenderer());
+		grid.addComponent(new GridRenderer(-100.0, -100.0, 100.0, 100.0));
 		this.sceneGraph.insert(grid);
 
 		var testMaterial = new Material("test material");
@@ -47,7 +47,12 @@ Application.prototype.extend(
 			quat.rotateY(orientation, orientation, time * 0.0174532925);
 			quat.normalize(orientation, orientation);
 			gameObject.transform.orientation = orientation;
-			gameObject.transform.orientationEuler[1] = time * 0.0174532925;
+			gameObject.transform.orientationEuler[1] = time;
+
+			while(gameObject.transform.orientationEuler[1] >= 360.0)
+			{
+				gameObject.transform.orientationEuler[1] -= 360.0;
+			}
 		});
 
 		this.sceneGraph.insert(testObject);

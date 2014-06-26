@@ -93,7 +93,6 @@ var TerrainMeshProvider = function (data, size_x, size_y)
 	];
 
 	this._uploadVertexData();
-	this.renderingLayer = RENDERING_LAYER.PERSPECTIVE;
 };
 
 TerrainMeshProvider.prototype = new Component();

@@ -1,10 +1,19 @@
-var GridRenderer = function ()
+var GridRenderer = function (x0, z0, x1, z1)
 {
+	// public
+
 	this.name = "GridRenderer";
 	this.type = "renderer";
 
+	this.x0 = x0;
+	this.x1 = x1;
+	this.z0 = z0;
+	this.z1 = z1;
+
 	this.size = 4.0;
 	this.lineColor = vec3.fromValues(0.2, 0.2, 0.2);
+
+	// private
 
 	var program = new Shader 
 	(
@@ -34,6 +43,8 @@ GridRenderer.extend(
 GridRenderer.prototype.extend(
 {
 
+	// public
+
 	onRender: function (worldModelMatrix)
 	{
 		Shader.setActiveProgram(this._material.program);
@@ -45,6 +56,8 @@ GridRenderer.prototype.extend(
 
 		Renderer.drawIndexedLines(this._indices.length, Renderer.VERTEX_FORMAT.PPP);
 	},
+
+	// private
 
 	_setupMesh: function ()
 	{
@@ -67,12 +80,13 @@ GridRenderer.prototype.extend(
 			indices.push(idx++);
 		}.bind(this);
 
-		var xStart = -100.0;
-		var xEnd = 100.0;
+		var xStart = this.x0;
+		var xEnd = this.x1;
 
 		var y = 0.0;
-		var zStart = -100.0;
-		var zEnd = 100.0;
+
+		var zStart = this.z0;
+		var zEnd = this.z1;
 
 		var step = this.size;
 

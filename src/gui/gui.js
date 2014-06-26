@@ -3,7 +3,6 @@ var Gui = function ()
 	// public
 
 	this.debugLayout = false;
-	this.renderingLayer = RENDERING_LAYER.GUI;
 	this.zOrder = 1;
 
 	// private

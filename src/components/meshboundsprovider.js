@@ -1,7 +1,10 @@
 var MeshBoundsProvider = function ()
 {
+	// public
+
 	this.name = "MeshBoundsProvider";
 	this.type = "meshBoundsProvider";
+
 	this.aabb = new AABB();
 	this.boundingSphereRadius = 0.0;
 };
@@ -15,6 +18,8 @@ MeshBoundsProvider.extend(
 
 MeshBoundsProvider.prototype.extend(
 {
+
+	// public
 
 	dispose: function ()
 	{

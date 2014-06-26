@@ -42,7 +42,6 @@ var OBJMeshProvider = function (name, forceRecalculateNormals)
 	];
 	
 	this._uploadVertexData();
-	this.renderingLayer = RENDERING_LAYER.PERSPECTIVE;
 };
 
 OBJMeshProvider.prototype = new Component();
