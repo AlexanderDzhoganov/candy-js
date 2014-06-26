@@ -224,12 +224,12 @@ Application.prototype.extend(
 		var terrainGameObject = this._createTerrain();*/
 	},
 
-	update: function(deltaTime)
+	update: function (deltaTime)
 	{
 		this.sceneGraph.update(deltaTime);
 	},
 
-	render: function()
+	render: function ()
 	{
 		this.sceneGraph.render();
 		Gui.renderSelf();
@@ -287,7 +287,7 @@ Application.prototype.extend(
 		return newPlayer
 	},
 
-	_createTerrain:  function()
+	_createTerrain:  function ()
 	{
 		// initialize terrain
 		var heightmap = ResourceLoader.getContent("heightmap");
