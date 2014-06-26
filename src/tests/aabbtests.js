@@ -1,6 +1,5 @@
 var AABBTests = function ()
 {
-
 	var test1 = function()
 	{
 		var aabb = new AABB();
@@ -60,12 +59,26 @@ var AABBTests = function ()
 		aabb.center[2] = 0.0;
 	};
 
+	var test5 = function()
+	{
+		var aabb = new AABB();
+		aabb.center = vec3.fromValues(0, 0, 0);
+		aabb.extents = vec3.fromValues(1, 1, 1);
+		var dir = vec3.fromValues(-2, -2, -2)
+		vec3.normalize(dir, dir);
+		var ray = new Ray(vec3.fromValues(2, 2, 2), dir);
+		
+		var result = aabb.intersectRay(ray);
+		expect (result.hit, true);
+	};
+
 	this.run = function ()
 	{
 		test1();
 		test2();
 		test3();
 		test4();
+		test5();
 	};
 
 }
