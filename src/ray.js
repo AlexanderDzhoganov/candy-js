@@ -1,7 +1,7 @@
-var Ray = function ()
+var Ray = function (origin, direction)
 {
-	this.origin = vec3.create();
-	this.direction = vec3.create();
+	this.origin = origin;
+	this.direction = direction;
 };
 
 Ray.extend(
@@ -11,5 +11,10 @@ Ray.extend(
 
 Ray.prototype.extend(
 {
+
+	transform: function (matrix)
+	{
+		return new Ray();
+	}
 
 });
