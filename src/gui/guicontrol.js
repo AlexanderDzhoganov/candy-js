@@ -177,7 +177,7 @@ GuiControl.prototype.extend(
 				controlsCount++;
 				return selectedIndex;
 			}.bind(this),
-			dropdownmenu: function( label, items, parentWindows, _args ) 
+			dropdownmenu: function ( label, items, parentWindows, _args ) 
 			{
 				var controlSize = GuiRenderer.calculateDropDownMenu(this._context, label);
 
@@ -440,7 +440,7 @@ GuiControl.prototype.extend(
 				return selectedIndex;
 			}.bind(this),
 
-			dropdownmenu: function(label, items, parentWindows)
+			dropdownmenu: function (label, items, parentWindows)
 			{
 				var control = this._beginControl(wnd);
 
@@ -455,7 +455,7 @@ GuiControl.prototype.extend(
 				{
 					var popupPosition;
 
-					if ( !parentWindows )
+					if (!parentWindows)
 					{
 						popupPosition = vec2.fromValues(control.rect.position[0] + control.rect.size[0], control.rect.position[1]);
 					} 
@@ -466,8 +466,10 @@ GuiControl.prototype.extend(
 
 					var itemLength = 0;
 
-					items.forEach(function( key, val ) {
-						if ( key.length > itemLength ) {
+					items.forEach(function (key, val)
+					{
+						if (key.length > itemLength)
+						{
 							itemLength = key.length;
 						}
 					}.bind(this));
@@ -494,13 +496,18 @@ GuiControl.prototype.extend(
 
 					dropDownWindow.drawSelf = function (gui)
 					{
-						items.forEach(function( key, val ) {
-							if ( typeof val === "object" && val !== null ) {
+						items.forEach(function (key, val)
+						{
+							if (typeof val === "object" && val !== null)
+							{
 								gui.dropdownmenu(key, val, parentWindows, {"width": itemWidth});
-							} else if ( typeof val === "function" ) {
+							}
+							else if(typeof val === "function")
+							{
 								if (gui.button(key, {"width": itemWidth}))
 								{
-									for( var i = parentWindows.length - 1; i >= 0 ; i-- ) {
+									for (var i = parentWindows.length - 1; i >= 0; i--)
+									{
 										parentWindows[i].close();
 									}
 
@@ -510,7 +517,7 @@ GuiControl.prototype.extend(
 						}.bind(this));
 					}.bind(this);
 
-					if ( !parentWindows )
+					if (!parentWindows)
 					{
 						parentWindows = [];
 					}
@@ -521,13 +528,14 @@ GuiControl.prototype.extend(
 
 					var closeTimeout = null;
 
-					dropDownWindow.onDeactivate = function() {
-						// closeTimeout = setTimeout(function() {
+					dropDownWindow.onDeactivate = function ()
+					{
+						// closeTimeout = setTimeout(function () {
 							console.log(inStack, parentWindows.length);
 
-							if ( inStack === parentWindows.length )
+							if (inStack === parentWindows.length)
 							{
-								for(var i = 0; i < parentWindows.length; i++)
+								for (var i = 0; i < parentWindows.length; i++)
 								{
 									//parentWindows[i].close();
 								}
@@ -535,12 +543,15 @@ GuiControl.prototype.extend(
 						// }, 1000);
 					}.bind(this);
 
-					dropDownWindow.activate = function() {
-						if ( closeTimeout ) {
+					dropDownWindow.activate = function ()
+					{
+						if (closeTimeout)
+						{
 							clearTimeout(closeTimeout);
 						}
 
-						if ( control.activeWindow != inStack ) {
+						if (control.activeWindow != inStack)
+						{
 							control.activeWindow = inStack;
 							console.log(control.activeWindow);	
 						}
@@ -560,7 +571,7 @@ GuiControl.prototype.extend(
 
 	_drawControls: function (wnd, deltaTime)
 	{
-		for(var i = 0; i < this.controlList.length; i++)
+		for (var i = 0; i < this.controlList.length; i++)
 		{
 			var type = this.controlList[i][0];
 			var control = this.controlList[i][1];
