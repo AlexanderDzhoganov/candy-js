@@ -42,15 +42,20 @@ Application.prototype.extend(
 
 		Gui.addMouseClickCallback(function (x, y)
 		{
+			var xNDC = -1.0 + (x / Renderer.screenWidth) * 2.0;
+			var yNDC = -1.0 + (y / Renderer.screenHeight) * 2.0;
+
 			var origin = Renderer._activeCamera.gameObject.transform.position;
-			var farPoint = Renderer._activeCamera.unproject(vec3.fromValues(0.0, 0.0, 1.0));
+			var farPoint = Renderer._activeCamera.unproject(vec3.fromValues(xNDC, yNDC, 1.0));
 
 			var dir = vec3.create();
 			vec3.subtract(dir, farPoint, origin);
 			vec3.normalize(dir, dir);
 
-			console.log("direction " + vec3.str(dir));	
-		});
+			var ray = new Ray(origin, dir);
+			var result = this.sceneGraph.intersectRay(ray);
+			console.log(result);
+		}.bind(this));
 
 		testObject.addComponent(new AnimationController());
 
