@@ -2,11 +2,11 @@ var expect = function (real, expected)
 {
 	if(real != expected)
 	{
-		console.log("failed - expected" + expected.toString() + "but got " + real.toString());
+		console.log("Failed! - expected " + expected.toString() + " but got " + real.toString());
 	}
 	else
 	{
-		console.log("Succes! - expected" + expected.toString() + "and got " + real.toString());
+		console.log("Succes! - expected " + expected.toString() + " and got " + real.toString());
 	}
 };
 
