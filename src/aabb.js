@@ -72,7 +72,7 @@ AABB.extend(
 		return aabb;
 	},
 
-	transform: function (matrix)
+	transform: function (aabb, matrix)
 	{
 		var vertices = [];
 
@@ -84,10 +84,10 @@ AABB.extend(
 		};
 
 		var topLeft = vec3.create();
-		vec3.subtract(topLeft, this.center, this.extents);
+		vec3.subtract(topLeft, aabb.center, aabb.extents);
 
 		var bottomRight = vec3.create();
-		vec3.add(bottomRight, this.center, this.extents);
+		vec3.add(bottomRight, aabb.center, aabb.extents);
 
 		pushVertex(topLeft[0], topLeft[1], topLeft[2]);
 		pushVertex(topLeft[0], bottomRight[1], topLeft[2]);

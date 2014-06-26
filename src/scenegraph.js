@@ -125,11 +125,17 @@ SceneGraph.prototype.extend(
 			var model = gameObject.transform.getModelMatrix();
 			mat4.multiply(model, parentModelMatrix, model);
 
-			var boundsProvider = gameObject.boundsProvider;
+			var boundsProvider = gameObject.meshBoundsProvider;
+
 			if(boundsProvider)
 			{
-				var aabb = boundsProvider.aabb.transform(model);
+				var aabb = AABB.transform(boundsProvider.aabb, model);
 				var result = aabb.intersectRay(ray);
+
+				console.log(aabb);
+				console.log(ray);
+				console.log(result);
+				
 				if(result.hit)
 				{
 					return gameObject;
