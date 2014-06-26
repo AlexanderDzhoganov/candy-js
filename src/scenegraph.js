@@ -132,10 +132,9 @@ SceneGraph.prototype.extend(
 				var aabb = AABB.transform(boundsProvider.aabb, model);
 				var result = aabb.intersectRay(ray);
 
-				console.log(aabb);
-				console.log(ray);
-				console.log(result);
-				
+				console.log(vec3.str(ray.origin));
+				console.log(vec3.str(ray.direction));
+
 				if(result.hit)
 				{
 					return gameObject;

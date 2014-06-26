@@ -52,12 +52,23 @@ Camera.prototype.extend(
 	{
 		var projection = this.getProjectionMatrix();
 		var view = this.getViewMatrix();
+		var viewProjection = mat4.create();
+		mat4.multiply(viewProjection, view, projection);
 		var inverseViewProjection = mat4.create();
-		mat4.multiply(inverseViewProjection, projection, view);
-		mat4.invert(inverseViewProjection, inverseViewProjection);
 
-		var result = vec4.fromValues(vertex[0], vertex[1], vertex[2], 1.0);
-		vec4.transformMat4(result, result, inverseViewProjection);
+		if(!mat4.invert(inverseViewProjection, viewProjection))
+		{
+			return null;
+		}
+
+		var input = vec4.fromValues(vertex[0], vertex[1], vertex[2], 1.0);
+		var result = vec4.create();
+		vec4.transformMat4(result, input, inverseViewProjection);
+
+		result[0] = result[0] / result[3];
+		result[1] = result[1] / result[3];
+		result[2] = result[2] / result[3];
+
 		return vec3.fromValues(result[0], result[1], result[2]);
 	},	
 
@@ -93,6 +104,7 @@ Camera.prototype.extend(
 
 		var translationMatrix = mat4.create();
 		mat4.translate(translationMatrix, translationMatrix, position);
+		mat4.invert(translationMatrix, translationMatrix);
 
 		var viewMatrix = mat4.create();
 		mat4.multiply(viewMatrix, rotationMatrix, translationMatrix);

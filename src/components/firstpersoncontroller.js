@@ -11,62 +11,62 @@ var FirstPersonController = function ()
 	this.moveSpeed = 5.0;
 	this._Movement = vec3.create();
 
-	InputController.add(InputController.keys.Q, InputController.modes.DOWN, function(key)
+	InputController.add(InputController.keys.Q, InputController.modes.DOWN, function (key)
 	{
 	 	this._Movement[1] = -1;
 	}.bind(this));
 
-	InputController.add(InputController.keys.Q, InputController.modes.UP, function(key)
+	InputController.add(InputController.keys.Q, InputController.modes.UP, function (key)
 	{
 	 	this._Movement[1] = 0;
 	}.bind(this));
 
-	InputController.add(InputController.keys.E, InputController.modes.DOWN, function(key)
+	InputController.add(InputController.keys.E, InputController.modes.DOWN, function (key)
 	{
 	 	this._Movement[1] = 1;
 	}.bind(this));
 
-	InputController.add(InputController.keys.E, InputController.modes.UP, function(key)
+	InputController.add(InputController.keys.E, InputController.modes.UP, function (key)
 	{
 	 	this._Movement[1] = 0;
 	}.bind(this));
 
-	InputController.add(InputController.keys.W, InputController.modes.DOWN, function(key)
-	{
-	 	this._Movement[2] = 1;
-	}.bind(this));
-
-	InputController.add(InputController.keys.W, InputController.modes.UP, function(key)
-	{
-	 	this._Movement[2] = 0;
-	}.bind(this));
-
-	InputController.add(InputController.keys.S, InputController.modes.DOWN, function(key)
+	InputController.add(InputController.keys.W, InputController.modes.DOWN, function (key)
 	{
 	 	this._Movement[2] = -1;
 	}.bind(this));
 
-	InputController.add(InputController.keys.S, InputController.modes.UP, function(key)
+	InputController.add(InputController.keys.W, InputController.modes.UP, function (key)
 	{
 	 	this._Movement[2] = 0;
 	}.bind(this));
 
-	InputController.add(InputController.keys.A, InputController.modes.DOWN, function(key)
+	InputController.add(InputController.keys.S, InputController.modes.DOWN, function (key)
 	{
-	 	this._Movement[0] = 1;
+	 	this._Movement[2] = 1;
 	}.bind(this));
 
-	InputController.add(InputController.keys.A, InputController.modes.UP, function(key)
+	InputController.add(InputController.keys.S, InputController.modes.UP, function (key)
 	{
-	 	this._Movement[0] = 0;
+	 	this._Movement[2] = 0;
 	}.bind(this));
 
-	InputController.add(InputController.keys.D, InputController.modes.DOWN, function(key)
+	InputController.add(InputController.keys.A, InputController.modes.DOWN, function (key)
 	{
 	 	this._Movement[0] = -1;
 	}.bind(this));
 
-	InputController.add(InputController.keys.D, InputController.modes.UP, function(key)
+	InputController.add(InputController.keys.A, InputController.modes.UP, function (key)
+	{
+	 	this._Movement[0] = 0;
+	}.bind(this));
+
+	InputController.add(InputController.keys.D, InputController.modes.DOWN, function (key)
+	{
+	 	this._Movement[0] = 1;
+	}.bind(this));
+
+	InputController.add(InputController.keys.D, InputController.modes.UP, function (key)
 	{
 	 	this._Movement[0] = 0;
 	}.bind(this));
@@ -91,7 +91,7 @@ FirstPersonController.prototype.extend(
 
 	//	document.body.onclick = document.body.requestPointerLock || document.body.mozRequestPointerLock || document.body.webkitRequestPointerLock;
 
-		document.onmousemove = function(e)
+		document.onmousemove = function (e)
 		{
 			var dx = e.movementX || e.mozMovementX || e.webkitMovementX || 0;
 			var dy = e.movementY || e.mozMovementY || e.webkitMovementY || 0;
@@ -128,7 +128,7 @@ FirstPersonController.prototype.extend(
 		config.title = "FirstPersonController";
 		config.autoSize = true;
 
-		config.onClose = function()
+		config.onClose = function ()
 		{
 			config.visible = false;
 			//this.Gui.detachWindow(testWindow);
