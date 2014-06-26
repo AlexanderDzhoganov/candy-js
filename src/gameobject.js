@@ -11,6 +11,7 @@ var GameObject = function (name)
 
 	};
 
+	this.transform = this.getComponent("transform");
 };
 
 GameObject.extend(
@@ -31,6 +32,7 @@ GameObject.prototype.extend(
 
 		component.gameObject = this;
 		this._components[component.type] = component;
+		this[component.type] = component;
 
 		if(component.onInit)
 		{
@@ -42,6 +44,7 @@ GameObject.prototype.extend(
 	{
 		var component = this._components[componentType];
 		this._components[componentType] = null;
+		this[componentType] = null;
 		component.gameObject = null;
 		return component;
 	},

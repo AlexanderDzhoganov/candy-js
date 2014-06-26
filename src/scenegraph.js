@@ -22,6 +22,11 @@ SceneGraph.prototype.extend(
 		{
 			sceneNode._Render = function (parentModelMatrix)
 			{
+				if(!this.enabled)
+				{
+					return;
+				}
+
 				var transformComponent = this.getComponent("transform");
 				var modelMatrix = transformComponent.getModelMatrix();
 
@@ -41,6 +46,11 @@ SceneGraph.prototype.extend(
 
 			sceneNode._Update = function (deltaTime)
 			{
+				if(!this.enabled)
+				{
+					return;
+				}
+				
 				var scriptComponent = this.getComponent("script");
 				if(scriptComponent && scriptComponent.onUpdate && scriptComponent.enabled)
 				{

@@ -31,15 +31,13 @@ Application.prototype.extend(
 		testObject.addComponent(new OBJMeshProvider("mesh", false));
 
 		testObject.addComponent(new MeshRenderer());
-		testObject.getComponent("renderer").material = testMaterial;
-		testObject.getComponent("renderer").drawBounds = true;
-		testObject.getComponent("renderer").wireframe = true;
+		testObject.renderer.material = testMaterial;
 
-		testObject.getComponent("transform").position = vec3.fromValues(0, 0, 0);
+		testObject.transform.position = vec3.fromValues(0, 0, 0);
 
 		testObject.addComponent(new AnimationController());
 		var time = 0.0;
-		testObject.getComponent("animationController").setAnimate(function (gameObject, deltaTime)
+		testObject.animationController.setAnimate(function (gameObject, deltaTime)
 		{
 			time += deltaTime * 4.0;
 
@@ -50,18 +48,17 @@ Application.prototype.extend(
 			quat.rotateZ(orientation, orientation, orientationEuler[2] * 0.0174532925);
 			quat.normalize(orientation, orientation);
 
-			gameObject.getComponent("transform").orientation = orientation;
+			gameObject.transform.orientation = orientation;
 		});
 
 		this.sceneGraph.insert(testObject);
-//		testObject.
 
 		var player = this._createPlayer(vec3.fromValues(-0.15, -0.5, -6.5));
 		var editor = new GameObjectEditor(testObject);
 
 		//Gui.debugLayout = true;
 
-		this._openResourceViewer();
+		/*this._openResourceViewer();
 
 		var testTextBoxWindow = this._createWindow("TextBox test", vec2.fromValues(0, 0), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
 
@@ -207,7 +204,7 @@ Application.prototype.extend(
 		testWindow.show();
 
 		Gui.bringToFront(testTextBoxWindow);
-
+*/
 		var terrainGameObject = this._createTerrain();
 	},
 

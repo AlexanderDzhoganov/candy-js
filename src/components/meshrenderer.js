@@ -86,6 +86,11 @@ MeshRenderer.prototype.extend(
 			gui.label("Wireframe");
 			this.wireframe = gui.checkbox(this.wireframe);
 			gui.endHorizontalGroup();
+
+			gui.beginHorizontalGroup();
+			gui.label("Draw bounding box");
+			this.drawBounds = gui.checkbox(this.drawBounds);
+			gui.endHorizontalGroup();
 		}.bind(this);
 
 		return wnd;
@@ -108,7 +113,7 @@ MeshRenderer.prototype.extend(
 
 			if(program[name] == undefined)
 			{
-				console.log("no uniform sampler2D for texture \"" + name + "\"");
+				//console.log("no uniform sampler2D for texture \"" + name + "\"");
 				continue;
 			}
 

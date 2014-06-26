@@ -20,7 +20,7 @@ var OBJMeshProvider = function (name, forceRecalculateNormals)
 
 	console.log
 	(
-		"OBJMeshProvider: obj parsed - " +
+		"OBJMeshProvider: \"" + name + "\" parsed - " +
 		objData.positions.length + " positions, " +
 		objData.normals.length + " normals, " +
 		objData.uvs.length + " uvs, " +
