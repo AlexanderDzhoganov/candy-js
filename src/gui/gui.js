@@ -165,22 +165,17 @@ Gui.prototype.extend(
 		var deltaTime = (time - this._previousTime) / 1000.0;
 		this._previousTime = time;
 
-		if(	this._activeWindow && 
-			this._activeWindow.activate && 
-			PointRectTest(this._input.getCursorPosition(), this._activeWindow.position, this._activeWindow.size))
-		{
-			this._activeWindow.activate();
-		}
-
-		if(	this._activeWindow && 
+		if(
+			this._activeWindow && 
 			this._activeWindow.onDeactivate && 
-			!PointRectTest(this._input.getCursorPosition(), this._activeWindow.position, this._activeWindow.size))
+			!this._activeWindow.resizing &&
+			!this._activeWindow.dragging && 
+			!PointRectTest(this._input.getCursorPosition(), this._activeWindow.position, this._activeWindow.size)
+		)
 		{
 			this._activeWindow.onDeactivate();
+			this._activeWindow = null;
 		}
-
-		this._activeWindow = null;
-		var windowActivated = false;
 
 		for (var i = 0; i < this._windows.length; i++)
 		{
@@ -190,27 +185,14 @@ Gui.prototype.extend(
 				continue;
 			}
 
-			if (wnd._dragging)
-			{
-				this._activeWindow = wnd;
-				break;
-			}
-
-			if(wnd._resizing)
-			{
-				this._activeWindow = wnd;
-				break;
-			}
-
 			if (PointRectTest(this._input.getCursorPosition(), wnd.position, wnd.size))
 			{
-				if(this._activeWindow != wnd && this._activeWindow && this._activeWindow.onDeactivate)
+				if(this._activeWindow && this._activeWindow.onDeactivate)
 				{
 					this._activeWindow.onDeactivate();
 				}
 
 				this._activeWindow = wnd;
-				windowActivated = true;
 
 				if(this._activeWindow.onActivate)
 				{
@@ -285,6 +267,11 @@ Gui.prototype.extend(
 		for (var i = 0; i < this._windows.length; i++)
 		{
 			var wnd = this._windows[i];
+
+			if(!wnd.beforeDockSize)
+			{
+				wnd.beforeDockSize = wnd.size;
+			}
 
 			if(wnd.dockTo)
 			{

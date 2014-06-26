@@ -305,7 +305,7 @@ var GuiRenderer =
 	// Checkbox
 	calculateCheckBoxSize: function (context, wnd)
 	{
-		return vec2.fromValues(16.0, 16.0);
+		return vec2.fromValues(12.0, 12.0);
 	},
 
 	drawCheckBox: function (context, wnd, checked, control)
@@ -321,7 +321,15 @@ var GuiRenderer =
 
 		if(checked)
 		{
-			this._drawRect(context, wnd.skin.checkbox.checkmark[state], { position: vec2.fromValues(rect.position[0] + 4.0, rect.position[1] + 4.0), size: vec2.fromValues(8.0, 8.0)});
+			this._drawRect
+			(
+				context,
+				wnd.skin.checkbox.checkmark[state],
+				{
+					position: vec2.fromValues(rect.position[0] + 2.0, rect.position[1] + 2.0),
+					size: vec2.fromValues(rect.size[0] - 4.0, rect.size[1] - 4.0)
+				}
+			);
 		}
 	},
 
