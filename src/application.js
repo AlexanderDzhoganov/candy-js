@@ -45,14 +45,17 @@ Application.prototype.extend(
 			var xNDC = -1.0 + (x / Renderer.screenWidth) * 2.0;
 			var yNDC = -1.0 + (y / Renderer.screenHeight) * 2.0;
 
-			var origin = Renderer._activeCamera.gameObject.transform.position;
-			var farPoint = Renderer._activeCamera.unproject(vec3.fromValues(xNDC, yNDC, 1.0));
+			var nearPoint = Renderer._activeCamera.unproject(vec3.fromValues(xNDC, yNDC, Renderer._activeCamera.near));
+			var farPoint = Renderer._activeCamera.unproject(vec3.fromValues(xNDC, yNDC, Renderer._activeCamera.far));
+
+			console.log("near " + vec3.str(nearPoint));
+			console.log("far " + vec3.str(farPoint));
 
 			var dir = vec3.create();
-			vec3.subtract(dir, farPoint, origin);
+			vec3.subtract(dir, farPoint, nearPoint);
 			vec3.normalize(dir, dir);
 
-			var ray = new Ray(origin, dir);
+			var ray = new Ray(nearPoint, dir);
 			var result = this.sceneGraph.intersectRay(ray);
 			console.log(result);
 		}.bind(this));
