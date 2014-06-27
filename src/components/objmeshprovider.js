@@ -7,33 +7,12 @@ include([], function ()
 		this.type = "meshProvider";
 
 		var objData = this._extractDataFromOBJ(ResourceLoader.getContent(name));
-		var uniqueVertices = this._calculateUniqueVertices
-		(
-			objData.positions,
-			objData.normals,
-			objData.uvs,
-			objData.materials.default.faces, 
-			forceRecalculateNormals
-		);
 
-		var result = this._prepareVerticesIndices(uniqueVertices, objData.materials.default.faces);
+		this.submeshes = [];
 
-		var vertices = new Float32Array(result.vertices);
-		var indices = new Uint16Array(result.indices);
-
-		console.log
-		(
-			"OBJMeshProvider: \"" + name + "\" parsed - " +
-			objData.positions.length + " positions, " +
-			objData.normals.length + " normals, " +
-			objData.uvs.length + " uvs, " +
-			objData.materials.default.faces.length + " faces, resulting in " +
-			(vertices.length / 8) + " unique vertices and " +
-			indices.length / 3 + " triangles"
-		);
-
-		this.submeshes =
-		[
+		var addSubmesh = function (vertices, indices)
+		{
+			this.submeshes.push(
 			{
 				vertices: vertices,
 				indices: indices,
@@ -41,8 +20,45 @@ include([], function ()
 				indexBuffer: GL.createBuffer(),
 				primitiveType: Renderer.PRIMITIVE_TYPE.INDEXED_TRIANGLES,
 				vertexFormat: Renderer.VERTEX_FORMAT.PPPNNNTT,
-			},
-		];
+			});
+		};
+
+		var materialsCount = 0;
+		var faceCount = 0;
+
+		objData.materials.forEach (function (name, material)
+		{
+			materialsCount++;
+			faceCount += objData.materials[name].faces.length;
+
+			var uniqueVertices = this._calculateUniqueVertices
+			(
+				objData.positions,
+				objData.normals,
+				objData.uvs,
+				objData.materials[name].faces, 
+				forceRecalculateNormals
+			);
+
+			var result = this._prepareVerticesIndices(uniqueVertices, objData.materials.default.faces);
+
+			var vertices = new Float32Array(result.vertices);
+			var indices = new Uint16Array(result.indices);
+
+			addSubmesh(vertices, indices);
+		}.bind(this));
+
+		console.log
+		(
+			"OBJMeshProvider: \"" + name + "\" parsed - " +
+			objData.positions.length + " positions, " +
+			objData.normals.length + " normals, " +
+			objData.uvs.length + " uvs, " +
+			materialsCount + " materials", +
+			faceCount + " faces, resulting in " +
+			(vertices.length / 8) + " unique vertices and " +
+			indices.length / 3 + " triangles"
+		);
 		
 		this._uploadVertexData();
 	};
