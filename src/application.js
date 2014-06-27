@@ -6,6 +6,7 @@ include(
 	"gameobject",
 	"tests/headers",
 	"components/headers",
+	"editor/headers",
 	"math/headers",
 	"gl/headers",
 	"gui/headers",
