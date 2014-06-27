@@ -17,12 +17,6 @@ var GuiInput = function ()
 	{
 		this._mouseDown = true;
 		this._mouseUp = false;
-
-		for(var i = 0; i < Gui._mouseClickCallbacks.length; i++)
-		{
-			var callback = Gui._mouseClickCallbacks[i];
-			callback(this._cursor.position[0], this._cursor.position[1]);
-		}
 	}.bind(this);
 
 	document.onmouseup = function ()

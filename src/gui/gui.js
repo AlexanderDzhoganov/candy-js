@@ -173,14 +173,28 @@ Gui.prototype.extend(
 
 		if (
 			this._activeWindow && 
-			this._activeWindow.onDeactivate && 
 			!this._activeWindow.resizing &&
 			!this._activeWindow.dragging && 
 			!PointRectTest(this._input.getCursorPosition(), this._activeWindow.position, this._activeWindow.size)
 		)
 		{
-			this._activeWindow.onDeactivate();
+			if(this._activeWindow.onDeactivate)
+			{
+				this._activeWindow.onDeactivate();
+			}
+
 			this._activeWindow = null;
+		}
+
+		if(this._input._mouseDown && this._activeWindow == null)
+		{
+			for(var i = 0; i < Gui._mouseClickCallbacks.length; i++)
+			{
+				var callback = Gui._mouseClickCallbacks[i];
+				callback(this._input._cursor.position[0], this._input._cursor.position[1]);
+			}
+
+			this._input._mouseDown = false;
 		}
 
 		for (var i = 0; i < this._windows.length; i++)

@@ -42,6 +42,8 @@ Application.prototype.extend(
 		unitTest.addTest(new AABBTests());
 		unitTest.runTests();*/
 
+		var gameObjectEditor = null;
+
 		Gui.addMouseClickCallback(function (x, y)
 		{
 			var cameraPosition = Renderer._activeCamera.gameObject.transform.position;
@@ -49,15 +51,31 @@ Application.prototype.extend(
 			var nearPoint = Renderer._activeCamera.unproject(vec3.fromValues(x, y, 0.0));
 			var farPoint = Renderer._activeCamera.unproject(vec3.fromValues(x, y, 1.0));
 
-			Renderer.debug.drawLine(nearPoint, farPoint);
-
 			var dir = vec3.create();
 			vec3.subtract(dir, farPoint, nearPoint);
 			vec3.normalize(dir, dir);
 
 			var ray = new Ray(nearPoint, dir);
 			var result = this.sceneGraph.intersectRay(ray);
-			console.log(result);
+				
+			if(result != null)
+			{
+				if(gameObjectEditor)
+				{
+					gameObjectEditor.dispose();
+					gameObjectEditor = null;
+				}
+
+				gameObjectEditor = new GameObjectEditor(result);
+			}
+			else
+			{
+				if(gameObjectEditor)
+				{
+					gameObjectEditor.dispose();
+					gameObjectEditor = null;
+				}
+			}
 		}.bind(this));
 
 		testObject.addComponent(new AnimationController());
@@ -82,7 +100,6 @@ Application.prototype.extend(
 		this.sceneGraph.insert(testObject);
 
 		var player = this._createPlayer(vec3.fromValues(0.0, 0.0, 0.0));
-		var editor = new GameObjectEditor(testObject);
 
 		var frameStatsWindow = this._createWindow("Frame stats", vec2.fromValues(0, 0), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
 		frameStatsWindow.autoSize = true;

@@ -2,6 +2,12 @@ var GameObjectEditor = function (gameObject)
 {
 	this._gameObject = gameObject;
 
+	var renderer = this._gameObject.getComponent("renderer");
+	if(renderer)
+	{
+		renderer.drawBounds = true;
+	}
+
 	var lastDockWindow = null;
 
 	this._window = new GuiWindow(vec2.fromValues(0.0, 0.0), vec2.fromValues(320.0, 0.0), new GuiLayout(), new GuiSkin());
@@ -43,4 +49,46 @@ var GameObjectEditor = function (gameObject)
 		}
 	}
 
+	this._window.onHide = function ()
+	{
+		for(var i = 0; i < this._componentsWindows.length; i++)
+		{
+			this._componentsWindows[i].hide();
+		}
+	}.bind(this);
+
+	this._window.onShow = function ()
+	{
+		for(var i = 0; i < this._componentsWindows.length; i++)
+		{
+			this._componentsWindows[i].show();
+		}
+	}.bind(this);
+
 };
+
+GameObjectEditor.extend(
+{
+	
+});
+
+GameObjectEditor.prototype.extend(
+{
+
+	dispose: function ()
+	{
+		this._window.close();
+
+		for(var i = 0; i < this._componentsWindows.length; i++)
+		{
+			this._componentsWindows[i].close();
+		}
+
+		var renderer = this._gameObject.getComponent("renderer");
+		if(renderer)
+		{
+			renderer.drawBounds = false;
+		}
+	},
+
+});

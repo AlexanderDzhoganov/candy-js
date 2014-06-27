@@ -28,6 +28,9 @@ var GuiWindow = function (position, size, layout, skin)
 
 	this.onActivate = null;
 	this.onDisactivate = null;
+
+	this.onShow = null;
+	this.onHide = null;
 	
 	// private
 
@@ -62,11 +65,21 @@ GuiWindow.prototype.extend(
 			Gui.attachWindow(this);
 			this._attached = true;
 		}
+
+		if(this.onShow)
+		{
+			this.onShow();
+		}
 	},
 
 	hide: function ()
 	{
 		this.visible = false;
+
+		if(this.onHide)
+		{
+			this.onHide();
+		}
 	},
 
 	close: function ()
