@@ -21,10 +21,12 @@ include([], function ()
 				primitiveType: Renderer.PRIMITIVE_TYPE.INDEXED_TRIANGLES,
 				vertexFormat: Renderer.VERTEX_FORMAT.PPPNNNTT,
 			});
-		};
+		}.bind(this);
 
 		var materialsCount = 0;
 		var faceCount = 0;
+		var verticesCount = 0;
+		var indicesCount = 0;
 
 		objData.materials.forEach (function (name, material)
 		{
@@ -42,6 +44,9 @@ include([], function ()
 
 			var result = this._prepareVerticesIndices(uniqueVertices, objData.materials.default.faces);
 
+			verticesCount += result.vertices.length / 8;
+			indicesCount += result.vertices.length / 3;
+
 			var vertices = new Float32Array(result.vertices);
 			var indices = new Uint16Array(result.indices);
 
@@ -56,8 +61,8 @@ include([], function ()
 			objData.uvs.length + " uvs, " +
 			materialsCount + " materials", +
 			faceCount + " faces, resulting in " +
-			(vertices.length / 8) + " unique vertices and " +
-			indices.length / 3 + " triangles"
+			verticesCount + " unique vertices and " +
+			indicesCount + " triangles"
 		);
 		
 		this._uploadVertexData();
