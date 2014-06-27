@@ -1,84 +1,97 @@
-# material_0
-newmtl material_0
-Kd 1.0000 1.0000 1.0000
-illum 0
-map_Kd material_0
-
-# material_1
-newmtl material_1
-Kd 1.0000 1.0000 1.0000
-illum 0
+newmtl de_dust2:material_0
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.40 0.40 0.40
+Tf 1.00 1.00 1.00
+Ni 1.00
+newmtl de_dust2:material_2
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.40 0.40 0.40
+Tf 1.00 1.00 1.00
 map_Kd de_dust2_material_1.jpg
-
-# material_2
-newmtl material_2
-Kd 1.0000 1.0000 1.0000
-illum 0
+Ni 1.00
+newmtl de_dust2:material_4
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.40 0.40 0.40
+Tf 1.00 1.00 1.00
 map_Kd de_dust2_material_2.jpg
-
-# material_3
-newmtl material_3
-Kd 1.0000 1.0000 1.0000
-illum 0
+Ni 1.00
+newmtl de_dust2:material_6
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.40 0.40 0.40
+Tf 1.00 1.00 1.00
 map_Kd de_dust2_material_3.jpg
-
-# material_4
-newmtl material_4
-Kd 1.0000 1.0000 1.0000
-illum 0
+Ni 1.00
+newmtl de_dust2:material_8
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.40 0.40 0.40
+Tf 1.00 1.00 1.00
 map_Kd de_dust2_material_4.jpg
-
-# material_5
-newmtl material_5
-Kd 1.0000 1.0000 1.0000
-illum 0
+Ni 1.00
+newmtl de_dust2:material_10
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.40 0.40 0.40
+Tf 1.00 1.00 1.00
 map_Kd de_dust2_material_5.jpg
-
-# material_6
-newmtl material_6
-Kd 1.0000 1.0000 1.0000
-illum 0
+Ni 1.00
+newmtl de_dust2:material_12
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.40 0.40 0.40
+Tf 1.00 1.00 1.00
 map_Kd de_dust2_material_6.jpg
-
-# material_7
-newmtl material_7
-Kd 1.0000 1.0000 1.0000
-illum 0
+Ni 1.00
+newmtl de_dust2:material_14
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.40 0.40 0.40
+Tf 1.00 1.00 1.00
 map_Kd de_dust2_material_7.jpg
-
-# material_8
-newmtl material_8
-Kd 1.0000 1.0000 1.0000
-illum 0
+Ni 1.00
+newmtl de_dust2:material_16
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.40 0.40 0.40
+Tf 1.00 1.00 1.00
 map_Kd de_dust2_material_8.jpg
-
-# material_9
-newmtl material_9
-Kd 1.0000 1.0000 1.0000
-illum 0
+Ni 1.00
+newmtl de_dust2:material_18
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.40 0.40 0.40
+Tf 1.00 1.00 1.00
 map_Kd de_dust2_material_9.jpg
-
-# material_10
-newmtl material_10
-Kd 1.0000 1.0000 1.0000
-illum 0
+Ni 1.00
+newmtl de_dust2:material_20
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.40 0.40 0.40
+Tf 1.00 1.00 1.00
 map_Kd de_dust2_material_10.jpg
-
-# material_11
-newmtl material_11
-Kd 1.0000 1.0000 1.0000
-illum 0
+Ni 1.00
+newmtl de_dust2:material_22
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.40 0.40 0.40
+Tf 1.00 1.00 1.00
 map_Kd de_dust2_material_11.jpg
-
-# material_12
-newmtl material_12
-Kd 1.0000 1.0000 1.0000
-illum 0
+Ni 1.00
+newmtl de_dust2:material_24
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.40 0.40 0.40
+Tf 1.00 1.00 1.00
 map_Kd de_dust2_material_12.jpg
-
-# material_13
-newmtl material_13
-Kd 1.0000 1.0000 1.0000
-illum 0
+Ni 1.00
+newmtl de_dust2:material_26
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.40 0.40 0.40
+Tf 1.00 1.00 1.00
 map_Kd de_dust2_material_13.jpg
-
+Ni 1.00
