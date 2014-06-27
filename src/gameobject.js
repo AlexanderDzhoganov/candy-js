@@ -1,3 +1,5 @@
+include( [ "editor/gameobject" ] );
+	
 var GameObject = function (name)
 {
 

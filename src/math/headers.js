@@ -1,5 +1,6 @@
 include(
 [
+
 	"math/common",
 	"math/mat2",
 	"math/mat2d",
@@ -9,6 +10,5 @@ include(
 	"math/vec3",
 	"math/vec4",
 	"math/quat",
-],
-
-function () {});
+	
+]);

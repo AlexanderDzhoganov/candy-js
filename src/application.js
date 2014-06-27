@@ -1,3 +1,5 @@
+include([ "ray", "scenegraph", "component", "gameobject", "tests/headers" ]);
+
 var Application = function()
 {
 	this.running = true;

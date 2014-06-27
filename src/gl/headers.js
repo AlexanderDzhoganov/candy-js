@@ -7,6 +7,4 @@ include(
 	"gl/renderer",
 	"gl/debugrenderer",
 
-],
-
-function () {});
+]);

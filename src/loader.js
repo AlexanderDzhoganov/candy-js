@@ -4,7 +4,10 @@ var include = function (scripts, onload)
 	{
 		if(scripts.length == 0)
 		{
-			onload();
+			if(onload)
+			{
+				onload();
+			}
 			return;
 		}
 
@@ -21,13 +24,11 @@ var include = function (scripts, onload)
 
 var Loader = function ()
 {
-
 	this.scriptsRoot = 'src/';
 
 	var pathConcat = function (pathA, pathB)
 	{
 		var sep = '';
-
 		if(pathA[pathA.length - 1] != '/')
 		{
 			sep = '/';

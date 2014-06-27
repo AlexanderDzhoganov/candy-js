@@ -1,3 +1,5 @@
+include ( [ "image" ]);
+
 var TerrainMeshProvider = function (data, size_x, size_y)
 {
 

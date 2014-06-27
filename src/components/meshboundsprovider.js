@@ -1,3 +1,5 @@
+include ( [ "aabb" ] );
+
 var MeshBoundsProvider = function ()
 {
 	// public

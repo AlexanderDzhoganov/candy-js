@@ -1,3 +1,8 @@
+include(
+[
+	"components/headers"
+]);
+
 var Component = function ()
 {
 	this.gameObject = null;

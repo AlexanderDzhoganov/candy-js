@@ -2,25 +2,17 @@ include(
 [
 
 	"shim",
-	"resourceloader",
-	"math/math",
-	"aabb",
-	"image",
+	"math/headers",
 	"gl/headers",
 	"gui/headers",
-	"scenegraph",
-	"component",
-	"components/headers",
-	"editor/gameobject",
-	"gameobject",
-	"ray",
-	"tests/headers",
 	"resourceloader",
 	"inputcontroller",
 	"application",
 
 ], function ()
 {
+
+	console.log("starting up");
 
 	ResourceLoader = new ResourceLoader(
 	{

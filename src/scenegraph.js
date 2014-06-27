@@ -1,3 +1,5 @@
+include ( [ "aabb" ] );
+
 var SceneGraph = function ()
 {
 	this._SceneNodes = [];
