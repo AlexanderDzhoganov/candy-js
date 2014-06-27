@@ -54,7 +54,7 @@ Application.prototype.extend(
 		testObject.addComponent(new MeshRenderer());
 		testObject.renderer.material = testMaterial;
 
-	testObject.transform.position = vec3.fromValues(0, 0, 0);
+		testObject.transform.position = vec3.fromValues(0, 0, 0);
 
 		/*var unitTest = new UnitTest();
 		unitTest.addTest(new AABBTests());
