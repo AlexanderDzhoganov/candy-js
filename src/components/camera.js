@@ -52,24 +52,28 @@ Camera.prototype.extend(
 	{
 		var projection = this.getProjectionMatrix();
 		var view = this.getViewMatrix();
-		var viewProjection = mat4.create();
-		mat4.multiply(viewProjection, view, projection);
-		var inverseViewProjection = mat4.create();
 
+		// inv(P * V)
+		var viewProjection = mat4.create();
+		mat4.multiply(viewProjection, projection, view);
+		var inverseViewProjection = mat4.create();
 		if(!mat4.invert(inverseViewProjection, viewProjection))
 		{
 			return null;
 		}
 
-		var input = vec4.fromValues(vertex[0], vertex[1], vertex[2], 1.0);
+		var tmp = vec4.fromValues(vertex[0], vertex[1], vertex[2], 1.0);
+		tmp[0] = (tmp[0] / this.width) * 2.0 - 1.0;
+		tmp[1] = (tmp[1] / this.height) * 2.0 - 1.0;
+		tmp[2] = tmp[2] * 2.0 - 1.0;
+
 		var result = vec4.create();
-		vec4.transformMat4(result, input, inverseViewProjection);
+		vec4.transformMat4(result, tmp, inverseViewProjection);
+		result[0] /= result[3];
+		result[1] /= result[3];
+		result[2] /= result[3];
 
-		result[0] = result[0] / result[3];
-		result[1] = result[1] / result[3];
-		result[2] = result[2] / result[3];
-
-		return vec3.fromValues(result[0], result[1], result[2]);
+		return result;
 	},	
 
 	createConfigWindow: function ()

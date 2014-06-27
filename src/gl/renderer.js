@@ -13,6 +13,8 @@ var Renderer = function ()
 	this._Canvas = document.getElementById("gl-canvas");
 	GL = this._Canvas.getContext("experimental-webgl");
 
+	this.debug = new DebugRenderer();
+
 	this.screenWidth = window.innerWidth;
 	this.screenHeight = window.innerHeight;
 
