@@ -1,0 +1,4 @@
+GridRenderer.prototype.extend(
+{
+
+});

@@ -1,4 +1,4 @@
-include ([ "image" ]);
+include ([ "image", "editor/components/terrainmeshprovider" ]);
 
 var TerrainMeshProvider = function (data, size_x, size_y)
 {

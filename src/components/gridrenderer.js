@@ -1,3 +1,5 @@
+include([ "editor/components/gridrenderer" ]);
+
 var GridRenderer = function (x0, z0, x1, z1)
 {
 	// public

@@ -1,3 +1,5 @@
+include([ "editor/components/transform" ]);
+
 var Transform = function ()
 {
 

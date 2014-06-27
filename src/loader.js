@@ -47,13 +47,18 @@ var Loader = function ()
 
 		var fullPath = pathConcat(this.scriptsRoot, path + ".js");
 
-		console.log("including " + fullPath);
-
 		var script = document.createElement('script');
 		script.type = 'text/javascript';
 		script.src = fullPath;
 		script.onload = function ()
 		{
+			console.log("included " + fullPath);
+			onload();
+		}.bind(this);
+
+		script.onerror = function ()
+		{
+			console.log("failed to load" + fullPath);
 			onload();
 		}.bind(this);
 

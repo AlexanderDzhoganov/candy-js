@@ -1,3 +1,5 @@
+include([ "editor/components/animationcontroller" ]);
+
 var AnimationController = function ()
 {
 	this.name = "AnimationController";

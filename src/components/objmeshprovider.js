@@ -1,3 +1,5 @@
+include([ "editor/components/objmeshprovider" ]);
+
 var OBJMeshProvider = function (name, forceRecalculateNormals)
 {
 	this.name = "OBJMeshProvider";

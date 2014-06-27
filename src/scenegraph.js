@@ -1,4 +1,4 @@
-include ( [ "aabb" ] );
+include ([ "aabb" ]);
 
 var SceneGraph = function ()
 {

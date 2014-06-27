@@ -1,3 +1,5 @@
+include([ "editor/components/firstpersoncontroller" ]);
+
 var FirstPersonController = function () 
 {
 	this.name = "FirstPersonController";

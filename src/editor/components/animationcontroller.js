@@ -1,0 +1,4 @@
+AnimationController.prototype.extend(
+{
+
+});
