@@ -44,6 +44,17 @@ include(
 	}, function ()
 	{
 		console.log("Resources Loaded.");
+
+		var ss = document.createElement("link");
+		ss.type = "text/css";
+		ss.rel = "stylesheet";
+		ss.href = "main.css";
+		document.getElementsByTagName("head")[0].appendChild(ss);
+
+		var canvas = document.createElement('canvas');
+		canvas.id = "gl-canvas";
+		document.body.appendChild(canvas);
+
 		document.getElementById('gl-canvas').width = window.innerWidth;
 		document.getElementById('gl-canvas').height = window.innerHeight;
 		

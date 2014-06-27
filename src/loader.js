@@ -49,7 +49,10 @@ var Loader = function ()
 
 		var script = document.createElement('script');
 		script.type = 'text/javascript';
+		script.async = false;
+		script.defer = true;
 		script.src = fullPath;
+
 		script.onload = function ()
 		{
 			console.log("included " + fullPath);
@@ -62,8 +65,7 @@ var Loader = function ()
 			onload();
 		}.bind(this);
 
-		var body = document.getElementById("body");
-		body.appendChild(script);
+		document.body.appendChild(script);
 
 		this._loaded[path] = true;
 	}

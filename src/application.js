@@ -1,4 +1,4 @@
-include([ "ray", "scenegraph", "component", "gameobject", "tests/headers" ]);
+include([ "ray", "scenegraph", "component", "gameobject", "tests/headers", "components/headers" ]);
 
 var Application = function()
 {
