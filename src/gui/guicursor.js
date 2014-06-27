@@ -1,4 +1,4 @@
-var GuiCursor = function (resourceName)
+GuiCursor = function (resourceName)
 {
 	this.position = vec2.fromValues(0.0, 0.0);
 	this.delta = vec2.fromValues(0.0, 0.0);
@@ -34,6 +34,12 @@ var GuiCursor = function (resourceName)
 	{
 		var dx = e.movementX || e.mozMovementX || e.webkitMovementX || 0;
 		var dy = e.movementY || e.mozMovementY || e.webkitMovementY || 0;
+
+		for(var i = 0; i < Gui._mouseDeltaCallbacks.length; i++)
+		{
+			var callback = Gui._mouseDeltaCallbacks[i];
+			callback(dx, dy);
+		}
 
 		this.delta[0] = dx;
 		this.delta[1] = dy;
@@ -80,8 +86,6 @@ GuiCursor.prototype.extend(
 		Shader.setUniformVec2("translation", vec2.fromValues(positionX, positionY));
 
 		GL.bindTexture(GL.TEXTURE_2D, this._texture._texture);
-
-//		this._texture.bind();
 
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 		GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);

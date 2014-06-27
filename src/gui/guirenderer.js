@@ -1,4 +1,4 @@
-var GuiRenderer = 
+GuiRenderer = 
 {
 
 	drawWindow: function (context, wnd, cursor, deltaTime, windowHovered, headerHovered, closeButtonHovered, resizeHovered)

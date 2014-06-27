@@ -1,4 +1,4 @@
-var AABB = function ()
+AABB = function ()
 {
 	this.center = vec3.create();
 	this.extents = vec3.create();

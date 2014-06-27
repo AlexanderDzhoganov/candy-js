@@ -1,4 +1,4 @@
-var PointRectTest = function (point, position, size)
+PointRectTest = function (point, position, size)
 {
 	if (point[0] > position[0] && point[0] < position[0] + size[0] && point[1] > position[1] && point[1] < position[1] + size[1])
 	{
@@ -40,7 +40,7 @@ var PointRectTest = function (point, position, size)
     }
 }*/
 
-var QuatToEuler = function (q)
+QuatToEuler = function (q)
 {
 	var w2 = q[3] * q[3];
 	var x2 = q[0] * q[0];
@@ -80,7 +80,7 @@ var QuatToEuler = function (q)
 	return vec3.fromValues(yaw, pitch, roll);
 };
 
-var Clamp = function (x, min, max)
+Clamp = function (x, min, max)
 {
 	if (x < min)
 	{
@@ -95,7 +95,7 @@ var Clamp = function (x, min, max)
 	return x;
 }
 
-var ptsToPixels = function ( pts ) {
+ptsToPixels = function ( pts ) {
 	return pts * 1.333333;
 }
 

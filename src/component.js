@@ -1,43 +1,46 @@
 include(
 [
 	"components/headers"
-]);
-
-var Component = function ()
-{
-	this.gameObject = null;
-	
-	this.name = "Component";
-	this.type = "component";
-	this.enabled = true;
-
-	this.onInit = null;
-	this.dispose = function () {};
-
-	this.onEnabled = null;
-	this.onDisabled = null;
-
-	this.onBecomeVisible = null;
-	this.onBecomeInvisible = null;
-
-	this.onPreRender = null;
-	this.onPostRender = null;
-
-	this.onUpdate = null;
-	this.onFixedUpdate = null;
-};
-
-Component.extend(
-{
-	
-});
-
-Component.prototype.extend(
+], function ()
 {
 
-	_attachToGameObject: function (gameObject)
+	Component = function ()
 	{
-		this.gameObject = gameObject;
-	},
+		this.gameObject = null;
+		
+		this.name = "Component";
+		this.type = "component";
+		this.enabled = true;
+
+		this.onInit = null;
+		this.dispose = function () {};
+
+		this.onEnabled = null;
+		this.onDisabled = null;
+
+		this.onBecomeVisible = null;
+		this.onBecomeInvisible = null;
+
+		this.onPreRender = null;
+		this.onPostRender = null;
+
+		this.onUpdate = null;
+		this.onFixedUpdate = null;
+	};
+
+	Component.extend(
+	{
+		
+	});
+
+	Component.prototype.extend(
+	{
+
+		_attachToGameObject: function (gameObject)
+		{
+			this.gameObject = gameObject;
+		},
+
+	});
 
 });

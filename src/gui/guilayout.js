@@ -1,4 +1,4 @@
-var GuiLayout = function ()
+GuiLayout = function ()
 {
 	// public
 	this.fontFamily = "Courier New";

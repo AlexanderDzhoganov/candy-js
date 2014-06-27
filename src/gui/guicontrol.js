@@ -1,4 +1,4 @@
-var GuiControl = function (guiInput, context)
+GuiControl = function (guiInput, context)
 {
 	this._input = guiInput;
 	this._context = context;

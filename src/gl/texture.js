@@ -1,4 +1,4 @@
-var Texture = function (name)
+Texture = function (name)
 {
 	var image = ResourceLoader.getContent(name);
 

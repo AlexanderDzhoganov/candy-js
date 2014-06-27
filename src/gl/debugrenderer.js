@@ -1,4 +1,4 @@
-var DebugRenderer = function ()
+DebugRenderer = function ()
 {
 	this._lineVertices = [];
 	this._lineIndices = [];

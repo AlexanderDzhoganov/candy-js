@@ -1,4 +1,4 @@
-var include = function (scripts, onload)
+include = function (scripts, onload)
 {
 	var _include = function (scripts, onload)
 	{
@@ -22,7 +22,7 @@ var include = function (scripts, onload)
 	_include(scripts, onload);
 };
 
-var Loader = function ()
+Loader = function ()
 {
 	this.scriptsRoot = 'src/';
 

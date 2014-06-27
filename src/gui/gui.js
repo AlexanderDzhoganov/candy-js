@@ -1,4 +1,4 @@
-var Gui = function ()
+Gui = function ()
 {
 	// public
 
@@ -170,8 +170,6 @@ Gui.prototype.extend(
 		var time = (new Date).getTime();
 		var deltaTime = (time - this._previousTime) / 1000.0;
 		this._previousTime = time;
-
-
 
 		if (
 			this._activeWindow && 

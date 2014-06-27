@@ -1,4 +1,4 @@
-var ImageLoader = 
+ImageLoader = 
 {
 
     GetPixels : function (img)
