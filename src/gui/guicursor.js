@@ -30,6 +30,23 @@ var GuiCursor = function (resourceName)
 	GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
 	GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(quad), GL.STREAM_DRAW);
 
+	this.show = true;
+	window.addEventListener("mousedown", function (e)
+	{
+		if(e.button == 2)
+		{
+			this.show = false;
+		}
+	}.bind(this), false);
+
+	window.addEventListener("mouseup", function (e)
+	{
+		if(e.button == 2)
+		{
+			this.show = true;
+		}
+	}.bind(this), false);
+
 	document.onmousemove = function (e)
 	{
 		var dx = e.movementX || e.mozMovementX || e.webkitMovementX || 0;
@@ -78,6 +95,11 @@ GuiCursor.prototype.extend(
 
 	renderSelf: function ()
 	{
+		if(!this.show)
+		{
+			return;
+		}
+
 		Shader.setActiveProgram(this._program);
 
 		var positionX = -1.0 + 2.0 * this.position[0] * (1.0 / Renderer.screenWidth);

@@ -75,9 +75,30 @@ var FirstPersonController = function ()
 
 	Gui.addMouseDeltaCallback(function (dx, dy)
 	{
-		this.yaw += dx * 0.001;
-		this.pitch += dy * 0.001;
+		if(this.mouseLook)
+		{
+			this.yaw += dx * 0.001;
+			this.pitch += dy * 0.001;
+		}
 	}.bind(this));
+
+	this.mouseLook = false;
+
+	window.addEventListener("mousedown", function (e)
+	{
+		if(e.button == 2)
+		{
+			this.mouseLook = true;
+		}
+	}.bind(this), false);
+
+	window.addEventListener("mouseup", function (e)
+	{
+		if(e.button == 2)
+		{
+			this.mouseLook = false;
+		}
+	}.bind(this), false);
 };
 
 FirstPersonController.prototype = new Component();
