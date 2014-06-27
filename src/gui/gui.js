@@ -23,7 +23,6 @@ Gui = function ()
 	this._previousTime = 0.0;
 
 	this._mouseClickCallbacks = [];
-	this._mouseDeltaCallbacks = [];
 };
 
 Gui.extend(
@@ -94,11 +93,6 @@ Gui.prototype.extend(
 	addMouseClickCallback: function (callback)
 	{
 		this._mouseClickCallbacks.push(callback);
-	},
-
-	addMouseDeltaCallback: function (callback)
-	{
-		this._mouseDeltaCallbacks.push(callback);
 	},
 
 	// private
@@ -177,8 +171,7 @@ Gui.prototype.extend(
 		var deltaTime = (time - this._previousTime) / 1000.0;
 		this._previousTime = time;
 
-		if
-		(
+		if (
 			this._activeWindow && 
 			!this._activeWindow.resizing &&
 			!this._activeWindow.dragging && 
@@ -187,7 +180,23 @@ Gui.prototype.extend(
 		{
 			if(this._activeWindow.onDeactivate)
 			{
-				this._activeWindow.onDeactivate();
+				var newActiveWindow = null;
+
+				for (var i = 0; i < this._windows.length; i++)
+				{
+					var wnd = this._windows[i];
+					if (!wnd.visible)
+					{
+						continue;
+					}
+
+					if (PointRectTest(this._input.getCursorPosition(), wnd.position, wnd.size))
+					{
+						newActiveWindow = wnd;
+					}
+				}
+
+				this._activeWindow.onDeactivate( newActiveWindow );
 			}
 
 			this._activeWindow = null;
@@ -214,16 +223,12 @@ Gui.prototype.extend(
 
 			if (PointRectTest(this._input.getCursorPosition(), wnd.position, wnd.size))
 			{
-				if (this._activeWindow && this._activeWindow.onDeactivate)
-				{
-					this._activeWindow.onDeactivate();
-				}
-
-				this._activeWindow = wnd;
-
-				if (this._activeWindow.onActivate)
-				{
-					this._activeWindow.onActivate();
+				if( this._activeWindow != wnd ) {	
+					this._activeWindow = wnd;					
+					if (this._activeWindow.onActivate)
+					{
+						this._activeWindow.onActivate();
+					}
 				}
 			}
 		}

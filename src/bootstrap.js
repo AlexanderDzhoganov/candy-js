@@ -10,6 +10,7 @@ include([ "shim", "resourceloader", "application" ], function ()
 
 		// meshes
 		"mesh": "resources/meshes/teapot_lowres.obj",
+		"sponza": "resources/meshes/sponza/sponza.obj",
 
 		// shaders
 		"terrain_vertex": "resources/shaders/terrain.vs",
