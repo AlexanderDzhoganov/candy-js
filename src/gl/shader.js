@@ -1,4 +1,4 @@
-var Shader = function (vertexSource, fragmentSource)
+Shader = function (vertexSource, fragmentSource)
 {
 	if (vertexSource == undefined || fragmentSource == undefined)
 	{

@@ -1,4 +1,4 @@
-var AABBTests = function ()
+AABBTests = function ()
 {
 	var test1 = function()
 	{

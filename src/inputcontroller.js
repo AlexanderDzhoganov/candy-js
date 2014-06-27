@@ -1,4 +1,4 @@
-var InputController = function ()
+InputController = function ()
 {
 	this.disableExternalKeyEvents = true;
 

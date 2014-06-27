@@ -1,4 +1,4 @@
-var GuiCursor = function (resourceName)
+GuiCursor = function (resourceName)
 {
 	this.position = vec2.fromValues(0.0, 0.0);
 	this.delta = vec2.fromValues(0.0, 0.0);
@@ -29,23 +29,6 @@ var GuiCursor = function (resourceName)
 	this._vertexBuffer = GL.createBuffer();
 	GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
 	GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(quad), GL.STREAM_DRAW);
-
-	this.show = true;
-	window.addEventListener("mousedown", function (e)
-	{
-		if(e.button == 2)
-		{
-			this.show = false;
-		}
-	}.bind(this), false);
-
-	window.addEventListener("mouseup", function (e)
-	{
-		if(e.button == 2)
-		{
-			this.show = true;
-		}
-	}.bind(this), false);
 
 	document.onmousemove = function (e)
 	{
@@ -95,11 +78,6 @@ GuiCursor.prototype.extend(
 
 	renderSelf: function ()
 	{
-		if(!this.show)
-		{
-			return;
-		}
-
 		Shader.setActiveProgram(this._program);
 
 		var positionX = -1.0 + 2.0 * this.position[0] * (1.0 / Renderer.screenWidth);
@@ -108,8 +86,6 @@ GuiCursor.prototype.extend(
 		Shader.setUniformVec2("translation", vec2.fromValues(positionX, positionY));
 
 		GL.bindTexture(GL.TEXTURE_2D, this._texture._texture);
-
-//		this._texture.bind();
 
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 		GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);

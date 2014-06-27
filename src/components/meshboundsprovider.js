@@ -1,116 +1,119 @@
-include ([ "aabb", "editor/components/meshboundsprovider" ]);
-
-var MeshBoundsProvider = function ()
-{
-	// public
-
-	this.name = "MeshBoundsProvider";
-	this.type = "meshBoundsProvider";
-
-	this.aabb = new AABB();
-	this.boundingSphereRadius = 0.0;
-};
-
-MeshBoundsProvider.prototype = new Component();
-
-MeshBoundsProvider.extend(
-{
-	
-});
-
-MeshBoundsProvider.prototype.extend(
+include ([ "aabb", "editor/components/meshboundsprovider" ], function ()
 {
 
-	// public
-
-	dispose: function ()
+	MeshBoundsProvider = function ()
 	{
-	},
+		// public
 
-	onInit: function ()
-	{
-	},
+		this.name = "MeshBoundsProvider";
+		this.type = "meshBoundsProvider";
 
-	getMinimumAABB: function ()
-	{
-		return this.aabb;
-	},
+		this.aabb = new AABB();
+		this.boundingSphereRadius = 0.0;
+	};
 
-	recalculateMinimumAABB: function ()
+	MeshBoundsProvider.prototype = new Component();
+
+	MeshBoundsProvider.extend(
 	{
-		var meshProvider = this.gameObject.getComponent("meshProvider");
-		if (!meshProvider)
+		
+	});
+
+	MeshBoundsProvider.prototype.extend(
+	{
+
+		// public
+
+		dispose: function ()
 		{
-			console.log("MeshBoundsProvider: cannot recalculate AABB as no meshProvider is present on the gameobject");
-			return;
-		}
+		},
 
-		for (var i = 0; i < meshProvider.submeshes.length; i++)
+		onInit: function ()
 		{
-			var subMesh = meshProvider.submeshes[i];
+		},
 
-			if (subMesh.vertexFormat != Renderer.VERTEX_FORMAT.PPPNNNTT)
+		getMinimumAABB: function ()
+		{
+			return this.aabb;
+		},
+
+		recalculateMinimumAABB: function ()
+		{
+			var meshProvider = this.gameObject.getComponent("meshProvider");
+			if (!meshProvider)
 			{
-				console.log("MeshBoundsProvider: invalid vertex format, only 'PPPNNNTT' supported");
+				console.log("MeshBoundsProvider: cannot recalculate AABB as no meshProvider is present on the gameobject");
 				return;
 			}
 
-			var vertices = subMesh.vertices;
-
-			var min = vec3.fromValues(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-			var max = vec3.fromValues(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
-
-			for (var i = 0; i < vertices.length / 8; i++)
+			for (var i = 0; i < meshProvider.submeshes.length; i++)
 			{
-				var position = vec3.fromValues
-				(
-					vertices[i * 8 + 0],
-					vertices[i * 8 + 1],
-					vertices[i * 8 + 2]
-				);
+				var subMesh = meshProvider.submeshes[i];
 
-				if (position[0] < min[0])
+				if (subMesh.vertexFormat != Renderer.VERTEX_FORMAT.PPPNNNTT)
 				{
-					min[0] = position[0];
+					console.log("MeshBoundsProvider: invalid vertex format, only 'PPPNNNTT' supported");
+					return;
 				}
 
-				if (position[0] > max[0])
+				var vertices = subMesh.vertices;
+
+				var min = vec3.fromValues(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+				var max = vec3.fromValues(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+
+				for (var i = 0; i < vertices.length / 8; i++)
 				{
-					max[0] = position[0];
+					var position = vec3.fromValues
+					(
+						vertices[i * 8 + 0],
+						vertices[i * 8 + 1],
+						vertices[i * 8 + 2]
+					);
+
+					if (position[0] < min[0])
+					{
+						min[0] = position[0];
+					}
+
+					if (position[0] > max[0])
+					{
+						max[0] = position[0];
+					}
+
+					if (position[1] < min[1])
+					{
+						min[1] = position[1];
+					}
+
+					if (position[1] > max[1])
+					{
+						max[1] = position[1];
+					}
+
+					if (position[2] < min[2])
+					{
+						min[2] = position[2];
+					}
+
+					if (position[2] > max[2])
+					{
+						max[2] = position[2];
+					}
 				}
 
-				if (position[1] < min[1])
-				{
-					min[1] = position[1];
-				}
+				var diff = vec3.create();
+				vec3.subtract(diff, max, min);
+				vec3.scale(diff, diff, 0.5);
+				vec3.add(this.aabb.center, min, diff);
+				this.aabb.extents = diff;
 
-				if (position[1] > max[1])
-				{
-					max[1] = position[1];
-				}
-
-				if (position[2] < min[2])
-				{
-					min[2] = position[2];
-				}
-
-				if (position[2] > max[2])
-				{
-					max[2] = position[2];
-				}
+				this.boundingSphereRadius = vec3.length(this.aabb.extents);
+				break;
 			}
 
-			var diff = vec3.create();
-			vec3.subtract(diff, max, min);
-			vec3.scale(diff, diff, 0.5);
-			vec3.add(this.aabb.center, min, diff);
-			this.aabb.extents = diff;
+			return this.aabb;
+		},
 
-			this.boundingSphereRadius = vec3.length(this.aabb.extents);
-			break;
-		}
-
-		return this.aabb;
-	},
+	});
 
 });

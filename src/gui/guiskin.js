@@ -1,4 +1,4 @@
-var GuiSkin = function ()
+GuiSkin = function ()
 {
 
 	this.window =

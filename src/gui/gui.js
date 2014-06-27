@@ -1,4 +1,4 @@
-var Gui = function ()
+Gui = function ()
 {
 	// public
 

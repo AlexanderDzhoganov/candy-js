@@ -1,4 +1,4 @@
-var GameObjectEditor = function (gameObject)
+GameObjectEditor = function (gameObject)
 {
 	this._gameObject = gameObject;
 

@@ -1,4 +1,4 @@
-var Renderer = function ()
+Renderer = function ()
 {
 	this.lightPos = vec3.create();
 	this.lightD = 0.0;

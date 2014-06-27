@@ -1,4 +1,4 @@
-var ResourceLoader = function (resources, step, callback)
+ResourceLoader = function (resources, step, callback)
 {
 	this.step = typeof(step) === "function" ? step : function () {};
 	this.callback = typeof(callback) === "function" ? callback : function () {};

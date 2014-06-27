@@ -1,4 +1,4 @@
-var expect = function (real, expected)
+expect = function (real, expected)
 {
 	if(real != expected)
 	{
@@ -10,7 +10,7 @@ var expect = function (real, expected)
 	}
 };
 
-var UnitTest = function()
+UnitTest = function()
 {
 	this.tests = [];
 };

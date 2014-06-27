@@ -1,4 +1,4 @@
-var GuiInput = function ()
+GuiInput = function ()
 {
 	this._cursor = new GuiCursor("cursor");
 	this._mouseDown = false;

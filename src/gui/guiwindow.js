@@ -1,4 +1,4 @@
-var GuiWindow = function (position, size, layout, skin)
+GuiWindow = function (position, size, layout, skin)
 {
 	// public
 

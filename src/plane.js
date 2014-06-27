@@ -1,4 +1,4 @@
-var Plane = function (a, b, c, d)
+Plane = function (a, b, c, d)
 {
 	this.abcd = new Float32Array([a, b, c, d]);
 	this.normalize();

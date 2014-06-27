@@ -1,4 +1,4 @@
-var Material = function (name)
+Material = function (name)
 {
 	this.name = name;
 
