@@ -23,6 +23,7 @@ var Gui = function ()
 	this._previousTime = 0.0;
 
 	this._mouseClickCallbacks = [];
+	this._mouseDeltaCallbacks = [];
 };
 
 Gui.extend(
@@ -93,6 +94,11 @@ Gui.prototype.extend(
 	addMouseClickCallback: function (callback)
 	{
 		this._mouseClickCallbacks.push(callback);
+	},
+
+	addMouseDeltaCallback: function (callback)
+	{
+		this._mouseDeltaCallbacks.push(callback);
 	},
 
 	// private
@@ -171,7 +177,8 @@ Gui.prototype.extend(
 		var deltaTime = (time - this._previousTime) / 1000.0;
 		this._previousTime = time;
 
-		if (
+		if
+		(
 			this._activeWindow && 
 			!this._activeWindow.resizing &&
 			!this._activeWindow.dragging && 

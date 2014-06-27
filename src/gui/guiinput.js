@@ -1,6 +1,5 @@
 var GuiInput = function ()
 {
-	this._mousePosition = vec2.create();
 	this._cursor = new GuiCursor("cursor");
 	this._mouseDown = false;
 	this._mouseUp = false;

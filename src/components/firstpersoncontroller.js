@@ -72,6 +72,12 @@ var FirstPersonController = function ()
 	{
 	 	this._Movement[0] = 0;
 	}.bind(this));
+
+	Gui.addMouseDeltaCallback(function (dx, dy)
+	{
+		this.yaw += dx * 0.001;
+		this.pitch += dy * 0.001;
+	}.bind(this));
 };
 
 FirstPersonController.prototype = new Component();

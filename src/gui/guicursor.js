@@ -35,6 +35,12 @@ var GuiCursor = function (resourceName)
 		var dx = e.movementX || e.mozMovementX || e.webkitMovementX || 0;
 		var dy = e.movementY || e.mozMovementY || e.webkitMovementY || 0;
 
+		for(var i = 0; i < Gui._mouseDeltaCallbacks.length; i++)
+		{
+			var callback = Gui._mouseDeltaCallbacks[i];
+			callback(dx, dy);
+		}
+
 		this.delta[0] = dx;
 		this.delta[1] = dy;
 
