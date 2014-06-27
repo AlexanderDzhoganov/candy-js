@@ -99,8 +99,7 @@ include([], function ()
 			var positions = [];
 			var normals = [];
 			var uvs = [];
-			var faces = [];
-
+			
 			for (var i = 0; i < lines.length; i++)
 			{
 				var line = lines[i];
@@ -147,12 +146,29 @@ include([], function ()
 						)
 					);
 				}
-				else if (components[0] == 'f')
+			}
+
+
+			var materials = {};
+			var currentMaterial = "";
+
+			for (var i = 0; i < lines.length; i++)
+			{
+				var line = lines[i];
+
+				while (line.indexOf('  ') != -1)
+				{
+					line = line.replace('  ', ' ');
+				}
+
+				var components = line.trim().split(' ');
+			
+				if (components[0] == 'f')
 				{
 					if (components.length == 4)
 					{
 						// triangle
-						faces.push
+						materials[currentMaterial].faces.push
 						([
 							components[1],
 							components[2],
@@ -162,14 +178,14 @@ include([], function ()
 					else if (components.length == 5)
 					{
 						// quad
-						faces.push
+						materials[currentMaterial].faces.push
 						([
 							components[1],
 							components[2],
 							components[3]
 						]);
 
-						faces.push
+						materials[currentMaterial].faces.push
 						([
 							components[1],
 							components[3],
@@ -177,9 +193,20 @@ include([], function ()
 						]);
 					}
 				}
-			}
+				else if (components.slice(0, 6) == "usemtl")
+				{
+					var material = components[1];
+					materials[material] =
+					{
+						name: material,
+						faces: [],
+					};
 
-			return { positions: positions, normals: normals, uvs: uvs, faces: faces };
+					currentMaterial = material;
+				}
+			}
+			console.log(materials);
+			return { positions: positions, normals: normals, uvs: uvs, materials: materials };
 		},
 
 		_calculateUniqueVertices: function (positions, normals, uvs, faces, forceRecalculateNormals)
