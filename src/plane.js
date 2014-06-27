@@ -7,7 +7,7 @@ Plane = function (a, b, c, d)
 Plane.extend(
 {
 
-	halfspace: { NEGATIVE: -1, ON_PLANE: 0, POSITIVE: 1, },
+	HALFSPACE: { NEGATIVE: -1, ON_PLANE: 0, POSITIVE: 1, },
 
 });
 
@@ -17,7 +17,17 @@ Plane.prototype.extend(
 	pointTest: function (point)
 	{
 		var d = this.distanceTo(point);
-		return d < 0.0 ? Plane.NEGATIVE : (d > 0.0 ? Plane.POSITIVE : Plane.ON_PLANE); 
+		if (d < 0.0) 
+		{
+			return Plane.HALFSPACE.NEGATIVE;
+		}
+
+		if(d > 0.0)
+		{
+			return Plane.HALFSPACE.POSITIVE;
+		}
+
+		return Plane.HALFSPACE.ON_PLANE); 
 	},
 
 	distanceTo: function (point)
