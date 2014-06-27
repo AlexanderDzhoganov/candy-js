@@ -461,7 +461,7 @@ GuiControl.prototype.extend(
 					} 
 					else 
 					{
-						popupPosition = vec2.fromValues(control.rect.position[0] + control.rect.size[0], control.rect.position[1]);
+						popupPosition = vec2.fromValues(control.rect.position[0] + control.rect.size[0] - 1, control.rect.position[1]);
 					}
 
 					var itemLength = 0;
@@ -489,7 +489,7 @@ GuiControl.prototype.extend(
 					popupSkin.border = { "hovered": "", "normal": ""};
 
 					var dropDownWindow = new GuiWindow(popupPosition, popupSize, popupLayout, popupSkin);
-					dropDownWindow.title = "";
+					dropDownWindow.title = parentWindows ? "drop_down_wnd_" + parentWindows.length : "drop_down_wnd_" + 0;
 					dropDownWindow.autoSize = true;
 					dropDownWindow.drawTitlebar = false;
 					dropDownWindow.resizable = false;
@@ -528,33 +528,33 @@ GuiControl.prototype.extend(
 
 					var closeTimeout = null;
 
-					dropDownWindow.onDeactivate = function ()
+					dropDownWindow.onDeactivate = function ( activeWnd )
 					{
-						// closeTimeout = setTimeout(function () {
-							console.log(inStack, parentWindows.length);
+						var closeDropdown = true;
 
-							if (inStack === parentWindows.length)
+						for( var i = 0; i < parentWindows.length; i++ ) 
+						{
+							if( activeWnd && activeWnd.title == parentWindows[i].title )
 							{
-								for (var i = 0; i < parentWindows.length; i++)
-								{
-									//parentWindows[i].close();
-								}
+								console.log("UGHHHHHHHH");
+								closeDropdown = false;
+							} else {
+								console.log( activeWnd, parentWindows[i]);
 							}
-						// }, 1000);
+						}
+
+						if (closeDropdown === true)
+						{
+							for (var i = 0; i < parentWindows.length; i++)
+							{
+								parentWindows[i].close();
+							}
+						}
 					}.bind(this);
 
-					dropDownWindow.activate = function ()
+					dropDownWindow.onActivate = function ()
 					{
-						if (closeTimeout)
-						{
-							clearTimeout(closeTimeout);
-						}
-
-						if (control.activeWindow != inStack)
-						{
-							control.activeWindow = inStack;
-							console.log(control.activeWindow);	
-						}
+						clearTimeout(closeTimeout);
 					}.bind(this);
 
 					dropDownWindow.show();
@@ -563,7 +563,7 @@ GuiControl.prototype.extend(
 				this.controlList.push(['dropdownmenu', control]);
 
 				this._endControl(wnd);
-			}.bind(this),
+			}.bind(this)
 		});
 
 		wnd.layout.endLayout(wnd);
