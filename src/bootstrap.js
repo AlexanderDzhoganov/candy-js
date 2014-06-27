@@ -1,39 +1,66 @@
-var ResourceLoader = new ResourceLoader(
-{
-	// textures
-	"heightmap": "resources/images/heightmap.png",
-	"cursor": "resources/images/cursor.png",
-	"grass": "resources/images/grass.png",
-	"checker": "resources/images/checker.png",
+include(
+[
 
-	// meshes
-	"mesh": "resources/meshes/teapot_lowres.obj",
+	"shim",
+	"resourceloader",
+	"math/math",
+	"aabb",
+	"image",
+	"gl/headers",
+	"gui/headers",
+	"scenegraph",
+	"component",
+	"components/headers",
+	"editor/gameobject",
+	"gameobject",
+	"ray",
+	"tests/headers",
+	"resourceloader",
+	"inputcontroller",
+	"application",
 
-	// shaders
-	"terrain_vertex": "resources/shaders/terrain.vs",
-	"terrain_fragment": "resources/shaders/terrain.fs",
-	"gui_vertex": "resources/shaders/gui.vs",
-	"gui_fragment": "resources/shaders/gui.fs",
-	"gui_quad_vertex": "resources/shaders/gui_quad.vs",
-	"gui_quad_fragment": "resources/shaders/gui_quad.fs",
-	"diffuse_vertex": "resources/shaders/diffuse.vs",
-	"diffuse_fragment": "resources/shaders/diffuse.fs",
-	"show_normals_vertex": "resources/shaders/show_normals.vs",
-	"show_normals_fragment": "resources/shaders/show_normals.fs",
-	"wireframe_vertex": "resources/shaders/wireframe.vs",
-	"wireframe_fragment": "resources/shaders/wireframe.fs",
-}, function (resName, progress, final)
+], function ()
 {
-	// update progress bar
-}, function ()
-{
-	console.log("Resources Loaded.");
-	document.getElementById('gl-canvas').width = window.innerWidth;
-	document.getElementById('gl-canvas').height = window.innerHeight;
-	
-	InputController = new InputController();	
-	Renderer = new Renderer();
-	Gui = new Gui();
-	Application = new Application();
-	Application.run(60);
+
+	ResourceLoader = new ResourceLoader(
+	{
+		// textures
+		"heightmap": "resources/images/heightmap.png",
+		"cursor": "resources/images/cursor.png",
+		"grass": "resources/images/grass.png",
+		"checker": "resources/images/checker.png",
+
+		// meshes
+		"mesh": "resources/meshes/teapot_lowres.obj",
+
+		// shaders
+		"terrain_vertex": "resources/shaders/terrain.vs",
+		"terrain_fragment": "resources/shaders/terrain.fs",
+		"gui_vertex": "resources/shaders/gui.vs",
+		"gui_fragment": "resources/shaders/gui.fs",
+		"gui_quad_vertex": "resources/shaders/gui_quad.vs",
+		"gui_quad_fragment": "resources/shaders/gui_quad.fs",
+		"diffuse_vertex": "resources/shaders/diffuse.vs",
+		"diffuse_fragment": "resources/shaders/diffuse.fs",
+		"show_normals_vertex": "resources/shaders/show_normals.vs",
+		"show_normals_fragment": "resources/shaders/show_normals.fs",
+		"wireframe_vertex": "resources/shaders/wireframe.vs",
+		"wireframe_fragment": "resources/shaders/wireframe.fs",
+	}, function (resName, progress, final)
+	{
+		// update progress bar
+	}, function ()
+	{
+		console.log("Resources Loaded.");
+		document.getElementById('gl-canvas').width = window.innerWidth;
+		document.getElementById('gl-canvas').height = window.innerHeight;
+		
+		InputController = new InputController();	
+		Renderer = new Renderer();
+		Gui = new Gui();
+		Application = new Application();
+		Application.run(60);
+	});
+
 });
+
