@@ -30,7 +30,7 @@ GuiCursor = function (resourceName)
 	GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
 	GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(quad), GL.STREAM_DRAW);
 
-	this.show = false;
+	this.show = true;
 	window.addEventListener("mousedown", function (e)
 	{
 		if(e.button == 2)
