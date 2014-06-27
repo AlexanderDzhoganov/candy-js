@@ -48,7 +48,8 @@ include([ "editor/components/camera", "frustum" ], function ()
 
 		getFrustum: function ()
 		{
-			return new Frustum(this.getViewProjectionMatrix());
+			var frustum = new Frustum(this.getViewProjectionMatrix()); // Be wary of mindfuck...
+			return frustum;
 		},
 
 		unproject: function (vertex)

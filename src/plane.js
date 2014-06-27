@@ -14,6 +14,26 @@ Plane.extend(
 Plane.prototype.extend(
 {
 
+	transform: function (matrix)
+	{
+		debugger;
+		var pointOnPlane = vec4.fromValues(this.abcd[0] * this.abcd[3], this.abcd[1] * this.abcd[3], this.abcd[2] * this.abcd[3], 1.0);
+		var normal = vec4.fromValues(this.abcd[0], this.abcd[1], this.abcd[2], 0.0);
+
+		var transformedPoint = vec4.create();
+		vec4.transformMat4(transformedPoint, pointOnPlane, matrix);
+
+		var transformedNormal = vec4.create();
+		vec4.transformMat4(transformedNormal, normal, matrix);
+
+		this.abcd[0] = transformedNormal[0];
+		this.abcd[1] = transformedNormal[1];
+		this.abcd[2] = transformedNormal[2];
+
+		this.abcd[3] = vec3.dot(transformedPoint, transformedNormal);
+		//this.normalize();
+	},
+
 	pointTest: function (point)
 	{
 		var d = this.distanceTo(point);

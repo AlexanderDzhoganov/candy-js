@@ -27,9 +27,12 @@ include([ "plane" ], function ()
 	Frustum.prototype.extend(
 	{
 
-		transform: function (modelMatrix)
+		transform: function (matrix)
 		{
-
+			for (var i = 0; i < 6; i++)
+			{
+				this.planes[i].transform(matrix);
+			}
 		},
 
 		intersectAABB: function (aabb)
@@ -60,10 +63,13 @@ include([ "plane" ], function ()
 			{
 				var plane = this.planes[i];
 
+				outPoints = 0;
+				inPoints = 0;
+
 				for(var q = 0; q < 8 && (inPoints == 0 || outPoints == 0); q++)
 				{
 					var vertex = vertices[q];
-					if(plane.distanceTo(vertex) < 0)
+					if(plane.distanceTo(vertex) < 0.0)
 					{
 						outPoints++;
 					}
