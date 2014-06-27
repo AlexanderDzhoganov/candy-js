@@ -1,4 +1,6 @@
-var Frustum = function (fov, whRatio, near, far)
+include([ "plane" ]);
+
+var Frustum = function (projectionMatrix)
 {
 
 };
