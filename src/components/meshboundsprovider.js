@@ -1,4 +1,4 @@
-include ([ "aabb", "editor/components/meshboundsprovider" ], function ()
+include ([ "aabb" ], function ()
 {
 
 	MeshBoundsProvider = function ()

@@ -1,4 +1,4 @@
-include([ "editor/components/camera", "frustum" ], function ()
+include([ "frustum" ], function ()
 {
 
 	Camera = function (width, height, fov, near, far)

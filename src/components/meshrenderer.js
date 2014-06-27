@@ -1,4 +1,4 @@
-include([ "editor/components/meshrenderer" ], function ()
+include([], function ()
 {
 
 	MeshRenderer = function ()

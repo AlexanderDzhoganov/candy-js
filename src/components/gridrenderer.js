@@ -1,4 +1,4 @@
-include([ "editor/components/gridrenderer" ], function ()
+include([], function ()
 {
 
 	GridRenderer = function (x0, z0, x1, z1)

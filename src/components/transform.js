@@ -1,4 +1,4 @@
-include([ "editor/components/transform" ], function ()
+include([], function ()
 {
 
 	Transform = function ()

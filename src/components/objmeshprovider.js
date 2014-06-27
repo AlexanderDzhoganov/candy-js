@@ -1,4 +1,4 @@
-include([ "editor/components/objmeshprovider" ], function ()
+include([], function ()
 {
 
 	OBJMeshProvider = function (name, forceRecalculateNormals)

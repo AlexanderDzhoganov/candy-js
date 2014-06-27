@@ -1,4 +1,4 @@
-include([ "editor/components/firstpersoncontroller" ], function ()
+include([], function ()
 {
 
 	FirstPersonController = function () 

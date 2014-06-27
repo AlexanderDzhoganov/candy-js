@@ -1,4 +1,4 @@
-include([ "editor/components/animationcontroller" ], function ()
+include([], function ()
 {
 
 	AnimationController = function ()
