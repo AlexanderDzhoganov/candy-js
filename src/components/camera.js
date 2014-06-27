@@ -1,4 +1,4 @@
-include([ "editor/components/camera" ]);
+include([ "editor/components/camera", "frustum" ]);
 
 var Camera = function (width, height, fov, near, far)
 {
@@ -47,7 +47,7 @@ Camera.prototype.extend(
 
 	getFrustum: function ()
 	{
-		return new Frustum(this.fov, this.width / this.height, this.near, this.far);
+		return new Frustum(this.getViewProjectionMatrix());
 	},
 
 	unproject: function (vertex)

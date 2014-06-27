@@ -7,7 +7,7 @@ var Plane = function (a, b, c, d)
 Plane.extend(
 {
 
-	halfspace: { NEGATIVE = -1, ON_PLANE = 0, POSITIVE = 1, },
+	halfspace: { NEGATIVE: -1, ON_PLANE: 0, POSITIVE: 1, },
 
 });
 

@@ -16,9 +16,9 @@ Frustum.extend({
 	
 	INTERSECT_RESULT:
 	{
-		INSIDE = 0,
-		OUTSIDE = 1,
-		INTERSECT = 2,
+		INSIDE: 0,
+		OUTSIDE: 1,
+		INTERSECT: 2,
 	},
 
 });

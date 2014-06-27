@@ -49,6 +49,11 @@ MeshRenderer.prototype.extend(
 			return;
 		}
 
+		if (this._isCulled())
+		{
+			return;
+		}
+
 		if (this.wireframe)
 		{
 			for (var i = 0; i < meshProvider.submeshes.length; i++)
@@ -74,6 +79,15 @@ MeshRenderer.prototype.extend(
 		{
 			this._drawBounds(worldModelMatrix);
 		}
+	},
+
+	_isCulled: function ()
+	{
+		var frustum = Renderer._activeCamera.getFrustum();
+		var boundsProvider = this.gameObject.getComponent("meshBoundsProvider");
+		var result = frustum.intersectAABB(boundsProvider.aabb);
+
+		return result == Frustum.INTERSECT_RESULT.OUTSIDE;
 	},
 
 	_setupMaterial: function ()
