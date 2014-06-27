@@ -51,7 +51,7 @@ Application.prototype.extend(
 		testMaterial.addTexture("diffuse", tex);
 
 		var testObject = new GameObject("testMesh");
-		testObject.addComponent(new OBJMeshProvider("mesh", false));
+		testObject.addComponent(new OBJMeshProvider("de_dust2", false));
 		testObject.addComponent(new MeshRenderer());
 		testObject.renderer.material = testMaterial;
 

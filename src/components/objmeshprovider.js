@@ -197,7 +197,7 @@ include([], function ()
 						]);
 					}
 				}
-				else if (components.slice(0, 6) == "usemtl")
+				else if (components[0].slice(0, 7) == "usemtl")
 				{
 					var material = components[1];
 					materials[material] =
@@ -209,7 +209,7 @@ include([], function ()
 					currentMaterial = material;
 				}
 			}
-			console.log(materials);
+
 			return { positions: positions, normals: normals, uvs: uvs, materials: materials };
 		},
 
