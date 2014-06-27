@@ -51,6 +51,46 @@ DebugRenderer.prototype.extend(
 		this._lineIndices.push((this._lineVertices.length / 3) - 1);
 	},
 
+	drawAABB: function (center, extents)
+	{
+		var pushVertex = function (x0, y0, z0)
+		{
+			this._lineVertices.push(x0);
+			this._lineVertices.push(y0);
+			this._lineVertices.push(z0);
+		}.bind(this);
+
+		var index = this._lineVertices.length / 3;
+
+		var topLeft = vec3.create();
+		vec3.subtract(topLeft, center, extents);
+
+		var bottomRight = vec3.create();
+		vec3.add(bottomRight, center, extents);
+
+		pushVertex(topLeft[0], topLeft[1], topLeft[2]);
+		pushVertex(topLeft[0], bottomRight[1], topLeft[2]);
+		pushVertex(bottomRight[0], bottomRight[1], topLeft[2]);
+		pushVertex(bottomRight[0], topLeft[1], topLeft[2]);
+
+		pushVertex(topLeft[0], topLeft[1], bottomRight[2]);
+		pushVertex(topLeft[0], bottomRight[1], bottomRight[2]);
+		pushVertex(bottomRight[0], bottomRight[1], bottomRight[2]);
+		pushVertex(bottomRight[0], topLeft[1], bottomRight[2]);
+
+		var indices = 
+		[
+			index + 0, index + 1, index + 1, index + 2, index + 2, index + 3, index + 3, index + 0, // back
+			index + 4, index + 5, index + 5, index + 6, index + 6, index + 7, index + 7, index + 4, // front
+			index + 0, index + 4, index + 1, index + 5, index + 2, index +6, index + 3, index + 7 // sides
+		];
+
+		for(var i = 0; i < indices.length; i++)
+		{
+			this._lineIndices.push(indices[i]);
+		}
+	},
+
 	clear: function ()
 	{
 		this._lineVertices = [];
@@ -75,8 +115,8 @@ DebugRenderer.prototype.extend(
 
 		Renderer.drawIndexedLines(this._lineIndices.length, Renderer.VERTEX_FORMAT.PPP);
 
-		//this._lineVertices = [];
-		//this._lineIndices = [];
+		this._lineVertices = [];
+		this._lineIndices = [];
 
 		GL.bindBuffer(GL.ARRAY_BUFFER, null);
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);

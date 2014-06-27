@@ -152,18 +152,8 @@ MeshRenderer.prototype.extend(
 			return;
 		}
 
-		Shader.setActiveProgram(MeshRenderer.getWireframeProgram());
-		Shader.setUniformVec3("wireframeColor", vec3.fromValues(0, 1, 0));
-		Shader.setUniformMat4("model", worldModelMatrix);
-
-		GL.bindBuffer(GL.ARRAY_BUFFER, boundsProvider.vertexBuffer);
-		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, boundsProvider.indexBuffer);
-
-		GL.disable(GL.DEPTH_TEST);
-
-		Renderer.drawIndexedLines(boundsProvider.indices.length);
-
-		GL.enable(GL.DEPTH_TEST);
+		var aabb = AABB.transform(boundsProvider.aabb, worldModelMatrix);
+		Renderer.debug.drawAABB(aabb.center, aabb.extents);
 	},
 
 });

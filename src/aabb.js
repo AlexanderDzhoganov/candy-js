@@ -76,10 +76,12 @@ AABB.extend(
 
 		var pushVertex = function (v0, v1, v2)
 		{
-			vertices.push(v0);
-			vertices.push(v1);
-			vertices.push(v2);
-		};
+			var vertex = vec4.fromValues(v0, v1, v2, 1.0);
+			vec4.transformMat4(vertex, vertex, matrix);
+			vertices.push(vertex[0]);
+			vertices.push(vertex[1]);
+			vertices.push(vertex[2]);
+		}.bind(this);
 
 		var topLeft = vec3.create();
 		vec3.subtract(topLeft, aabb.center, aabb.extents);
