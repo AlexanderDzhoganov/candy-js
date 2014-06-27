@@ -27,7 +27,7 @@ Plane.prototype.extend(
 			return Plane.HALFSPACE.POSITIVE;
 		}
 
-		return Plane.HALFSPACE.ON_PLANE); 
+		return Plane.HALFSPACE.ON_PLANE; 
 	},
 
 	distanceTo: function (point)
