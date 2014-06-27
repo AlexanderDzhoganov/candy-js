@@ -12,11 +12,11 @@ include([], function ()
 			objData.positions,
 			objData.normals,
 			objData.uvs,
-			objData.faces, 
+			objData.materials.default.faces, 
 			forceRecalculateNormals
 		);
 
-		var result = this._prepareVerticesIndices(uniqueVertices, objData.faces);
+		var result = this._prepareVerticesIndices(uniqueVertices, objData.materials.default.faces);
 
 		var vertices = new Float32Array(result.vertices);
 		var indices = new Uint16Array(result.indices);
@@ -27,7 +27,7 @@ include([], function ()
 			objData.positions.length + " positions, " +
 			objData.normals.length + " normals, " +
 			objData.uvs.length + " uvs, " +
-			objData.faces.length + " faces, resulting in " +
+			objData.materials.default.faces.length + " faces, resulting in " +
 			(vertices.length / 8) + " unique vertices and " +
 			indices.length / 3 + " triangles"
 		);
@@ -149,8 +149,12 @@ include([], function ()
 			}
 
 
-			var materials = {};
-			var currentMaterial = "";
+			var materials =
+			{
+				default: { name: "default", faces: [] },
+			};
+
+			var currentMaterial = "default";
 
 			for (var i = 0; i < lines.length; i++)
 			{
