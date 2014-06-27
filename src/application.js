@@ -38,14 +38,12 @@ Application.prototype.extend(
 
 		testObject.transform.position = vec3.fromValues(0, 0, 0);
 
-		var unitTest = new UnitTest();
+		/*var unitTest = new UnitTest();
 		unitTest.addTest(new AABBTests());
-		unitTest.runTests();
+		unitTest.runTests();*/
 
 		Gui.addMouseClickCallback(function (x, y)
 		{
-			y = Renderer.screenHeight - y;
-
 			var cameraPosition = Renderer._activeCamera.gameObject.transform.position;
 
 			var nearPoint = Renderer._activeCamera.unproject(vec3.fromValues(x, y, 0.0));

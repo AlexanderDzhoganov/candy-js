@@ -129,9 +129,9 @@ SceneGraph.prototype.extend(
 
 			if(boundsProvider)
 			{
-				var aabb = boundsProvider.aabb; //AABB.transform(boundsProvider.aabb, model);
+				var aabb = AABB.transform(boundsProvider.aabb, model);
 
-				var result = aabb.intersectRay(new Ray(vec3.fromValues(0, 0, -1), vec3.fromValues(0, 0.000000000000000000001, 0.999999999999999)));
+				var result = aabb.intersectRay(ray);
 
 				if(result.hit)
 				{

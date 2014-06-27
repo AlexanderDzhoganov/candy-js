@@ -1,9 +1,7 @@
 var AABB = function ()
 {
-
 	this.center = vec3.create();
 	this.extents = vec3.create();
-
 };
 
 AABB.extend(
@@ -107,7 +105,7 @@ AABB.extend(
 AABB.prototype.extend(
 {
 
-	intersectRay: function (ray)
+	/*intersectRay: function (ray)
 	{
 		//acquire bbox min and max bounds
 		var vmin = vec3.create();
@@ -164,6 +162,55 @@ AABB.prototype.extend(
 		}
 
 		return { hit: true, nearDistance: vec3.length(T_nearDist) };
+	},*/
+
+	intersectRay: function (ray)
+	{
+		var max = function (a, b)
+		{
+			return Math.max(a, b);
+		}
+
+		var min = function (a, b)
+		{
+			return Math.min(a, b);
+		}
+
+		var lb = vec3.create();
+		var rt = vec3.create();
+		
+		vec3.subtract(lb, this.center, this.extents);
+		vec3.add(rt, this.center, this.extents);
+
+		var dirFrac = vec3.fromValues(1.0 / ray.direction[0], 1.0 / ray.direction[1], 1.0 / ray.direction[2]);
+
+		var t = 0.0;
+		var t1 = (lb[0] - ray.origin[0]) * dirFrac[0];
+		var t2 = (rt[0] - ray.origin[0]) * dirFrac[0];
+		var t3 = (lb[1] - ray.origin[1]) * dirFrac[1];
+		var t4 = (rt[1] - ray.origin[1]) * dirFrac[1];
+		var t5 = (lb[2] - ray.origin[2]) * dirFrac[2];
+		var t6 = (rt[2] - ray.origin[2]) * dirFrac[2];
+
+		var tmin = max(max(min(t1, t2), min(t3, t4)), min(t5, t6));
+		var tmax = min(min(max(t1, t2), max(t3, t4)), max(t5, t6));
+
+		// if tmax < 0, ray (line) is intersecting AABB, but whole AABB is behing us
+		if (tmax < 0)
+		{
+			t = tmax;
+			return { hit: false, nearDistance: t };
+		}
+
+		// if tmin > tmax, ray doesn't intersect AABB
+		if (tmin > tmax)
+		{
+			t = tmax;
+			return { hit: false, nearDistance: t };
+		}
+
+		t = tmin;
+		return { hit: true, nearDistance: t };
 	},
 
 	// expands the AABB to fit another AABB
