@@ -56,7 +56,7 @@ OBJMeshProvider.prototype.extend(
 
 	dispose: function ()
 	{
-		for(var i = 0; i < this.submeshes.length; i++)
+		for (var i = 0; i < this.submeshes.length; i++)
 		{
 			var subMesh = this.submeshes[i];
 
@@ -78,7 +78,7 @@ OBJMeshProvider.prototype.extend(
 
 	_uploadVertexData: function ()
 	{
-		for(var i = 0; i < this.submeshes.length; i++)
+		for (var i = 0; i < this.submeshes.length; i++)
 		{
 			var subMesh = this.submeshes[i];
 			GL.bindBuffer(GL.ARRAY_BUFFER, subMesh.vertexBuffer);
@@ -98,11 +98,11 @@ OBJMeshProvider.prototype.extend(
 		var uvs = [];
 		var faces = [];
 
-		for(var i = 0; i < lines.length; i++)
+		for (var i = 0; i < lines.length; i++)
 		{
 			var line = lines[i];
 
-			while(line.indexOf('  ') != -1)
+			while (line.indexOf('  ') != -1)
 			{
 				line = line.replace('  ', ' ');
 			}
@@ -183,12 +183,12 @@ OBJMeshProvider.prototype.extend(
 	{
 		var uniqueVertices = {};
 
-		for(var i = 0; i < faces.length; i++)
+		for (var i = 0; i < faces.length; i++)
 		{
 			var face = faces[i];
 			var verts = [face[0], face[1], face[2]];
 
-			for(var q = 0; q < verts.length; q++)
+			for (var q = 0; q < verts.length; q++)
 			{
 				var vert = verts[q];
 				if (vert in uniqueVertices)
@@ -249,7 +249,7 @@ OBJMeshProvider.prototype.extend(
 		var interleavedVertices = [];
 
 		var currentIndex = 0;
-		for(var vertex in uniqueVertices)
+		for (var vertex in uniqueVertices)
 		{
 			if (typeof uniqueVertices[vertex] != 'object')
 			{
@@ -259,14 +259,14 @@ OBJMeshProvider.prototype.extend(
 			hashToIndex[vertex] = currentIndex++;
 			var data = uniqueVertices[vertex];
 
-			for(var i = 0; i < data.length; i++)
+			for (var i = 0; i < data.length; i++)
 			{
 				interleavedVertices.push(data[i]);
 			}
 		}
 
 		var indices = [];
-		for(var i = 0; i < faces.length; i++)
+		for (var i = 0; i < faces.length; i++)
 		{
 			var face = faces[i];
 			indices.push(hashToIndex[face[0]]);

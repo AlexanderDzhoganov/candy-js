@@ -45,7 +45,7 @@ MeshBoundsProvider.prototype.extend(
 			return;
 		}
 
-		for(var i = 0; i < meshProvider.submeshes.length; i++)
+		for (var i = 0; i < meshProvider.submeshes.length; i++)
 		{
 			var subMesh = meshProvider.submeshes[i];
 
@@ -60,7 +60,7 @@ MeshBoundsProvider.prototype.extend(
 			var min = vec3.fromValues(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
 			var max = vec3.fromValues(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
 
-			for(var i = 0; i < vertices.length / 8; i++)
+			for (var i = 0; i < vertices.length / 8; i++)
 			{
 				var position = vec3.fromValues
 				(

@@ -30,7 +30,7 @@ var GuiCursor = function (resourceName)
 	GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
 	GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(quad), GL.STREAM_DRAW);
 
-	document.onmousemove = function(e)
+	document.onmousemove = function (e)
 	{
 		var dx = e.movementX || e.mozMovementX || e.webkitMovementX || 0;
 		var dy = e.movementY || e.mozMovementY || e.webkitMovementY || 0;

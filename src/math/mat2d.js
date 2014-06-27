@@ -45,7 +45,7 @@ var mat2d = {};
  *
  * @returns {mat2d} a new 2x3 matrix
  */
-mat2d.create = function() {
+mat2d.create = function () {
     var out = new GLMAT_ARRAY_TYPE(6);
     out[0] = 1;
     out[1] = 0;
@@ -62,7 +62,7 @@ mat2d.create = function() {
  * @param {mat2d} a matrix to clone
  * @returns {mat2d} a new 2x3 matrix
  */
-mat2d.clone = function(a) {
+mat2d.clone = function (a) {
     var out = new GLMAT_ARRAY_TYPE(6);
     out[0] = a[0];
     out[1] = a[1];
@@ -80,7 +80,7 @@ mat2d.clone = function(a) {
  * @param {mat2d} a the source matrix
  * @returns {mat2d} out
  */
-mat2d.copy = function(out, a) {
+mat2d.copy = function (out, a) {
     out[0] = a[0];
     out[1] = a[1];
     out[2] = a[2];
@@ -96,7 +96,7 @@ mat2d.copy = function(out, a) {
  * @param {mat2d} out the receiving matrix
  * @returns {mat2d} out
  */
-mat2d.identity = function(out) {
+mat2d.identity = function (out) {
     out[0] = 1;
     out[1] = 0;
     out[2] = 0;
@@ -113,7 +113,7 @@ mat2d.identity = function(out) {
  * @param {mat2d} a the source matrix
  * @returns {mat2d} out
  */
-mat2d.invert = function(out, a) {
+mat2d.invert = function (out, a) {
     var aa = a[0], ab = a[1], ac = a[2], ad = a[3],
         atx = a[4], aty = a[5];
 
@@ -198,7 +198,7 @@ mat2d.rotate = function (out, a, rad) {
  * @param {vec2} v the vec2 to scale the matrix by
  * @returns {mat2d} out
  **/
-mat2d.scale = function(out, a, v) {
+mat2d.scale = function (out, a, v) {
     var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5],
         v0 = v[0], v1 = v[1];
     out[0] = a0 * v0;
@@ -218,7 +218,7 @@ mat2d.scale = function(out, a, v) {
  * @param {vec2} v the vec2 to translate the matrix by
  * @returns {mat2d} out
  **/
-mat2d.translate = function(out, a, v) {
+mat2d.translate = function (out, a, v) {
     var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3], a4 = a[4], a5 = a[5],
         v0 = v[0], v1 = v[1];
     out[0] = a0;

@@ -136,7 +136,7 @@ var GuiRenderer =
 	calculateInputBoxSize: function (context, wnd, maxLength)
 	{
 		var s = '';
-		for(var i = 0; i <= maxLength; i++)
+		for (var i = 0; i <= maxLength; i++)
 		{
 			s += ' ';
 		}
@@ -238,7 +238,7 @@ var GuiRenderer =
 		var lines = input.split("\n");
 
 		
-		for(var i = 0; i < lines.length; i++)
+		for (var i = 0; i < lines.length; i++)
 		{
 			var line = lines[i];
 			var y = 16.0 + i * (wnd.layout.fontSize + 2.0);
@@ -348,7 +348,7 @@ var GuiRenderer =
 		this._strokeRect(context, wnd.skin.listbox.border[control.state], control.rect, wnd.skin.button.borderThickness);
 
 		var step = wnd.layout.fontSize + 4.0;
-		for(var i = 0; i < items.length; i++)
+		for (var i = 0; i < items.length; i++)
 		{
 			var y = i * step;
 			var itemRect =

@@ -31,7 +31,7 @@ var mat2 = {};
  *
  * @returns {mat2} a new 2x2 matrix
  */
-mat2.create = function() {
+mat2.create = function () {
     var out = new GLMAT_ARRAY_TYPE(4);
     out[0] = 1;
     out[1] = 0;
@@ -46,7 +46,7 @@ mat2.create = function() {
  * @param {mat2} a matrix to clone
  * @returns {mat2} a new 2x2 matrix
  */
-mat2.clone = function(a) {
+mat2.clone = function (a) {
     var out = new GLMAT_ARRAY_TYPE(4);
     out[0] = a[0];
     out[1] = a[1];
@@ -62,7 +62,7 @@ mat2.clone = function(a) {
  * @param {mat2} a the source matrix
  * @returns {mat2} out
  */
-mat2.copy = function(out, a) {
+mat2.copy = function (out, a) {
     out[0] = a[0];
     out[1] = a[1];
     out[2] = a[2];
@@ -76,7 +76,7 @@ mat2.copy = function(out, a) {
  * @param {mat2} out the receiving matrix
  * @returns {mat2} out
  */
-mat2.identity = function(out) {
+mat2.identity = function (out) {
     out[0] = 1;
     out[1] = 0;
     out[2] = 0;
@@ -91,7 +91,7 @@ mat2.identity = function(out) {
  * @param {mat2} a the source matrix
  * @returns {mat2} out
  */
-mat2.transpose = function(out, a) {
+mat2.transpose = function (out, a) {
     // If we are transposing ourselves we can skip a few steps but have to cache some values
     if (out === a) {
         var a1 = a[1];
@@ -114,7 +114,7 @@ mat2.transpose = function(out, a) {
  * @param {mat2} a the source matrix
  * @returns {mat2} out
  */
-mat2.invert = function(out, a) {
+mat2.invert = function (out, a) {
     var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3],
 
         // Calculate the determinant
@@ -140,7 +140,7 @@ mat2.invert = function(out, a) {
  * @param {mat2} a the source matrix
  * @returns {mat2} out
  */
-mat2.adjoint = function(out, a) {
+mat2.adjoint = function (out, a) {
     // Caching this value is nessecary if out == a
     var a0 = a[0];
     out[0] =  a[3];
@@ -212,7 +212,7 @@ mat2.rotate = function (out, a, rad) {
  * @param {vec2} v the vec2 to scale the matrix by
  * @returns {mat2} out
  **/
-mat2.scale = function(out, a, v) {
+mat2.scale = function (out, a, v) {
     var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3],
         v0 = v[0], v1 = v[1];
     out[0] = a0 * v0;

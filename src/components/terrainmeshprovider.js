@@ -107,7 +107,7 @@ TerrainMeshProvider.prototype.extend(
 
 	dispose: function ()
 	{
-		for(var i = 0; i < this.submeshes.length; i++)
+		for (var i = 0; i < this.submeshes.length; i++)
 		{
 			var subMesh = this.submeshes[i];
 
@@ -118,7 +118,7 @@ TerrainMeshProvider.prototype.extend(
 
 	_uploadVertexData: function ()
 	{
-		for(var i = 0; i < this.submeshes.length; i++)
+		for (var i = 0; i < this.submeshes.length; i++)
 		{
 			var subMesh = this.submeshes[i];
 

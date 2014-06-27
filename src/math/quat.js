@@ -31,7 +31,7 @@ var quat = {};
  *
  * @returns {quat} a new quaternion
  */
-quat.create = function() {
+quat.create = function () {
     var out = new GLMAT_ARRAY_TYPE(4);
     out[0] = 0;
     out[1] = 0;
@@ -51,12 +51,12 @@ quat.create = function() {
  * @param {vec3} b the destination vector
  * @returns {quat} out
  */
-quat.rotationTo = (function() {
+quat.rotationTo = (function () {
     var tmpvec3 = vec3.create();
     var xUnitVec3 = vec3.fromValues(1,0,0);
     var yUnitVec3 = vec3.fromValues(0,1,0);
 
-    return function(out, a, b) {
+    return function (out, a, b) {
         var dot = vec3.dot(a, b);
         if (dot < -0.999999) {
             vec3.cross(tmpvec3, xUnitVec3, a);
@@ -92,10 +92,10 @@ quat.rotationTo = (function() {
  * @param {vec3} up    the vector representing the local "up" direction
  * @returns {quat} out
  */
-quat.setAxes = (function() {
+quat.setAxes = (function () {
     var matr = mat3.create();
 
-    return function(out, view, right, up) {
+    return function (out, view, right, up) {
         matr[0] = right[0];
         matr[3] = right[1];
         matr[6] = right[2];
@@ -162,7 +162,7 @@ quat.set = vec4.set;
  * @param {quat} out the receiving quaternion
  * @returns {quat} out
  */
-quat.identity = function(out) {
+quat.identity = function (out) {
     out[0] = 0;
     out[1] = 0;
     out[2] = 0;
@@ -179,7 +179,7 @@ quat.identity = function(out) {
  * @param {Number} rad the angle in radians
  * @returns {quat} out
  **/
-quat.setAxisAngle = function(out, axis, rad) {
+quat.setAxisAngle = function (out, axis, rad) {
     rad = rad * 0.5;
     var s = Math.sin(rad);
     out[0] = s * axis[0];
@@ -208,7 +208,7 @@ quat.add = vec4.add;
  * @param {quat} b the second operand
  * @returns {quat} out
  */
-quat.multiply = function(out, a, b) {
+quat.multiply = function (out, a, b) {
     var ax = a[0], ay = a[1], az = a[2], aw = a[3],
         bx = b[0], by = b[1], bz = b[2], bw = b[3];
 
@@ -397,7 +397,7 @@ quat.slerp = function (out, a, b, t) {
  * @param {quat} a quat to calculate inverse of
  * @returns {quat} out
  */
-quat.invert = function(out, a) {
+quat.invert = function (out, a) {
     var a0 = a[0], a1 = a[1], a2 = a[2], a3 = a[3],
         dot = a0*a0 + a1*a1 + a2*a2 + a3*a3,
         invDot = dot ? 1.0/dot : 0;
@@ -478,7 +478,7 @@ quat.normalize = vec4.normalize;
  * @returns {quat} out
  * @function
  */
-quat.fromMat3 = function(out, m) {
+quat.fromMat3 = function (out, m) {
     // Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
     // article "Quaternion Calculus and Fast Animation".
     var fTrace = m[0] + m[4] + m[8];

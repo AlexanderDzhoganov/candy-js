@@ -1,4 +1,4 @@
-var ResourceLoader = function(resources, step, callback)
+var ResourceLoader = function (resources, step, callback)
 {
 	this.step = typeof(step) === "function" ? step : function () {};
 	this.callback = typeof(callback) === "function" ? callback : function () {};
@@ -28,22 +28,22 @@ ResourceLoader.extend(
 
 ResourceLoader.prototype.extend(
 {
-	getResource: function(name)
+	getResource: function (name)
 	{
 		return this.resources[name];
 	},
 
-	getContent: function(name)
+	getContent: function (name)
 	{
 		return this.resources[name] ? this.resources[name].content : null;
 	},
 
-	getResources: function()
+	getResources: function ()
 	{
 		return this.resources;
 	},
 	
-	_ajaxLoad: function()
+	_ajaxLoad: function ()
 	{
 		if (window.XMLHttpRequest)
 		{// code for IE7+, Firefox, Chrome, Opera, Safari
@@ -62,7 +62,7 @@ ResourceLoader.prototype.extend(
 			ext,
 			res;
 
-		resources.forEach(function(key, res)
+		resources.forEach(function (key, res)
 		{
 	   		filename = res.split("/");
 	   		ext = res.split(".");
@@ -81,13 +81,13 @@ ResourceLoader.prototype.extend(
 		this._parseResources();
 	},
 
-	_getFileType: function(ext)
+	_getFileType: function (ext)
 	{
 		var type = null;
 
-		ResourceLoader.EXT.forEach(function( key, val )
+		ResourceLoader.EXT.forEach(function ( key, val )
 		{
-			val.forEach(function( el, ind )
+			val.forEach(function ( el, ind )
 			{
 				if ( el === ext )
 				{
@@ -99,11 +99,11 @@ ResourceLoader.prototype.extend(
 		return type;
 	},
 
-	_parseResources: function()
+	_parseResources: function ()
 	{
 		var elements = [];
 
-		this.resources.forEach(function( k, v )
+		this.resources.forEach(function ( k, v )
 		{
 			elements.push(k);
 		});
@@ -111,7 +111,7 @@ ResourceLoader.prototype.extend(
 		this._fetchResources(elements);
 	},
 
-	_fetchResources: function(elements)
+	_fetchResources: function (elements)
 	{
 		var elementKey = elements[0];
 
@@ -131,7 +131,7 @@ ResourceLoader.prototype.extend(
 			{
 				var img = new Image();
 
-				img.onload = function()
+				img.onload = function ()
 				{
 					elements.shift();
 
@@ -160,7 +160,7 @@ ResourceLoader.prototype.extend(
 			}
 			else if (elementObject.type == "json")
 			{
-				this.xmlHttp.onreadystatechange = function()
+				this.xmlHttp.onreadystatechange = function ()
 				{
 					if (this.xmlHttp.readyState == 4 && this.xmlHttp.status == 200)
 					{
@@ -176,7 +176,7 @@ ResourceLoader.prototype.extend(
 			}
 			else if (elementObject.type == "uint8array")
 			{
-				this.xmlHttp.onreadystatechange = function()
+				this.xmlHttp.onreadystatechange = function ()
 				{
 					if (this.xmlHttp.readyState == 4 && this.xmlHttp.status == 200)
 					{
@@ -204,7 +204,7 @@ ResourceLoader.prototype.extend(
 		}
 	},
 
-	_updateProgress: function(resName, failed)
+	_updateProgress: function (resName, failed)
 	{
 		this.progress++;
 

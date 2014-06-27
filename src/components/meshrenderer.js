@@ -49,7 +49,7 @@ MeshRenderer.prototype.extend(
 
 		if (this.wireframe)
 		{
-			for(var i = 0; i < meshProvider.submeshes.length; i++)
+			for (var i = 0; i < meshProvider.submeshes.length; i++)
 			{
 				Shader.setActiveProgram(MeshRenderer.getWireframeProgram());
 				Shader.setUniformVec3("wireframeColor", vec3.fromValues(0, 0.2, 1));
@@ -60,7 +60,7 @@ MeshRenderer.prototype.extend(
 		}
 		else
 		{
-			for(var i = 0; i < meshProvider.submeshes.length; i++)
+			for (var i = 0; i < meshProvider.submeshes.length; i++)
 			{
 				this._setupMaterial();
 				Shader.setUniformMat4("model", worldModelMatrix);
@@ -104,7 +104,7 @@ MeshRenderer.prototype.extend(
 		Shader.setActiveProgram(program);
 
 		var index = 0;
-		for(var name in material.textures)
+		for (var name in material.textures)
 		{
 			if (!material.textures.hasOwnProperty(name))
 			{
@@ -139,7 +139,7 @@ MeshRenderer.prototype.extend(
 		}
 	},
 
-	_drawWireframeSubmesh: function(subMesh)
+	_drawWireframeSubmesh: function (subMesh)
 	{
 		var indices = subMesh.indices;
 		var lineIndices = [];

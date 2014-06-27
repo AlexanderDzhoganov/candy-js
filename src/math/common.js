@@ -43,7 +43,7 @@ var glMatrix = {};
  *
  * @param {Type} type Array type, such as Float32Array or Array
  */
-glMatrix.setMatrixArrayType = function(type) {
+glMatrix.setMatrixArrayType = function (type) {
 		GLMAT_ARRAY_TYPE = type;
 }
 
@@ -58,6 +58,6 @@ var degree = Math.PI / 180;
 *
 * @param {Number} Angle in Degrees
 */
-glMatrix.toRadian = function(a){
+glMatrix.toRadian = function (a){
 		 return a * degree;
 }

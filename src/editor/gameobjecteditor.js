@@ -27,7 +27,7 @@ var GameObjectEditor = function (gameObject)
 
 	var components = gameObject.getComponents();
 
-	for(var key in components)
+	for (var key in components)
 	{
 		if (components[key] instanceof Component);
 		{

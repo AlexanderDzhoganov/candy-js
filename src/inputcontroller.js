@@ -1,4 +1,4 @@
-var InputController = function()
+var InputController = function ()
 {
 	this.disableExternalKeyEvents = true;
 
@@ -152,7 +152,7 @@ InputController.prototype.extend(
 
 	removeGlobal: function (listenerFunc, mode)
 	{
-		this.allListeners[mode].forEach(function(func, ind)
+		this.allListeners[mode].forEach(function (func, ind)
 		{
 			if (func.toString() == listenerFunc.toString())
 			{
@@ -229,7 +229,7 @@ InputController.prototype.extend(
 		}
 	},
 
-	_keyAction: function(e)
+	_keyAction: function (e)
 	{
 		var keyCode = e.keyCode;
 		var addToStack = true;
@@ -337,7 +337,7 @@ InputController.prototype.extend(
 
 		if (e.type == "keyup")
 		{
-			for(var i = 0; i < this.keyPressStack.length; i++)
+			for (var i = 0; i < this.keyPressStack.length; i++)
 			{
 				if (this.keyPressStack[i] == keyCode)
 				{

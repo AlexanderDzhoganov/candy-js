@@ -90,12 +90,12 @@ GridRenderer.prototype.extend(
 
 		var step = this.size;
 
-		for(var x = xStart; x <= xEnd; x += step)
+		for (var x = xStart; x <= xEnd; x += step)
 		{
 			pushLine(x, y, zStart, x, y, zEnd);
 		}
 
-		for(var z = zStart; z <= zEnd; z += step)
+		for (var z = zStart; z <= zEnd; z += step)
 		{
 			pushLine(xStart, y, z, xEnd, y, z);
 		}

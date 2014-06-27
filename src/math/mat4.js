@@ -31,7 +31,7 @@ var mat4 = {};
  *
  * @returns {mat4} a new 4x4 matrix
  */
-mat4.create = function() {
+mat4.create = function () {
     var out = new GLMAT_ARRAY_TYPE(16);
     out[0] = 1;
     out[1] = 0;
@@ -58,7 +58,7 @@ mat4.create = function() {
  * @param {mat4} a matrix to clone
  * @returns {mat4} a new 4x4 matrix
  */
-mat4.clone = function(a) {
+mat4.clone = function (a) {
     var out = new GLMAT_ARRAY_TYPE(16);
     out[0] = a[0];
     out[1] = a[1];
@@ -86,7 +86,7 @@ mat4.clone = function(a) {
  * @param {mat4} a the source matrix
  * @returns {mat4} out
  */
-mat4.copy = function(out, a) {
+mat4.copy = function (out, a) {
     out[0] = a[0];
     out[1] = a[1];
     out[2] = a[2];
@@ -112,7 +112,7 @@ mat4.copy = function(out, a) {
  * @param {mat4} out the receiving matrix
  * @returns {mat4} out
  */
-mat4.identity = function(out) {
+mat4.identity = function (out) {
     out[0] = 1;
     out[1] = 0;
     out[2] = 0;
@@ -139,7 +139,7 @@ mat4.identity = function(out) {
  * @param {mat4} a the source matrix
  * @returns {mat4} out
  */
-mat4.transpose = function(out, a) {
+mat4.transpose = function (out, a) {
     // If we are transposing ourselves we can skip a few steps but have to cache some values
     if (out === a) {
         var a01 = a[1], a02 = a[2], a03 = a[3],
@@ -187,7 +187,7 @@ mat4.transpose = function(out, a) {
  * @param {mat4} a the source matrix
  * @returns {mat4} out
  */
-mat4.invert = function(out, a) {
+mat4.invert = function (out, a) {
     var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3],
         a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7],
         a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11],
@@ -241,7 +241,7 @@ mat4.invert = function(out, a) {
  * @param {mat4} a the source matrix
  * @returns {mat4} out
  */
-mat4.adjoint = function(out, a) {
+mat4.adjoint = function (out, a) {
     var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3],
         a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7],
         a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11],
@@ -387,7 +387,7 @@ mat4.translate = function (out, a, v) {
  * @param {vec3} v the vec3 to scale the matrix by
  * @returns {mat4} out
  **/
-mat4.scale = function(out, a, v) {
+mat4.scale = function (out, a, v) {
     var x = v[0], y = v[1], z = v[2];
 
     out[0] = a[0] * x;

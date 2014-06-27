@@ -31,7 +31,7 @@ var mat3 = {};
  *
  * @returns {mat3} a new 3x3 matrix
  */
-mat3.create = function() {
+mat3.create = function () {
     var out = new GLMAT_ARRAY_TYPE(9);
     out[0] = 1;
     out[1] = 0;
@@ -52,7 +52,7 @@ mat3.create = function() {
  * @param {mat4} a   the source 4x4 matrix
  * @returns {mat3} out
  */
-mat3.fromMat4 = function(out, a) {
+mat3.fromMat4 = function (out, a) {
     out[0] = a[0];
     out[1] = a[1];
     out[2] = a[2];
@@ -71,7 +71,7 @@ mat3.fromMat4 = function(out, a) {
  * @param {mat3} a matrix to clone
  * @returns {mat3} a new 3x3 matrix
  */
-mat3.clone = function(a) {
+mat3.clone = function (a) {
     var out = new GLMAT_ARRAY_TYPE(9);
     out[0] = a[0];
     out[1] = a[1];
@@ -92,7 +92,7 @@ mat3.clone = function(a) {
  * @param {mat3} a the source matrix
  * @returns {mat3} out
  */
-mat3.copy = function(out, a) {
+mat3.copy = function (out, a) {
     out[0] = a[0];
     out[1] = a[1];
     out[2] = a[2];
@@ -111,7 +111,7 @@ mat3.copy = function(out, a) {
  * @param {mat3} out the receiving matrix
  * @returns {mat3} out
  */
-mat3.identity = function(out) {
+mat3.identity = function (out) {
     out[0] = 1;
     out[1] = 0;
     out[2] = 0;
@@ -131,7 +131,7 @@ mat3.identity = function(out) {
  * @param {mat3} a the source matrix
  * @returns {mat3} out
  */
-mat3.transpose = function(out, a) {
+mat3.transpose = function (out, a) {
     // If we are transposing ourselves we can skip a few steps but have to cache some values
     if (out === a) {
         var a01 = a[1], a02 = a[2], a12 = a[5];
@@ -163,7 +163,7 @@ mat3.transpose = function(out, a) {
  * @param {mat3} a the source matrix
  * @returns {mat3} out
  */
-mat3.invert = function(out, a) {
+mat3.invert = function (out, a) {
     var a00 = a[0], a01 = a[1], a02 = a[2],
         a10 = a[3], a11 = a[4], a12 = a[5],
         a20 = a[6], a21 = a[7], a22 = a[8],
@@ -199,7 +199,7 @@ mat3.invert = function(out, a) {
  * @param {mat3} a the source matrix
  * @returns {mat3} out
  */
-mat3.adjoint = function(out, a) {
+mat3.adjoint = function (out, a) {
     var a00 = a[0], a01 = a[1], a02 = a[2],
         a10 = a[3], a11 = a[4], a12 = a[5],
         a20 = a[6], a21 = a[7], a22 = a[8];
@@ -275,7 +275,7 @@ mat3.mul = mat3.multiply;
  * @param {vec2} v vector to translate by
  * @returns {mat3} out
  */
-mat3.translate = function(out, a, v) {
+mat3.translate = function (out, a, v) {
     var a00 = a[0], a01 = a[1], a02 = a[2],
         a10 = a[3], a11 = a[4], a12 = a[5],
         a20 = a[6], a21 = a[7], a22 = a[8],
@@ -333,7 +333,7 @@ mat3.rotate = function (out, a, rad) {
  * @param {vec2} v the vec2 to scale the matrix by
  * @returns {mat3} out
  **/
-mat3.scale = function(out, a, v) {
+mat3.scale = function (out, a, v) {
     var x = v[0], y = v[1];
 
     out[0] = x * a[0];
@@ -357,7 +357,7 @@ mat3.scale = function(out, a, v) {
  * @param {mat2d} a the matrix to copy
  * @returns {mat3} out
  **/
-mat3.fromMat2d = function(out, a) {
+mat3.fromMat2d = function (out, a) {
     out[0] = a[0];
     out[1] = a[1];
     out[2] = 0;

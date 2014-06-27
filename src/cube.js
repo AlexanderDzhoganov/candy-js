@@ -1,4 +1,4 @@
-var Cube = function()
+var Cube = function ()
 {
 	var v =
 	[
@@ -56,7 +56,7 @@ Cube.extend(
 Cube.prototype.extend(
 {
 
-	uploadVertexData: function()
+	uploadVertexData: function ()
 	{
 		GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
 		GL.bufferData(GL.ARRAY_BUFFER, this.vertices, GL.STATIC_DRAW);
@@ -65,20 +65,20 @@ Cube.prototype.extend(
 		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, this.indices, GL.STATIC_DRAW);
 	},
 
-	renderSelf: function()
+	renderSelf: function ()
 	{
 		GL.bindBuffer(GL.ARRAY_BUFFER, this._vertexBuffer);
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._indexBuffer);
 		Renderer.drawIndexedTriangles(this.indices.length);
 	},
 
-	dispose: function()
+	dispose: function ()
 	{
 		GL.deleteBuffer(this._vertexBuffer);
 		GL.deleteBuffer(this._indexBuffer);
 	},
 
-	getModelMatrix: function()
+	getModelMatrix: function ()
 	{
 		return mat4.create();
 	},
