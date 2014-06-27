@@ -1,4 +1,16 @@
-include([ "ray", "scenegraph", "component", "gameobject", "tests/headers", "components/headers" ]);
+include(
+[
+	"ray",
+	"scenegraph",
+	"component",
+	"gameobject",
+	"tests/headers",
+	"components/headers",
+	"math/headers",
+	"gl/headers",
+	"gui/headers",
+	"inputcontroller",
+]);
 
 var Application = function()
 {
@@ -19,6 +31,10 @@ Application.prototype.extend(
 
 	init: function ()
 	{
+		InputController = new InputController();	
+		Renderer = new Renderer();
+		Gui = new Gui();
+
 		this.sceneGraph = new SceneGraph();
 
 		var grid = new GameObject("Grid");

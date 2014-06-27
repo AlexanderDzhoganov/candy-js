@@ -8,10 +8,7 @@ var ResourceLoader = function (resources, step, callback)
 	this.progress = 0;
 	this.numElements = 0;
 
-	this.xmlHttp = null;
-
-	this._ajaxLoad();
-
+	this.xmlHttp = new XMLHttpRequest();
 	this._loadResources( resources );
 };
 
@@ -42,30 +39,15 @@ ResourceLoader.prototype.extend(
 	{
 		return this.resources;
 	},
-	
-	_ajaxLoad: function ()
-	{
-		if (window.XMLHttpRequest)
-		{// code for IE7+, Firefox, Chrome, Opera, Safari
-			this.xmlHttp = new XMLHttpRequest();
-		}
-		else
-		{// code for IE6, IE5
-			this.xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
-		}
-	},
 
 	_loadResources: function (resources)
 	{
-		var length = resources.size(),
-			filename,
-			ext,
-			res;
+		var length = resources.size();
 
 		resources.forEach(function (key, res)
 		{
-	   		filename = res.split("/");
-	   		ext = res.split(".");
+	   		var filename = res.split("/");
+	   		var ext = res.split(".");
 
 			this.resources[key] = 
 			{
@@ -85,11 +67,11 @@ ResourceLoader.prototype.extend(
 	{
 		var type = null;
 
-		ResourceLoader.EXT.forEach(function ( key, val )
+		ResourceLoader.EXT.forEach(function (key, val)
 		{
-			val.forEach(function ( el, ind )
+			val.forEach(function (element, index)
 			{
-				if ( el === ext )
+				if (element === ext)
 				{
 					type = key;
 				}
@@ -103,7 +85,7 @@ ResourceLoader.prototype.extend(
 	{
 		var elements = [];
 
-		this.resources.forEach(function ( k, v )
+		this.resources.forEach(function (k, v)
 		{
 			elements.push(k);
 		});
