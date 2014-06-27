@@ -42,10 +42,12 @@ include([], function ()
 				forceRecalculateNormals
 			);
 
-			var result = this._prepareVerticesIndices(uniqueVertices, objData.materials.default.faces);
+			console.log("unique verts for material " + name + " " + uniqueVertices.size());
+
+			var result = this._prepareVerticesIndices(uniqueVertices, objData.materials[name].faces);
 
 			verticesCount += result.vertices.length / 8;
-			indicesCount += result.vertices.length / 3;
+			indicesCount += result.indices.length / 3;
 
 			var vertices = new Float32Array(result.vertices);
 			var indices = new Uint16Array(result.indices);
@@ -59,7 +61,7 @@ include([], function ()
 			objData.positions.length + " positions, " +
 			objData.normals.length + " normals, " +
 			objData.uvs.length + " uvs, " +
-			materialsCount + " materials", +
+			materialsCount + " materials, ", +
 			faceCount + " faces, resulting in " +
 			verticesCount + " unique vertices and " +
 			indicesCount + " triangles"
@@ -190,42 +192,31 @@ include([], function ()
 			
 				if (components[0] == 'f')
 				{
-					if (components.length == 4)
+					var numVertices = components.length - 1;
+
+					for(var q = 0; q < numVertices - 2; q++) // works fine
 					{
-						// triangle
 						materials[currentMaterial].faces.push
 						([
-							components[1],
-							components[2],
-							components[3]
-						]);
-					}
-					else if (components.length == 5)
-					{
-						// quad
-						materials[currentMaterial].faces.push
-						([
-							components[1],
-							components[2],
-							components[3]
+							components[1].split("/"),
+							components[2 + q].split("/"),
+							components[3 + q].split("/")
 						]);
 
-						materials[currentMaterial].faces.push
-						([
-							components[1],
-							components[3],
-							components[4]
-						]);
 					}
 				}
 				else if (components[0].slice(0, 7) == "usemtl")
 				{
 					var material = components[1];
-					materials[material] =
+
+					if(!materials[material])
 					{
-						name: material,
-						faces: [],
-					};
+						materials[material] =
+						{
+							name: material,
+							faces: [],
+						};
+					}
 
 					currentMaterial = material;
 				}
@@ -245,13 +236,13 @@ include([], function ()
 
 				for (var q = 0; q < verts.length; q++)
 				{
-					var vert = verts[q];
-					if (vert in uniqueVertices)
+					var vertSplit = verts[q];
+
+					var vertHash = vertSplit[0] + '/' + vertSplit[1] + '/' + vertSplit[2];
+					if (vertHash in uniqueVertices)
 					{
 						continue;
 					}
-
-					var vertSplit = vert.split('/');
 
 					var pidx = null;
 					var nidx = null;
@@ -275,13 +266,57 @@ include([], function ()
 
 					if (!normal || !nidx || forceRecalculateNormals)
 					{
-						normal = this._calculateNormal(pidx, positions, faces);
-						//console.log("call");
+						//normal = this._calculateNormal(pidx, positions, faces);
+						normal = vec3.create();			
+
+						var faceVertexIndex = pidx + 1;
+						var faceSet = [];
+						var facesFound = 0;
+
+						for (var i = 0; i < faces.length && faceSet.length < 8; i++) // optimization
+						{
+							for (var q = 0; q < 3; q++)
+							{
+								var currentFaceVertex = faces[i][q][0];
+								if (faceVertexIndex == currentFaceVertex)
+								{
+									faceSet.push(faces[i]);
+									break;
+								}
+							}
+						}
+
+						for (var i = 0; i < faceSet.length; i++)
+						{
+							var v0_idx = parseInt(faceSet[i][0][0]) - 1;
+							var v1_idx = parseInt(faceSet[i][1][0]) - 1;
+							var v2_idx = parseInt(faceSet[i][2][0]) - 1;
+
+							var v0 = positions[v0_idx];
+							var v1 = positions[v1_idx];
+							var v2 = positions[v2_idx];
+
+							var sideA = vec3.create();
+							vec3.subtract(sideA, v0, v1);
+							
+							var sideB = vec3.create();
+							vec3.subtract(sideB, v0, v2);
+
+							var crossNormal = vec3.create();
+							vec3.cross(crossNormal, sideA, sideB);
+
+							vec3.normalize(crossNormal, crossNormal);
+
+							vec3.add(normal, crossNormal, normal);
+						}
+
+						vec3.scale(normal, normal, 1.0 / faceSet.length);
+						vec3.normalize(normal, normal);
 					}
 
 					var uv = uvs[uvidx];
 
-					uniqueVertices[vert] =
+					uniqueVertices[vertHash] =
 					[
 						position[0],
 						position[1],
@@ -293,6 +328,11 @@ include([], function ()
 						uv[1]
 					];
 				}
+			}
+
+			if(uniqueVertices.size() >= 65534)
+			{
+				console.log("SubMesh is too big!");
 			}
 
 			return uniqueVertices;
@@ -324,9 +364,9 @@ include([], function ()
 			for (var i = 0; i < faces.length; i++)
 			{
 				var face = faces[i];
-				indices.push(hashToIndex[face[0]]);
-				indices.push(hashToIndex[face[1]]);
-				indices.push(hashToIndex[face[2]]);		
+				indices.push(hashToIndex[face[0][0] + '/' + face[0][1] + '/' + face[0][2]]);
+				indices.push(hashToIndex[face[1][0] + '/' + face[1][1] + '/' + face[1][2]]);
+				indices.push(hashToIndex[face[2][0] + '/' + face[2][1] + '/' + face[2][2]]);		
 			}
 
 			return { vertices: interleavedVertices, indices: indices };
@@ -334,59 +374,7 @@ include([], function ()
 
 		_calculateNormal: function (positionIndex, positions, faces)
 		{
-		
-			var resultNormal = vec3.create();
-
-			var normalForTriangle = function (v0, v1, v2)
-			{
-				var sideA = vec3.create();
-				vec3.subtract(sideA, v0, v1);
-				
-				var sideB = vec3.create();
-				vec3.subtract(sideB, v0, v2);
-
-				var normal = vec3.create();
-				vec3.cross(normal, sideA, sideB);
-
-				vec3.normalize(normal, normal);
-
-				return normal;
-			};
-
-			var faceVertexIndex = positionIndex + 1;
-			var faceSet = [];
-
-			for (var i = 0; i < faces.length; i++)
-			{
-				for (var q = 0; q < 3; q++)
-				{
-					var currentFaceVertex = faces[i][q].split('/')[0];
-					if (faceVertexIndex == currentFaceVertex)
-					{
-						faceSet.push(faces[i]);
-						break;
-					}
-				}
-			}
-
-			for (var i = 0; i < faceSet.length; i++)
-			{
-				var v0_idx = parseInt(faceSet[i][0].split('/')[0]) - 1;
-				var v1_idx = parseInt(faceSet[i][1].split('/')[0]) - 1;
-				var v2_idx = parseInt(faceSet[i][2].split('/')[0]) - 1;
-
-				var v0 = positions[v0_idx];
-				var v1 = positions[v1_idx];
-				var v2 = positions[v2_idx];
-
-				var calculatedNormal = normalForTriangle(v0, v1, v2);
-				vec3.add(resultNormal, calculatedNormal, resultNormal);
-			}
-
-			vec3.scale(resultNormal, resultNormal, 1.0 / faceSet.length);
-
-			vec3.normalize(resultNormal, resultNormal);
-
+			
 			return resultNormal;
 		},
 
