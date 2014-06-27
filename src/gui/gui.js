@@ -23,6 +23,7 @@ Gui = function ()
 	this._previousTime = 0.0;
 
 	this._mouseClickCallbacks = [];
+	this._mouseDeltaCallbacks = [];
 };
 
 Gui.extend(
@@ -93,6 +94,11 @@ Gui.prototype.extend(
 	addMouseClickCallback: function (callback)
 	{
 		this._mouseClickCallbacks.push(callback);
+	},
+
+	addMouseDeltaCallback: function (callback)
+	{
+		this._mouseDeltaCallbacks.push(callback);
 	},
 
 	// private
