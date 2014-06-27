@@ -115,7 +115,8 @@ AABB.prototype.extend(
 		vec3.subtract(vmin, this.center, this.extents);
 		vec3.add(vmax, this.center, this.extents);
 
-		var T_nearDist = T_farDist = vec3.create();; // vectors to hold the T-values for every direction
+		var T_nearDist = vec3.create();
+		var T_farDist = vec3.create(); // vectors to hold the T-values for every direction
     	var t_near = Number.MIN_VALUE; // limits as defined; 
     	var t_far = Number.MAX_VALUE;
 
