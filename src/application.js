@@ -42,7 +42,7 @@ Application.prototype.extend(
 		grid.addComponent(new GridRenderer(-100.0, -100.0, 100.0, 100.0));
 		this.sceneGraph.insert(grid);
 
-		var testProgram = new Shader(ResourceLoader.getContent("diffuse_vertex"), ResourceLoader.getContent("diffuse_fragment"));
+		var testProgram = new Shader(ResourceLoader.getContent("show_normals_vertex"), ResourceLoader.getContent("show_normals_fragment"));
 
 		var testObject = new GameObject("testMesh");
 		testObject.addComponent(new OBJMeshProvider("de_dust2", false));

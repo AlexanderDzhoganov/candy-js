@@ -33,8 +33,6 @@ include([ "octree" ], function ()
 
 				for(var i = 0; i < mesh.submeshes.length; i++)
 				{
-					debugger;
-					
 					this.octrees.push
 					(
 						new Octree(bounds.aabbs[i], 300, mesh.submeshes[i].vertices, mesh.submeshes[i].indices)
@@ -45,7 +43,9 @@ include([ "octree" ], function ()
 
 		intersectFrustum: function (frustum, subMeshIndex)
 		{
-			return this.octrees[subMeshIndex].intersectFrustum(frustum);
+			//debugger;
+			var result =  this.octrees[subMeshIndex].intersectFrustum(frustum);
+			return result;
 		},
 
 	});

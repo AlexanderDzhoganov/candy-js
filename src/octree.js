@@ -23,7 +23,7 @@ include([], function ()
 
 			this._splitNode(node);
 
-			for(var i = 0; i < 8; i++)
+			for(var i = 0; i < node.children.length; i++)
 			{
 				split(node.children[i]);
 			}
@@ -53,7 +53,7 @@ include([], function ()
 
 				if(node.indices)
 				{
-					indices = indices.concat(node.indices[i]);
+					indices = indices.concat(node.indices);
 				}
 				else
 				{
@@ -73,7 +73,7 @@ include([], function ()
 			node.children = [];
 			var childBounds = node.aabb.octreeSplit();
 
-			for (var i = 0; i < 8; i++)
+			for (var i = 0; i < childBounds.length; i++)
 			{
 				var visibleSet = this._splitIndices(node.indices, childBounds[i]);
 
@@ -101,7 +101,7 @@ include([], function ()
 
 			for(var i = 0; i < indices.length; i += 3)
 			{
-				var triIndices = [ indices[i], indices[i+1], indices[i+2] ];
+				var triIndices = [ indices[i], indices[i + 1], indices[i + 2] ];
 
 				if(triIndices[0] == triIndices[1] || triIndices[1] == triIndices[2] || triIndices[0] == triIndices[2])
 				{
@@ -131,7 +131,6 @@ include([], function ()
 			{
 				debugger;
 			}
-
 			return visibleSetIndices;
 		},
 
