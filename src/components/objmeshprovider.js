@@ -273,7 +273,7 @@ include([], function ()
 						var faceSet = [];
 						var facesFound = 0;
 
-						for (var i = 0; i < faces.length && faceSet.length < 8; i++) // optimization
+						for (var i = 0; i < faces.length && faceSet.length < 80; i++) // optimization
 						{
 							for (var q = 0; q < 3; q++)
 							{

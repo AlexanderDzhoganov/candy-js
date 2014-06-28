@@ -99,7 +99,7 @@ Application.prototype.extend(
 		testObject.addComponent(new AnimationController());
 
 		var time = 0.0;
-		testObject.animationController.setAnimate(function (gameObject, deltaTime)
+		/*testObject.animationController.setAnimate(function (gameObject, deltaTime)
 		{
 			time += deltaTime * 4.0;
 
@@ -113,7 +113,7 @@ Application.prototype.extend(
 			{
 				gameObject.transform.orientationEuler[1] -= 360.0;
 			}
-		});
+		});*/
 
 		this.sceneGraph.insert(testObject);
 
