@@ -27,20 +27,22 @@ include([], function ()
 		var verticesCount = 0;
 		var indicesCount = 0;
 
-		objData.materials.forEach (function (name, material)
+		for (var i = 0; i < objData.materials.length; i++)
 		{
-			faceCount += objData.materials[name].faces.length;
+		//	var name = objData.materials[i].name;
+			faceCount += objData.materials[i].faces.length;
 
 			var uniqueVertices = this._calculateUniqueVertices
 			(
 				objData.positions,
 				objData.normals,
 				objData.uvs,
-				objData.materials[name].faces, 
+				objData.materials[i].faces, 
 				forceRecalculateNormals
 			);
 
-			var result = this._prepareVerticesIndices(uniqueVertices, objData.materials[name].faces);
+			var result = this._prepareVerticesIndices(uniqueVertices, objData.materials[i].faces);
+
 
 			verticesCount += result.vertices.length / 8;
 			indicesCount += result.indices.length / 3;
@@ -51,7 +53,7 @@ include([], function ()
 				var indices = new Uint16Array(result.indices);
 				addSubmesh(vertices, indices);
 			}
-		}.bind(this));
+		}
 
 		console.log
 		(
@@ -169,13 +171,8 @@ include([], function ()
 				}
 			}
 
-
-			var materials =
-			{
-				default: { name: "default", faces: [] },
-			};
-
-			var currentMaterial = "default";
+			var materials = [ { name: "default", faces: [] } ];
+			var current = 0;
 
 			for (var i = 0; i < lines.length; i++)
 			{
@@ -192,31 +189,33 @@ include([], function ()
 				{
 					var numVertices = components.length - 1;
 
-					for(var q = 0; q < numVertices - 2; q++) // works fine
+					for (var q = 0; q < numVertices - 2; q++) // works fine
 					{
-						materials[currentMaterial].faces.push
+						materials[current].faces.push
 						([
 							components[1].split("/"),
 							components[2 + q].split("/"),
 							components[3 + q].split("/")
 						]);
-
 					}
 				}
 				else if (components[0].slice(0, 7) == "usemtl")
 				{
 					var material = components[1];
 
-					if(!materials[material])
+					currentMaterial = null;
+					for (var m = 0; m < materials.length; m++)
 					{
-						materials[material] =
+						if(materials[m].name == material)
 						{
-							name: material,
-							faces: [],
-						};
+							currentMaterial = m;
+						}
 					}
 
-					currentMaterial = material;
+					if(currentMaterial == null)
+					{
+						materials.push({ name: material, faces: [] });
+					}
 				}
 			}
 
@@ -350,6 +349,7 @@ include([], function ()
 				}
 
 				hashToIndex[vertex] = currentIndex++;
+
 				var data = uniqueVertices[vertex];
 
 				for (var i = 0; i < data.length; i++)
@@ -372,7 +372,6 @@ include([], function ()
 
 		_calculateNormal: function (positionIndex, positions, faces)
 		{
-			
 			return resultNormal;
 		},
 

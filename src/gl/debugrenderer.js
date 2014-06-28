@@ -19,6 +19,12 @@ DebugRenderer = function ()
 	{
 	 	this.clear();
 	}.bind(this));
+
+	this.useDepth = true;
+	InputController.add(InputController.keys.Z, InputController.modes.DOWN, function (key)
+	{
+	 	this.useDepth = !this.useDepth;
+	}.bind(this));
 };
 
 DebugRenderer.extend(
@@ -99,7 +105,15 @@ DebugRenderer.prototype.extend(
 
 	renderSelf: function ()
 	{
-		GL.disable(GL.DEPTH_TEST);
+		if(this.useDepth)
+		{
+			GL.enable(GL.DEPTH_TEST);
+		}
+		else
+		{
+			GL.disable(GL.DEPTH_TEST);
+		}
+		//GL.enable(GL.DEPTH_TEST);
 
 		GL.bindBuffer(GL.ARRAY_BUFFER, this._lineVertexBuffer);
 		GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(this._lineVertices), GL.STREAM_DRAW);
@@ -111,7 +125,7 @@ DebugRenderer.prototype.extend(
 		Shader.setUniformVec3("wireframeColor", vec3.fromValues(1, 0, 0));
 		Shader.setUniformMat4("model", mat4.create());
 
-		GL.disable(GL.DEPTH_TEST);
+		//GL.disable(GL.DEPTH_TEST);
 
 		Renderer.drawIndexedLines(this._lineIndices.length, Renderer.VERTEX_FORMAT.PPP);
 

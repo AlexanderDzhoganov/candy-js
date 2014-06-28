@@ -64,6 +64,7 @@ include([], function ()
 			{
 				var octreeMeshProvider = this.gameObject.octreeMeshProvider;
 				var frustum = Renderer._activeCamera.getFrustum();
+				var meshBoundsProvider = this.gameObject.meshBoundsProvider;
 
 				for (var i = 0; i < meshProvider.submeshes.length; i++)
 				{

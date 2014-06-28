@@ -7,10 +7,17 @@ include([], function ()
 		this.indices = indices;
 		this.maxTrianglesPerLeaf = maxTrianglesPerLeaf;
 
+		var convertedIndices = []; //because input is in Uint16 format !;
+
+		for (var i = 0; i < indices.length; i++)
+		{
+			convertedIndices.push(indices[i]);
+		}
+
 		this.root =
 		{
 			aabb: aabb,
-			indices: indices,
+			indices: convertedIndices,
 			children: []
 		};
 
@@ -73,9 +80,13 @@ include([], function ()
 			node.children = [];
 			var childBounds = node.aabb.octreeSplit();
 
+			//Renderer.debug.drawAABB(node.aabb.center, node.aabb.extents);
+
 			for (var i = 0; i < childBounds.length; i++)
 			{
 				var visibleSet = this._splitIndices(node.indices, childBounds[i]);
+
+				//Renderer.debug.drawAABB(childBounds[i].center, childBounds[i].extents);
 
 				node.children.push
 				({
@@ -92,16 +103,26 @@ include([], function ()
 		{
 			var visibleSetIndices = [];
 
-			var pushTriangle = function(tri)
+			var pushTriangle = function (tri)
 			{
 				visibleSetIndices.push(tri[0]);
 				visibleSetIndices.push(tri[1]);
 				visibleSetIndices.push(tri[2]);
 			}.bind(this);
-
-			for(var i = 0; i < indices.length; i += 3)
+			
+			if(Math.floor(indices.length / 3.0) != indices.length / 3.0)
 			{
-				var triIndices = [ indices[i], indices[i + 1], indices[i + 2] ];
+				debugger;
+			}
+
+			for(var i = 0; i < indices.length / 3; i++)
+			{
+				var triIndices =
+				[
+					indices[i * 3 + 0], 
+					indices[i * 3 + 1], 
+					indices[i * 3 + 2] 
+				];
 
 				if(triIndices[0] == triIndices[1] || triIndices[1] == triIndices[2] || triIndices[0] == triIndices[2])
 				{

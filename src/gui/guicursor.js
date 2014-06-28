@@ -99,6 +99,8 @@ GuiCursor.prototype.extend(
 		{
 			return;
 		}
+
+		GL.disable(GL.DEPTH_TEST);
 		
 		Shader.setActiveProgram(this._program);
 

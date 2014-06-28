@@ -40,14 +40,14 @@ Application.prototype.extend(
 
 		var grid = new GameObject("Grid");
 		grid.addComponent(new GridRenderer(-100.0, -100.0, 100.0, 100.0));
-		this.sceneGraph.insert(grid);
+		//this.sceneGraph.insert(grid);
 
 		var testProgram = new Shader(ResourceLoader.getContent("show_normals_vertex"), ResourceLoader.getContent("show_normals_fragment"));
 
 		var testObject = new GameObject("testMesh");
 		testObject.addComponent(new OBJMeshProvider("de_dust2", false));
 		testObject.addComponent(new MeshRenderer());
-		testObject.addComponent(new OctreeMeshProvider());
+		//testObject.addComponent(new OctreeMeshProvider());
 
 		var waht = new AABB();
 		waht.extents = vec3.fromValues(1, 1, 1);
@@ -137,7 +137,8 @@ Application.prototype.extend(
 		{
 			gui.label("tris: " + Renderer.frameStats.numberOfTrianglesDrawn);
 			gui.label("lines: " + Renderer.frameStats.numberOfLinesDrawn);
-		};
+			gui.label("average fps: " + this.averageFps);
+		}.bind(this);
 
 		frameStatsWindow.show();
 
@@ -309,11 +310,25 @@ Application.prototype.extend(
 	{
 		var timeUntilNextTick = 1.0 / tickRate,
 		previousTime = 0.0;
+		
+		var frameCounter = 0;
+		var timeAccum = 0.0;
+		this.averageFps = 0;
 
-		var doFrame = function(time)
+		var doFrame = function (time)
 		{
 			time /= 1000.0;
 			var dt = time - previousTime;
+			timeAccum += dt;
+			frameCounter++;
+
+			if(timeAccum >= 1.0)
+			{
+				this.averageFps = frameCounter;
+				frameCounter = 0;
+				timeAccum = 0.0;
+			}
+
 			previousTime = time;
 
 			timeUntilNextTick -= dt;

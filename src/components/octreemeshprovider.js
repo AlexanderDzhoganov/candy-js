@@ -7,6 +7,8 @@ include([ "octree" ], function ()
 		this.type = "octreeMeshProvider";
 
 		this.octrees = [];
+
+		this.debugDrawOctrees = false;
 	};
 
 	OctreeMeshProvider.prototype = new Component();
