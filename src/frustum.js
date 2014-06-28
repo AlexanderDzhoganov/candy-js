@@ -45,14 +45,14 @@ include([ "plane" ], function ()
 
 			var vertices =
 			[
-				vec3.fromValues( bottomLeft[0], bottomLeft[1], bottomLeft[2]),
-				vec3.fromValues( bottomLeft[0],   topRight[1], bottomLeft[2]),
-				vec3.fromValues(   topRight[0],   topRight[1], bottomLeft[2]),
-				vec3.fromValues(   topRight[0], bottomLeft[1], bottomLeft[2]),
-				vec3.fromValues( bottomLeft[0], bottomLeft[1],   topRight[2]),
-				vec3.fromValues( bottomLeft[0],   topRight[1],   topRight[2]),
-				vec3.fromValues(   topRight[0],   topRight[1],   topRight[2]),
-				vec3.fromValues(   topRight[0], bottomLeft[1],   topRight[2]),
+				vec3.fromValues(bottomLeft[0], bottomLeft[1], bottomLeft[2]),
+				vec3.fromValues(bottomLeft[0],   topRight[1], bottomLeft[2]),
+				vec3.fromValues(  topRight[0],   topRight[1], bottomLeft[2]),
+				vec3.fromValues(  topRight[0], bottomLeft[1], bottomLeft[2]),
+				vec3.fromValues(bottomLeft[0], bottomLeft[1],   topRight[2]),
+				vec3.fromValues(bottomLeft[0],   topRight[1],   topRight[2]),
+				vec3.fromValues(  topRight[0],   topRight[1],   topRight[2]),
+				vec3.fromValues(  topRight[0], bottomLeft[1],   topRight[2]),
 			];
 
 			var outPoints = 0;

@@ -8,8 +8,7 @@ include ([ "aabb" ], function ()
 		this.name = "MeshBoundsProvider";
 		this.type = "meshBoundsProvider";
 
-		this.aabb = new AABB();
-		this.boundingSphereRadius = 0.0;
+		this.aabbs = [];
 	};
 
 	MeshBoundsProvider.prototype = new Component();
@@ -46,9 +45,9 @@ include ([ "aabb" ], function ()
 				return;
 			}
 
-			for (var i = 0; i < meshProvider.submeshes.length; i++)
+			for (var q = 0; q < meshProvider.submeshes.length; q++)
 			{
-				var subMesh = meshProvider.submeshes[i];
+				var subMesh = meshProvider.submeshes[q];
 
 				if (subMesh.vertexFormat != Renderer.VERTEX_FORMAT.PPPNNNTT)
 				{
@@ -101,17 +100,14 @@ include ([ "aabb" ], function ()
 					}
 				}
 
+				var aabb = new AABB();
 				var diff = vec3.create();
 				vec3.subtract(diff, max, min);
 				vec3.scale(diff, diff, 0.5);
-				vec3.add(this.aabb.center, min, diff);
-				this.aabb.extents = diff;
-
-				this.boundingSphereRadius = vec3.length(this.aabb.extents);
-				break;
+				vec3.add(aabb.center, min, diff);
+				aabb.extents = diff;
+				this.aabbs.push(aabb);
 			}
-
-			return this.aabb;
 		},
 
 	});

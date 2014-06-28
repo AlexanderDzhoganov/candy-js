@@ -304,4 +304,26 @@ AABB.prototype.extend(
 		vec3.add(this.center, resultTopLeft, this.extents);
 	},
 
+	pointTest: function (point)
+	{	
+		var xmax = Math.max(this.center[0] - this.extents[0], this.center[0] + this.extents[0]);
+		var xmin = Math.min(this.center[0] - this.extents[0], this.center[0] + this.extents[0]);
+		var ymax = Math.max(this.center[1] - this.extents[1], this.center[1] + this.extents[1]);
+		var ymin = Math.min(this.center[1] - this.extents[1], this.center[1] + this.extents[1]);
+		var zmax = Math.max(this.center[2] - this.extents[2], this.center[2] + this.extents[2]);
+		var zmin = Math.min(this.center[2] - this.extents[2], this.center[2] + this.extents[2]);
+
+		if
+		(
+			point[0] >= xmin && point[0] <= xmax &&
+			point[1] >= ymin && point[1] <= ymax &&
+			point[2] >= zmin && point[2] <= zmax
+		)
+		{
+			return true;
+		}
+
+		return false;
+	},
+
 });

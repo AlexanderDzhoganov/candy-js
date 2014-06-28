@@ -17,9 +17,13 @@ Plane.prototype.extend(
 	transform: function (matrix)
 	{
 		debugger;
-		var pointOnPlane = vec4.fromValues(this.abcd[0] * this.abcd[3], 
-										   this.abcd[1] * this.abcd[3], 
-										   this.abcd[2] * this.abcd[3], 1.0);
+		var pointOnPlane = vec4.fromValues
+		(
+			this.abcd[0] * this.abcd[3], 
+			this.abcd[1] * this.abcd[3], 
+			this.abcd[2] * this.abcd[3],
+			1.0
+		);
 		
 		var normal = vec4.fromValues(this.abcd[0], this.abcd[1], this.abcd[2], 0.0);
 

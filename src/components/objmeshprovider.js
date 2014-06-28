@@ -23,14 +23,12 @@ include([], function ()
 			});
 		}.bind(this);
 
-		var materialsCount = 0;
 		var faceCount = 0;
 		var verticesCount = 0;
 		var indicesCount = 0;
 
 		objData.materials.forEach (function (name, material)
 		{
-			materialsCount++;
 			faceCount += objData.materials[name].faces.length;
 
 			var uniqueVertices = this._calculateUniqueVertices
@@ -47,10 +45,12 @@ include([], function ()
 			verticesCount += result.vertices.length / 8;
 			indicesCount += result.indices.length / 3;
 
-			var vertices = new Float32Array(result.vertices);
-			var indices = new Uint16Array(result.indices);
-
-			addSubmesh(vertices, indices);
+			if(result.vertices.length > 0)
+			{
+				var vertices = new Float32Array(result.vertices);
+				var indices = new Uint16Array(result.indices);
+				addSubmesh(vertices, indices);
+			}
 		}.bind(this));
 
 		console.log
@@ -59,10 +59,10 @@ include([], function ()
 			objData.positions.length + " positions, " +
 			objData.normals.length + " normals, " +
 			objData.uvs.length + " uvs, " +
-			materialsCount + " materials, ", +
 			faceCount + " faces, resulting in " +
 			verticesCount + " unique vertices and " +
-			indicesCount + " triangles"
+			indicesCount + " triangles in " +
+			this.submeshes.length + " submeshes"
 		);
 		
 		this._uploadVertexData();

@@ -47,6 +47,7 @@ Application.prototype.extend(
 		var testObject = new GameObject("testMesh");
 		testObject.addComponent(new OBJMeshProvider("de_dust2", false));
 		testObject.addComponent(new MeshRenderer());
+		testObject.addComponent(new OctreeMeshProvider());
 
 		var waht = new AABB();
 		waht.extents = vec3.fromValues(1, 1, 1);
@@ -348,7 +349,7 @@ Application.prototype.extend(
 	{
 		var newPlayer = new GameObject("FPS Controller");
 		newPlayer.addComponent(new FirstPersonController());
-		newPlayer.addComponent(new Camera(Renderer.screenWidth, Renderer.screenHeight, 120.0, 0.1, 100.0));
+		newPlayer.addComponent(new Camera(Renderer.screenWidth, Renderer.screenHeight, 120.0, 1, 1000.0));
 		newPlayer.getComponent("camera").setActive();
 		newPlayer.getComponent("transform").position = position;
 		this.sceneGraph.insert(newPlayer);

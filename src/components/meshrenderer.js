@@ -50,11 +50,6 @@ include([], function ()
 				return;
 			}
 
-			if (this._isCulled())
-			{
-				return;
-			}
-
 			if (this.wireframe)
 			{
 				for (var i = 0; i < meshProvider.submeshes.length; i++)
@@ -62,17 +57,43 @@ include([], function ()
 					Shader.setActiveProgram(MeshRenderer.getWireframeProgram());
 					Shader.setUniformVec3("wireframeColor", vec3.fromValues(0, 0.2, 1));
 					Shader.setUniformMat4("model", worldModelMatrix);
-
 					this._drawWireframeSubmesh(meshProvider.submeshes[i]);
 				}
 			}
 			else
 			{
+				var octreeMeshProvider = this.gameObject.octreeMeshProvider;
+				var frustum = Renderer._activeCamera.getFrustum();
+
 				for (var i = 0; i < meshProvider.submeshes.length; i++)
 				{
+					var indicesCount = meshProvider.submeshes[i].indices.length;
+
+					if(octreeMeshProvider)
+					{
+						var visibleSet = octreeMeshProvider.intersectFrustum(frustum, i);
+						if(visibleSet == null || visibleSet.length == 0)
+						{
+							continue;
+						}
+
+						if(visibleSet.length % 3 != 0)
+						{
+							debugger;
+						}
+
+						GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, meshProvider.submeshes[i].indexBuffer);
+						GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(visibleSet), GL.STREAM_DRAW);
+						indicesCount = visibleSet.length;
+					}
+					else if(this._isCulled(i, frustum))
+					{
+						continue;
+					}
+
 					this._setupMaterial(i);
 					Shader.setUniformMat4("model", worldModelMatrix);
-					this._drawSubmesh(meshProvider.submeshes[i]);
+					this._drawSubmesh(meshProvider.submeshes[i], indicesCount);
 				}
 			}
 
@@ -82,12 +103,10 @@ include([], function ()
 			}
 		},
 
-		_isCulled: function ()
+		_isCulled: function (index, frustum)
 		{
-			var frustum = Renderer._activeCamera.getFrustum();
 			var boundsProvider = this.gameObject.getComponent("meshBoundsProvider");
-			var result = frustum.intersectAABB(boundsProvider.aabb);
-
+			var result = frustum.intersectAABB(boundsProvider.aabbs[index]);
 			return result == Frustum.INTERSECT_RESULT.OUTSIDE;
 		},
 
@@ -119,18 +138,18 @@ include([], function ()
 			}
 		},
 
-		_drawSubmesh: function (subMesh)
+		_drawSubmesh: function (subMesh, indicesCount)
 		{
 			GL.bindBuffer(GL.ARRAY_BUFFER, subMesh.vertexBuffer);
 			GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, subMesh.indexBuffer);
 
 			if (subMesh.primitiveType == Renderer.PRIMITIVE_TYPE.INDEXED_TRIANGLE_STRIP)
 			{
-				Renderer.drawIndexedTriangleStrip(subMesh.indices.length, subMesh.vertexFormat);
+				Renderer.drawIndexedTriangleStrip(indicesCount, subMesh.vertexFormat);
 			}
 			else if (subMesh.primitiveType == Renderer.PRIMITIVE_TYPE.INDEXED_TRIANGLES)
 			{
-				Renderer.drawIndexedTriangles(subMesh.indices.length, subMesh.vertexFormat);	
+				Renderer.drawIndexedTriangles(indicesCount, subMesh.vertexFormat);	
 			}
 		},
 
@@ -167,8 +186,13 @@ include([], function ()
 				return;
 			}
 
-			var aabb = AABB.transform(boundsProvider.aabb, worldModelMatrix);
-			Renderer.debug.drawAABB(aabb.center, aabb.extents);
+			var meshProvider = this.gameObject.meshProvider;
+
+			for(var i = 0; i < meshProvider.submeshes.length; i++)
+			{
+				var aabb = AABB.transform(boundsProvider.aabbs[i], worldModelMatrix);
+				Renderer.debug.drawAABB(aabb.center, aabb.extents);
+			}
 		},
 
 	});

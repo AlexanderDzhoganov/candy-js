@@ -10,5 +10,6 @@ include(
 	"components/meshboundsProvider",
 	"components/animationcontroller",
 	"components/gridrenderer",
+	"components/octreemeshprovider",
 	
 ], function () {});
