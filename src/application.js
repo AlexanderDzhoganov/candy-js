@@ -10,6 +10,7 @@ include(
 	"gl/headers",
 	"gui/headers",
 	"inputcontroller",
+	"octree",
 ]);
 
 var Application = function()
@@ -41,18 +42,26 @@ Application.prototype.extend(
 		grid.addComponent(new GridRenderer(-100.0, -100.0, 100.0, 100.0));
 		this.sceneGraph.insert(grid);
 
-		var testMaterial = new Material("test material");
-		var testProgram = new Shader(ResourceLoader.getContent("show_normals_vertex"), ResourceLoader.getContent("show_normals_fragment"));
-
-		testMaterial.setProgram(testProgram);
-		var tex = new Texture("checker");
-		tex.setWrap(Texture.REPEAT);
-		testMaterial.addTexture("diffuse", tex);
+		var testProgram = new Shader(ResourceLoader.getContent("diffuse_vertex"), ResourceLoader.getContent("diffuse_fragment"));
 
 		var testObject = new GameObject("testMesh");
 		testObject.addComponent(new OBJMeshProvider("de_dust2", false));
 		testObject.addComponent(new MeshRenderer());
-		testObject.renderer.material = testMaterial;
+
+		var waht = new AABB();
+		waht.extents = vec3.fromValues(1, 1, 1);
+		waht.octreeSplit();
+
+		console.log(testObject.meshProvider.submeshes.length);
+		for(var i = 0; i < testObject.meshProvider.submeshes.length; i++)
+		{
+			var material = new Material("de_dust2_material_" + (i + 1));
+			material.setProgram(testProgram);
+			var texture = new Texture("de_dust2_material_" + (i + 1));
+			texture.setWrap(Texture.REPEAT);
+			material.addTexture("diffuse", texture);
+			testObject.renderer.materials.push(material);
+		}
 
 		testObject.transform.position = vec3.fromValues(0, 0, 0);
 

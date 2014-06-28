@@ -166,6 +166,61 @@ AABB.prototype.extend(
 		return { hit: true, nearDistance: vec3.length(T_nearDist) };
 	},*/
 
+	octreeSplit: function ()
+	{
+		var vmin = vec3.create();
+		var vmax = vec3.create();
+
+		var topLeft = vec3.clone(this.extents);
+		topLeft[0] *= -1.0;
+		vec3.scale(topLeft, topLeft, 0.5)
+
+		var topLeft2 = vec3.clone(this.extents);
+		topLeft2[0] *= -1.0;
+		topLeft2[2] *= -1.0;
+		vec3.scale(topLeft2, topLeft2, 0.5)
+
+		var topLeft3 = vec3.clone(this.extents);
+		topLeft3[2] *= -1.0;
+		vec3.scale(topLeft3, topLeft3, 0.5)
+
+		var childrenAABB = [];
+
+		for (var i = 0; i < 8; i++)
+		{
+			childrenAABB.push(new AABB());
+		}
+
+		var childExtents = vec3.create();
+		vec3.scale(childExtents, this.extents, 0.5);
+
+		vec3.subtract(childrenAABB[0].center, this.center, childExtents);
+		childrenAABB[0].extents = childExtents;
+
+		vec3.add(childrenAABB[1].center, this.center, childExtents);
+		childrenAABB[1].extents = childExtents;
+
+		vec3.subtract(childrenAABB[2].center, this.center, topLeft);
+		childrenAABB[2].extents = childExtents;
+		
+		vec3.add(childrenAABB[3].center, this.center, topLeft);
+		childrenAABB[3].extents = childExtents;
+
+		vec3.subtract(childrenAABB[4].center, this.center, topLeft2);
+		childrenAABB[4].extents = childExtents;
+
+		vec3.add(childrenAABB[5].center, this.center, topLeft2);
+		childrenAABB[5].extents = childExtents;
+
+		vec3.subtract(childrenAABB[6].center, this.center, topLeft3);
+		childrenAABB[6].extents = childExtents;
+
+		vec3.add(childrenAABB[7].center, this.center, topLeft3);
+		childrenAABB[7].extents = childExtents;
+
+		return childrenAABB;
+	},
+
 	intersectRay: function (ray)
 	{
 		var max = function (a, b)

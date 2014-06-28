@@ -42,8 +42,6 @@ include([], function ()
 				forceRecalculateNormals
 			);
 
-			console.log("unique verts for material " + name + " " + uniqueVertices.size());
-
 			var result = this._prepareVerticesIndices(uniqueVertices, objData.materials[name].faces);
 
 			verticesCount += result.vertices.length / 8;

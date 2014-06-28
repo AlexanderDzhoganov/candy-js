@@ -5,7 +5,7 @@ include([], function ()
 	{
 		this.name = "MeshRenderer";
 		this.type = "renderer";
-		this.material = null;
+		this.materials = [];
 
 		this.drawBounds = false;
 		this.wireframe = false;
@@ -39,7 +39,7 @@ include([], function ()
 
 		onRender: function (worldModelMatrix)
 		{
-			if (!this.material)
+			if (this.materials.length == 0)
 			{
 				return;
 			}
@@ -70,7 +70,7 @@ include([], function ()
 			{
 				for (var i = 0; i < meshProvider.submeshes.length; i++)
 				{
-					this._setupMaterial();
+					this._setupMaterial(i);
 					Shader.setUniformMat4("model", worldModelMatrix);
 					this._drawSubmesh(meshProvider.submeshes[i]);
 				}
@@ -91,10 +91,10 @@ include([], function ()
 			return result == Frustum.INTERSECT_RESULT.OUTSIDE;
 		},
 
-		_setupMaterial: function ()
+		_setupMaterial: function (idx)
 		{
-			var material = this.material;
-			var program = this.material.program;
+			var material = this.materials[idx];
+			var program = material.program;
 
 			Shader.setActiveProgram(program);
 

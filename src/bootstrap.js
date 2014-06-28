@@ -8,6 +8,21 @@ include([ "shim", "resourceloader", "application" ], function ()
 		"grass": "resources/images/grass.png",
 		"checker": "resources/images/checker.png",
 
+		// de_dust2
+		"de_dust2_material_1": "resources/meshes/de_dust2/de_dust2_material_1.jpg",
+		"de_dust2_material_2": "resources/meshes/de_dust2/de_dust2_material_2.jpg",
+		"de_dust2_material_3": "resources/meshes/de_dust2/de_dust2_material_3.jpg",
+		"de_dust2_material_4": "resources/meshes/de_dust2/de_dust2_material_4.jpg",
+		"de_dust2_material_5": "resources/meshes/de_dust2/de_dust2_material_5.jpg",
+		"de_dust2_material_6": "resources/meshes/de_dust2/de_dust2_material_6.jpg",
+		"de_dust2_material_7": "resources/meshes/de_dust2/de_dust2_material_7.jpg",
+		"de_dust2_material_8": "resources/meshes/de_dust2/de_dust2_material_8.jpg",
+		"de_dust2_material_9": "resources/meshes/de_dust2/de_dust2_material_9.jpg",
+		"de_dust2_material_10": "resources/meshes/de_dust2/de_dust2_material_10.jpg",
+		"de_dust2_material_11": "resources/meshes/de_dust2/de_dust2_material_11.jpg",
+		"de_dust2_material_12": "resources/meshes/de_dust2/de_dust2_material_12.jpg",
+		"de_dust2_material_13": "resources/meshes/de_dust2/de_dust2_material_13.jpg",
+
 		// meshes
 		//"mesh": "resources/meshes/teapot_lowres.obj",
 		//"sponza": "resources/meshes/sponza/sponza.obj",
