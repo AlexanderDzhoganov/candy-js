@@ -61,18 +61,18 @@ include([], function ()
 			var vertexCursor = 0;
 			var indexCursor = 0;
 
-			for(var i = 0; i < lines.length; i++)
+			for (var i = 0; i < lines.length; i++)
 			{
 				var line = lines[i];
 
 				var components = line.split(' ');
-				if(components[0] == 'm')
+				if (components[0] == 'm')
 				{
 					var materialName = components[1];
 					var vertexCount = parseInt(components[2]);
 					var indexCount = parseInt(components[3]);
 
-					if(currentSubmesh)
+					if (currentSubmesh)
 					{
 						submeshes.push(currentSubmesh);
 					}
@@ -81,23 +81,36 @@ include([], function ()
 					vertexCursor = 0;
 					indexCursor = 0;
 				}
-				else if(components[0] == 'vnt')
+				else if (components[0] == 'vnt')
 				{
 					for(var p = 1; p < 9; p++)
 					{
 						currentSubmesh.vertices[vertexCursor++] = parseFloat(components[p]);
 					}
 				}
-				else if(components[0] == 'i')
+				else if (components[0] == 'i')
 				{
 					for(var p = 1; p < components.length; p++)
 					{
 						currentSubmesh.indices[indexCursor++] = parseInt(components[p]);
 					}
 				}
+				else if (components[0] == 'aabb')
+				{
+					currentSubmesh.aabb = new AABB();
+
+					for (var p = 1; p < 4; p++)
+					{
+						currentSubmesh.aabb.center[p - 1] = components[p];
+					}
+					for (var p = 4; p < 7; p++)
+					{
+						currentSubmesh.aabb.extents[p - 4] = components[p];
+					}
+				}
 			}
 
-			if(currentSubmesh)
+			if (currentSubmesh)
 			{
 				submeshes.push(currentSubmesh);
 			}

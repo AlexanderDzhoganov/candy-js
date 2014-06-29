@@ -59,7 +59,17 @@ include ([ "aabb" ], function ()
 
 				var vertices = subMesh.vertices;
 
-				var aabb = AABB.fromVertices(vertices);
+				var aabb = null;
+
+				if(subMesh.aabb != undefined)
+				{
+					aabb = subMesh.aabb;
+				}
+				else
+				{	
+					aabb = AABB.fromVertices(vertices);
+				}
+
 				this.aabbs.push(aabb);
 			}
 		},

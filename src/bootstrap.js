@@ -36,7 +36,7 @@ include([ "shim", "resourceloader", "application" ], function ()
 
 		// meshes
 		//"mesh": "resources/meshes/teapot_lowres.obj",
-		"sponza": "resources/meshes/sponza.obj2",
+		"sponza": "resources/meshes/sponza_scaled.obj2",
 		//"city": "resources/meshes/city.obj2",
 		//"sibenik": "resources/meshes/sibenik.obj2",
 		//"de_dust2": "resources/meshes/de_dust2/de_dust2.obj",
