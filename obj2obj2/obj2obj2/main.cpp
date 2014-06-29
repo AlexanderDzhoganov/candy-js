@@ -11,14 +11,53 @@
 #include <thread>
 #include <future>
 
+#include "vec3.h"
+
 using namespace std;
 
 const auto MAX_VERTICES_PER_SUBMESH = 65535; // max of Uint16.
+const auto MAX_TRIANGLES_PER_LEAF = 3000;
+
 vector<string> lines;
 
 struct Vertex
 {
 	float x, y, z, nx, ny, nz, u, v;
+
+	operator vec3 () const
+	{
+		return vec3(x, y, z);
+	}
+};
+
+struct AABB
+{
+	vec3 center;
+	vec3 extents;
+
+	AABB() = default;
+	AABB(const vec3& _center, const vec3& _extents) : center(_center), extents(_extents) {}
+
+	static auto fromVertices(const vector<Vertex>& vertices) -> AABB
+	{
+		vec3 vmin(numeric_limits<float>::max(), numeric_limits<float>::max(), numeric_limits<float>::max());
+		vec3 vmax(numeric_limits<float>::min(), numeric_limits<float>::min(), numeric_limits<float>::min());
+
+		for (auto i = 0u; i < vertices.size(); i++)
+		{
+			vec3 position = vertices[i];
+
+			vmin = min(vmin, position);
+			vmax = max(vmax, position);
+		}
+		vec3 diff = vmax - vmin;
+		diff.scale(0.5f);
+
+		vec3 center = vmin + diff;
+		vec3 extents = diff;
+
+		return AABB(center, extents);
+	}
 };
 
 struct SubMesh
@@ -26,10 +65,15 @@ struct SubMesh
 	vector<Vertex> vertices;
 	vector<size_t> indices;
 	string material;
+	AABB aabb;
+
 	bool disjoint = false;
 
 	SubMesh() { vertices.reserve(65536); }
 };
+
+
+
 
 typedef tuple<vector<float>, vector<float>, vector<float>> PositionsNormalsUVs;
 typedef vector<pair<string, vector<size_t>>> MaterialMap;
@@ -558,6 +602,18 @@ auto splitToSubMeshesConcurrent(const MaterialMap& materials, const vector<Verte
 	return combinedResults;
 }
 
+auto calculateSubmeshesAABBs(vector<SubMesh>& submeshes) -> void
+{
+	size_t calculatedAABBs = 0;
+	cout << "Calculating AABBs" << endl;
+	for (auto& submesh : submeshes)
+	{
+		submesh.aabb = AABB::fromVertices(submesh.vertices);
+		calculatedAABBs++;
+	}
+	cout << "Finished! Calculated a total of " << calculatedAABBs << endl;
+}
+
 auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName) -> void
 {
 	fstream f(fileName, ios::out);
@@ -585,6 +641,10 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName) ->
 			ss << i << " ";
 		}
 		ss << endl;
+
+		ss << "aabb " << subMesh.aabb.center.x << " " << subMesh.aabb.center.y << " " << subMesh.aabb.center.z << " "
+			<< subMesh.aabb.extents.x << " " << subMesh.aabb.extents.y << " " << subMesh.aabb.extents.z << endl;
+
 		ss << endl;
 
 		count++;
@@ -614,6 +674,7 @@ auto main(int argc, char** argv) -> int
 	auto materials = extractFaces(vertices, outVertices);
 
 	auto submeshes = splitToSubMeshesConcurrent(materials, outVertices);
+	calculateSubmeshesAABBs(submeshes);
 
 	auto fileName = string(argv[1]) + "2";
 	writeOutToFile(submeshes, fileName);
