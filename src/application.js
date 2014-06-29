@@ -4,6 +4,7 @@ include(
 	"scenegraph",
 	"component",
 	"gameobject",
+	"mesh",
 	"tests/headers",
 	"components/headers",
 	"math/headers",
@@ -44,15 +45,16 @@ Application.prototype.extend(
 		//this.sceneGraph.insert(grid);
 
 		var testProgram = new Shader(ResourceLoader.getContent("show_normals_vertex"), ResourceLoader.getContent("show_normals_fragment"));
+		var testMesh = new Mesh("sponza");
 
 		var testObject = new GameObject("testMesh");
-		testObject.addComponent(new OBJ2MeshProvider("city"));
 		testObject.addComponent(new MeshRenderer());
-		testObject.addComponent(new OctreeMeshProvider());
+		testObject.getComponent("renderer").setMesh(testMesh);
+		testObject.addComponent(new OctreeFrustumCullingProvider());
 
-		for(var q = 0; q < testObject.meshProvider.submeshes.length; q++)
+		for(var q = 0; q < testMesh.submeshes.length; q++)
 		{
-			var submesh = testObject.meshProvider.submeshes[q];
+			var submesh = testMesh.submeshes[q];
 			var material = new Material(submesh.material);
 			material.setProgram(testProgram);
 			var texture = new Texture(submesh.material);
@@ -63,8 +65,6 @@ Application.prototype.extend(
 
 		testObject.transform.position = vec3.fromValues(0.0, 0, 0);
 		this.sceneGraph.insert(testObject);
-
-		var rt = new RenderTexture(1280, 720);
 
 		var gameObjectEditor = null;
 

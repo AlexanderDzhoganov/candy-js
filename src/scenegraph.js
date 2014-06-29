@@ -38,7 +38,8 @@ include ([ "aabb" ], function ()
 					var rendererComponent = this.getComponent("renderer");
 					if (rendererComponent && rendererComponent.enabled)
 					{
-						rendererComponent.onRender(modelMatrix);
+						Renderer.renderQueue.enqueue(rendererComponent, modelMatrix);
+						//rendererComponent.onRender(modelMatrix);
 					}
 
 					for (var i = 0; i < this._ChildNodes.length; i++)
