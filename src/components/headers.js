@@ -7,6 +7,7 @@ include(
 	"components/terrainmeshprovider",
 	"components/firstpersoncontroller",
 	"components/objmeshprovider",
+	"components/obj2meshprovider",
 	"components/meshboundsProvider",
 	"components/animationcontroller",
 	"components/gridrenderer",

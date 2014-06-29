@@ -613,7 +613,7 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName) ->
 	auto count = 0u;
 	for (auto& subMesh : submeshes)
 	{
-		ss << "m " << subMesh.material << endl;
+		ss << "m " << subMesh.material << " " << subMesh.vertices.size() << " " << subMesh.indices.size() << endl;
 
 		if (subMesh.disjoint)
 		{

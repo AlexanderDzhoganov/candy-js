@@ -37,7 +37,7 @@ include([ "octree" ], function ()
 				{
 					this.octrees.push
 					(
-						new Octree(bounds.aabbs[i], 300, mesh.submeshes[i].vertices, mesh.submeshes[i].indices)
+						new Octree(bounds.aabbs[i], 4200, mesh.submeshes[i].vertices, mesh.submeshes[i].indices)
 					);
 				}
 			}

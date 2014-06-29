@@ -17,7 +17,7 @@ ResourceLoader.extend(
 	EXT:
 	{
 		image: ["jpg", "png", "gif"],
-		text: ["txt", "vs", "fs", "obj"],
+		text: ["txt", "vs", "fs", "obj", "obj2"],
 		json: ["json"],
 		uint8array: ["bin"]
 	}

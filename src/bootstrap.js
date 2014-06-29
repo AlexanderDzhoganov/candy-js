@@ -25,8 +25,10 @@ include([ "shim", "resourceloader", "application" ], function ()
 
 		// meshes
 		//"mesh": "resources/meshes/teapot_lowres.obj",
-		//"sponza": "resources/meshes/sponza/sponza.obj",
-		"de_dust2": "resources/meshes/de_dust2/de_dust2.obj",
+		"sponza": "resources/meshes/de_dust2/sponza.obj2",
+		//"sibenik": "resources/meshes/de_dust2/sibenik.obj2",
+		//"de_dust2": "resources/meshes/de_dust2/de_dust2.obj",
+		//"de_dust22": "resources/meshes/de_dust2/de_dust2.obj2",
 
 		// shaders
 		"terrain_vertex": "resources/shaders/terrain.vs",

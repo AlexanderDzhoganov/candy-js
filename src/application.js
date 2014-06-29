@@ -40,14 +40,14 @@ Application.prototype.extend(
 
 		var grid = new GameObject("Grid");
 		grid.addComponent(new GridRenderer(-100.0, -100.0, 100.0, 100.0));
-		//this.sceneGraph.insert(grid);
+		this.sceneGraph.insert(grid);
 
 		var testProgram = new Shader(ResourceLoader.getContent("show_normals_vertex"), ResourceLoader.getContent("show_normals_fragment"));
 
 		var testObject = new GameObject("testMesh");
-		testObject.addComponent(new OBJMeshProvider("de_dust2", false));
+		testObject.addComponent(new OBJ2MeshProvider("sponza"));
 		testObject.addComponent(new MeshRenderer());
-		//testObject.addComponent(new OctreeMeshProvider());
+		testObject.addComponent(new OctreeMeshProvider());
 
 		var waht = new AABB();
 		waht.extents = vec3.fromValues(1, 1, 1);
