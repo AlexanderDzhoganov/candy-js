@@ -36,7 +36,7 @@ struct Vertex
 struct SubMesh 
 {
 	vector<Vertex> vertices;
-	vector<int> indices;
+	vector<size_t> indices;
 	string material;
 	bool disjoint = false;
 
@@ -165,7 +165,9 @@ vector<string> split(const std::string& s, char delim)
 
 
 vector<string> readFile(const string& fileName)
-{
+{	
+	cout << "Reading file.." << endl;
+
 	ifstream f(fileName);
 	if (!f.is_open())
 	{
@@ -181,49 +183,51 @@ vector<string> readFile(const string& fileName)
 
 	s.assign(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
 	
-	cout << "finished reading file" << endl;
-
-	return split(s, '\n');
+	auto result = split(s, '\n');
+	cout << "Done! " << result.size() << " lines read" << endl;
+	return result;
 }
 
 typedef std::tuple<vector<float>, vector<float>, vector<float>> PositionsNormalsUVs;
-typedef vector<std::pair<string, vector<int>>> MaterialMap;
+typedef vector<std::pair<string, vector<size_t>>> MaterialMap;
+
+size_t addUniqueVertex(const string& hash, unordered_map<string, size_t>& indices, vector<Vertex>& vertices, const PositionsNormalsUVs& input)
+{
+	auto components = split2(hash, '/');
+
+	size_t positionIndex = std::stoi(components[0]) - 1;
+	size_t normalsIndex = std::stoi(components[2]) - 1;
+	size_t uvsIndex = std::stoi(components[1]) - 1;
+
+	const auto& positions = std::get<0>(input);
+	const auto& normals = std::get<1>(input);
+	const auto& uvs = std::get<2>(input);
+
+	Vertex vertex;
+	vertex.x = positions[positionIndex * 3 + 0];
+	vertex.y = positions[positionIndex * 3 + 1];
+	vertex.z = positions[positionIndex * 3 + 2];
+
+	vertex.nx = normals[normalsIndex * 3 + 0];
+	vertex.ny = normals[normalsIndex * 3 + 1];
+	vertex.nz = normals[normalsIndex * 3 + 2];
+
+	vertex.u = uvs[uvsIndex * 2 + 0];
+	vertex.v = uvs[uvsIndex * 2 + 1];
+
+	vertices.push_back(vertex);
+	indices[hash] = vertices.size() - 1;
+	return indices[hash];
+}
 
 auto extractFaces(const vector<string>& lines, const PositionsNormalsUVs& input, vector<Vertex>& vertices) -> MaterialMap
 {
-	std::unordered_map<string, vector<int>> materials;
-	unordered_map<string, int> indices;
+	cout << "Extracing faces.." << endl;
+
+	std::unordered_map<string, vector<size_t>> materials;
+	unordered_map<string, size_t> indices;
 
 	std::string currentMaterial = "default";
-
-	auto addUniqueVertex = [&](const string& hash)
-	{
-		auto components = split2(hash, '/');
-
-		size_t positionIndex = std::stoi(components[0]) - 1;
-		size_t normalsIndex = std::stoi(components[2]) - 1;
-		size_t uvsIndex = std::stoi(components[1]) - 1;
-
-		const auto& positions = std::get<0>(input);
-		const auto& normals = std::get<1>(input);
-		const auto& uvs = std::get<2>(input);
-
-		Vertex vertex;
-		vertex.x = positions[positionIndex * 3 + 0];
-		vertex.y = positions[positionIndex * 3 + 1];
-		vertex.z = positions[positionIndex * 3 + 2];
-
-		vertex.nx = normals[normalsIndex * 3 + 0];
-		vertex.ny = normals[normalsIndex * 3 + 1];
-		vertex.nz = normals[normalsIndex * 3 + 2];
-
-		vertex.u = uvs[uvsIndex * 2 + 0];
-		vertex.v = uvs[uvsIndex * 2 + 1];
-
-		vertices.push_back(vertex);
-		indices[hash] = vertices.size() - 1;
-		return indices[hash];
-	};
 
 	for (auto line : lines)
 	{
@@ -246,7 +250,7 @@ auto extractFaces(const vector<string>& lines, const PositionsNormalsUVs& input,
 
 			for (auto q = 0u; q < numVertices - 2; q++)
 			{
-				int indexA, indexB, indexC;
+				size_t indexA, indexB, indexC;
 
 				auto a = components[1];
 				if (indices.find(a) != indices.end())
@@ -255,7 +259,7 @@ auto extractFaces(const vector<string>& lines, const PositionsNormalsUVs& input,
 				}
 				else
 				{
-					indexA = addUniqueVertex(a);
+					indexA = addUniqueVertex(a, indices, vertices, input);
 				}
 
 				auto b = components[2 + q];
@@ -265,7 +269,7 @@ auto extractFaces(const vector<string>& lines, const PositionsNormalsUVs& input,
 				}
 				else
 				{
-					indexB = addUniqueVertex(b);
+					indexB = addUniqueVertex(b, indices, vertices, input);
 				}
 
 				auto c = components[3 + q];
@@ -275,7 +279,7 @@ auto extractFaces(const vector<string>& lines, const PositionsNormalsUVs& input,
 				}
 				else
 				{
-					indexC = addUniqueVertex(c);
+					indexC = addUniqueVertex(c, indices, vertices, input);
 				}
 
 				materials[currentMaterial].push_back(indexA);
@@ -286,12 +290,15 @@ auto extractFaces(const vector<string>& lines, const PositionsNormalsUVs& input,
 	}
 
 	MaterialMap result;
+	size_t numberOfFaces = 0;
 
 	for (auto& kv : materials)
 	{
+		numberOfFaces += kv.second.size();
 		result.push_back(std::make_pair(kv.first, std::move(kv.second)));
 	}
 
+	cout << "Done! Extracted " << result.size() << " materials with " << numberOfFaces / 3 << " faces" << endl;
 	return result;
 }
 
@@ -344,14 +351,16 @@ auto extractVertices(const vector<string>& lines, size_t startLine, size_t endLi
 
 auto extractVerticesConcurrent(const vector<string>& lines) -> PositionsNormalsUVs
 {
-	auto cpuCores = thread::hardware_concurrency();
+	size_t cpuCores = thread::hardware_concurrency();
+	cout << "Extracting vertices (" << cpuCores << " threads)" << endl;
+
 	vector<thread> threads;
-	auto lineCount = lines.size();
-	auto linesPerThread = lineCount / cpuCores;
+	size_t lineCount = lines.size();
+	size_t linesPerThread = lineCount / cpuCores;
 
 	std::vector<PositionsNormalsUVs> results;
 
-	auto currentLine = 0;
+	size_t currentLine = 0;
 	for (auto i = 0u; i < cpuCores; i++)
 	{
 		results.emplace_back();
@@ -366,7 +375,6 @@ auto extractVerticesConcurrent(const vector<string>& lines) -> PositionsNormalsU
 	}
 
 	PositionsNormalsUVs combinedResults;
-
 	for (auto i = 0u; i < cpuCores; i++)
 	{
 		threads[i].join();
@@ -391,25 +399,27 @@ auto extractVerticesConcurrent(const vector<string>& lines) -> PositionsNormalsU
 		}
 	}
 
+	cout << "Done! Extracted " <<
+		std::get<0>(combinedResults).size() <<
+		" positions, " << std::get<1>(combinedResults).size() <<
+		" normal and " << std::get<2>(combinedResults).size() << " uvs" << endl;
+
 	return combinedResults;
 }
 
-auto splitMesh(int maxVerticesPerBucket, const vector<Vertex>& verticesForSubMesh,
-			   const vector<int>& subMeshIndices,
+auto splitMesh(size_t maxVerticesPerBucket, const vector<Vertex>& verticesForSubMesh,
+			   const vector<size_t>& subMeshIndices,
 			   const string& materialName) -> vector<SubMesh>
 {
-	auto bucketCount = ceil(verticesForSubMesh.size() / (float) maxVerticesPerBucket);
-
-	cout << '/';
+	auto bucketCount = (size_t)(ceil(verticesForSubMesh.size() / (float)maxVerticesPerBucket));
 
 	vector<SubMesh> submeshes; // result of split. holds all ( disjoint and normal submeshes
-
-	unordered_map<int, int> disjointTrianglesMap; // 
-	vector<int> disjointTriangles;
+	unordered_map<size_t, bool> disjointTrianglesMap; 
+	vector<size_t> disjointTriangles;
 
 	for (auto i = 0; i < bucketCount; i++)
 	{
-		auto verticesToCopy = maxVerticesPerBucket;
+		size_t verticesToCopy = maxVerticesPerBucket;
 		if (i == bucketCount - 1)
 		{
 			verticesToCopy = verticesForSubMesh.size() - (bucketCount - 1) * maxVerticesPerBucket;
@@ -426,7 +436,7 @@ auto splitMesh(int maxVerticesPerBucket, const vector<Vertex>& verticesForSubMes
 
 		auto indexOffset = -i * maxVerticesPerBucket; //bucket offset. traslates from big (global) to local (small) idx
 
-		vector<int> finalIndices; //bucked indices;
+		vector<size_t> finalIndices; //bucked indices;
 		for (auto j = 0u; j < subMeshIndices.size() / 3; j++)
 		{
 			//triangle idx
@@ -466,9 +476,9 @@ auto splitMesh(int maxVerticesPerBucket, const vector<Vertex>& verticesForSubMes
 		}
 	}
 
-	set<int> uniqueDisjointIndices(disjointTriangles.begin(), disjointTriangles.end());
+	set<size_t> uniqueDisjointIndices(disjointTriangles.begin(), disjointTriangles.end());
 
-	unordered_map<int, int> disjointVerticesMap;
+	unordered_map<size_t, size_t> disjointVerticesMap;
 	vector<Vertex> disjointVertices;
 
 	for (auto& uniqueIndice : uniqueDisjointIndices)
@@ -478,7 +488,7 @@ auto splitMesh(int maxVerticesPerBucket, const vector<Vertex>& verticesForSubMes
 		disjointVerticesMap[uniqueIndice] = disjointVertices.size() - 1;
 	}
 
-	vector<int> disjointIndices;
+	vector<size_t> disjointIndices;
 
 	for (auto i = 0u; i < disjointTriangles.size() / 3; i++)
 	{
@@ -527,9 +537,9 @@ auto splitToSubMeshes(const MaterialMap& materials, const vector<Vertex>& vertic
 		auto& material = materials[i];
 		vector<Vertex> verticesForSubMesh;
 
-		set<int> uniqueIndices(material.second.begin(), material.second.end());
+		set<size_t> uniqueIndices(material.second.begin(), material.second.end());
 
-		unordered_map<int, int> globalToSubmeshIndicesMap;
+		unordered_map<size_t, size_t> globalToSubmeshIndicesMap;
 
 		for (auto& uniqueIdx : uniqueIndices)
 		{
@@ -539,7 +549,7 @@ auto splitToSubMeshes(const MaterialMap& materials, const vector<Vertex>& vertic
 			globalToSubmeshIndicesMap[uniqueIdx] = newIndex;
 		}
 
-		vector<int> subMeshIndices;
+		vector<size_t> subMeshIndices;
 		for (auto& index : material.second)
 		{
 			subMeshIndices.push_back(globalToSubmeshIndicesMap[index]);
@@ -558,20 +568,24 @@ auto splitToSubMeshes(const MaterialMap& materials, const vector<Vertex>& vertic
 
 auto splitToSubMeshesConcurrent(const MaterialMap& materials, const vector<Vertex>& vertices) -> vector<SubMesh>
 {
-	auto cpuCores = thread::hardware_concurrency();
+	size_t cpuCores = thread::hardware_concurrency();
+
+	cout << "Splitting submeshes recursively (" << cpuCores << " threads)" << endl;
+
 	vector<thread> threads;
-	auto materialCount = materials.size();
-	auto materialsPerThread = floor(materialCount / cpuCores);
-	auto leftOver = materialCount % cpuCores;
+	size_t materialCount = materials.size();
+	size_t materialsPerThread = (size_t)floor(materialCount / cpuCores);
+	size_t leftOver = materialCount % cpuCores;
 
 	vector<vector<SubMesh>> results;
 
-	auto currentMaterial = 0;
+	size_t currentMaterial = 0;
 	for (auto i = 0u; i < cpuCores; i++)
 	{
 		results.emplace_back();
 		auto startIndex = currentMaterial;
 		auto endIndex = currentMaterial + materialsPerThread + (i == (cpuCores - 1) ? leftOver : 0);
+
 		threads.emplace_back([&materials, &vertices, startIndex, endIndex, i, &results]()
 		{
 			results[i] = splitToSubMeshes(materials, vertices, startIndex, endIndex);
@@ -592,6 +606,7 @@ auto splitToSubMeshesConcurrent(const MaterialMap& materials, const vector<Verte
 		}
 	}
 
+	cout << "Done! Total of " << combinedResults.size() << " submeshes in resulting mesh" << endl;
 	return combinedResults;
 }
 
@@ -601,28 +616,12 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName) ->
 
 	stringstream ss;
 
-	cout << "writing out " << submeshes.size() << " submeshes" << endl;
-
-	auto numFaces = 0;
-	for (auto& submesh : submeshes)
-	{
-		numFaces += submesh.indices.size() / 3;
-	}
-	cout << "generated a total of " << numFaces << " faces" << endl;
+	cout << "Writing out to \"" << fileName << "\"" << endl;
 
 	auto count = 0u;
 	for (auto& subMesh : submeshes)
 	{
 		ss << "m " << subMesh.material << " " << subMesh.vertices.size() << " " << subMesh.indices.size() << endl;
-
-		if (subMesh.disjoint)
-		{
-			ss << "# disjoint" << endl;
-		}
-
-		cout << "submesh " << count << " (" << subMesh.material << ")" << (subMesh.disjoint ? "DISJOINT" : "") << endl;
-		cout << subMesh.vertices.size() << " vertices" << endl;
-		cout << subMesh.indices.size() / 3 << " faces" << endl;
 
 		for (auto& vertex : subMesh.vertices)
 		{
@@ -644,51 +643,31 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName) ->
 	}
 
 	string result = ss.str();
-
 	f.write(result.c_str(), result.size());
+
+	cout << "Done!" << endl;
 }
 
 int main(int argc, char** argv)
 {
 	if (argc == 1)
 	{
-		cout << " not enough args" << endl;
+		cout << "Usage:" << endl;
+		cout << argv[0] << " <.obj>" << endl;
 		return -1;
 	}
 
-	cout << "reading " << argv[1] << endl;
+	cout << "Starting conversion for mesh \"" << argv[1] << "\"" << endl;
 
 	auto lines = readFile(argv[1]);
-
-	cout << lines.size() << " lines" << endl;
-
 	auto vertices = extractVerticesConcurrent(lines);
-
-	cout << "extracted " << std::get<0>(vertices).size() << " positions, " << std::get<1>(vertices).size() << " normals, " << std::get<2>(vertices).size() << " uvs" << endl;
 
 	vector<Vertex> outVertices;
 	auto materials = extractFaces(lines, vertices, outVertices);
 
-	cout << "found " << materials.size() << " materials" << endl;
-
-	auto originalFacesCount = 0;
-	for (auto& kv : materials)
-	{
-		cout << " " << kv.first << " : " << kv.second.size() / 3 << " faces" << endl;
-		originalFacesCount += kv.second.size() / 3;
-	}
-
 	auto submeshes = splitToSubMeshesConcurrent(materials, outVertices);
 
-	cout << submeshes.size() << " submeshes generated" << endl;
-
 	string fileName = string(argv[1]) + "2";
-
-	cout << "original mesh contains " << originalFacesCount << " faces" << endl;
-
 	writeOutToFile(submeshes, fileName);
-
-	cout << "written to " + fileName;
-	while (true);
 	return 0;
 }

@@ -121,8 +121,6 @@ include([], function ()
 			var index = 0;
 			for (var name in material.textures)
 			{
-				debugger;
-
 				if (!material.textures.hasOwnProperty(name))
 				{
 					continue;
