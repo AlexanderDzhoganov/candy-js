@@ -9,6 +9,7 @@
 #include <tuple>
 #include <set>
 #include <thread>
+#include <future>
 
 using std::thread;
 using std::set;
@@ -24,12 +25,15 @@ using std::cin;
 using std::endl;
 using std::stof;
 
+const static auto MAX_VERTICES_PER_SUBMESH = 65535;
+
 struct Vertex
 {
-	float x, y, z, nx, ny, nz, u, v;
+	float x, y, z, nx, ny, nz, u, v; // engine format (PPPNNNTTT
 };
 
-struct SubMesh
+
+struct SubMesh 
 {
 	vector<Vertex> vertices;
 	vector<int> indices;
@@ -74,7 +78,7 @@ string strip(const string& s)
 	return s;
 }
 
-vector<string> split(const string& s, char delimiter)
+/*vector<string> split(const string& s, char delimiter)
 {
 	vector<stringstream> ss;
 	ss.emplace_back();
@@ -98,17 +102,67 @@ vector<string> split(const string& s, char delimiter)
 	}
 
 	return result;
+}*/
+
+vector<string>& split2(const std::string& s, char delim, std::vector<std::string>& elems) {
+	stringstream ss(s);
+	std::string item;
+	while (std::getline(ss, item, delim))
+	{
+		elems.push_back(item);
+	}
+	return elems;
 }
 
-void stringReplace(std::string& subject, const std::string& search, const std::string& replace)
-{
-	size_t pos = 0;
-	while ((pos = subject.find(search, pos)) != std::string::npos)
-	{
-		subject.replace(pos, search.length(), replace);
-		pos += replace.length();
-	}
+
+std::vector<std::string> split2(const std::string& s, char delim) {
+	std::vector<std::string> elems;
+	split2(s, delim, elems);
+	return elems;
 }
+
+
+vector<string> split(const std::string& s, char delim)
+{
+	if (s.size() == 0)
+	{
+		return vector<string>();
+	}
+
+	vector<string> lines;
+
+	vector<size_t> lenghts;
+	size_t currentLength = 0;
+
+	for (auto i = 0u; i < s.size(); i++)
+	{
+		currentLength++;
+
+		if (s[i] == delim)
+		{
+			lenghts.push_back(currentLength);
+			currentLength = 0;
+		}
+	}
+
+	if (s[s.size() - 1] != delim)
+	{
+		lenghts.push_back(currentLength);
+	}
+
+	size_t current = 0;
+	lines.resize(lenghts.size());
+	for (auto i = 0u; i < lenghts.size(); i++)
+	{
+		auto length = lenghts[i];
+		lines[i].resize(length - 1);
+		memcpy((void*)(lines[i].c_str()), (void*)(s.c_str() + current), length -  1);
+		current += length;
+	}
+
+	return lines;
+}
+
 
 vector<string> readFile(const string& fileName)
 {
@@ -118,7 +172,7 @@ vector<string> readFile(const string& fileName)
 		throw std::runtime_error("error opening file");
 	}
 
-	std::string s;
+	string s;
 
 	f.seekg(0, std::ios::end);
 	auto length = f.tellg();
@@ -126,73 +180,25 @@ vector<string> readFile(const string& fileName)
 	f.seekg(0, std::ios::beg);
 
 	s.assign(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
-
-	stringReplace(s, "  ", " ");
+	
+	cout << "finished reading file" << endl;
 
 	return split(s, '\n');
 }
 
 typedef std::tuple<vector<float>, vector<float>, vector<float>> PositionsNormalsUVs;
-typedef unordered_map<string, vector<int>> MaterialMap;
-
-auto extractVertices(const vector<string>& lines) -> PositionsNormalsUVs
-{
-	vector<float> positions;
-	vector<float> normals;
-	vector<float> uvs;
-
-	for (auto line : lines)
-	{
-		auto stripped = strip(line);
-
-		if (line.size() == 0)
-		{
-			continue;
-		}
-
-		auto components = split(stripped, ' ');
-
-		if (stripped[0] == '#')
-		{
-			continue;
-		}
-
-		cout << ".";
-
-		if (components[0] == "v")
-		{
-			positions.push_back(stof(components[1]));
-			positions.push_back(stof(components[2]));
-			positions.push_back(stof(components[3]));
-		}
-
-		if (components[0] == "vn")
-		{
-			normals.push_back(stof(components[1]));
-			normals.push_back(stof(components[2]));
-			normals.push_back(stof(components[3]));
-		}
-
-		if (components[0] == "vt")
-		{
-			uvs.push_back(stof(components[1]));
-			uvs.push_back(stof(components[2]));
-		}
-	}
-
-	return PositionsNormalsUVs(positions, normals, uvs);
-}
+typedef vector<std::pair<string, vector<int>>> MaterialMap;
 
 auto extractFaces(const vector<string>& lines, const PositionsNormalsUVs& input, vector<Vertex>& vertices) -> MaterialMap
 {
-	MaterialMap materials;
+	std::unordered_map<string, vector<int>> materials;
 	unordered_map<string, int> indices;
 
 	std::string currentMaterial = "default";
 
 	auto addUniqueVertex = [&](const string& hash)
 	{
-		auto components = split(hash, '/');
+		auto components = split2(hash, '/');
 
 		size_t positionIndex = std::stoi(components[0]) - 1;
 		size_t normalsIndex = std::stoi(components[2]) - 1;
@@ -223,9 +229,12 @@ auto extractFaces(const vector<string>& lines, const PositionsNormalsUVs& input,
 	{
 		auto stripped = strip(line);
 
-		auto components = split(stripped, ' ');
+		auto components = split2(stripped, ' ');
 
-		cout << "+";
+		if (stripped.size() < 6)
+		{
+			continue;
+		}
 
 		if (components[0] == "usemtl")
 		{
@@ -276,7 +285,113 @@ auto extractFaces(const vector<string>& lines, const PositionsNormalsUVs& input,
 		}
 	}
 
-	return materials;
+	MaterialMap result;
+
+	for (auto& kv : materials)
+	{
+		result.push_back(std::make_pair(kv.first, std::move(kv.second)));
+	}
+
+	return result;
+}
+
+auto extractVertices(const vector<string>& lines, size_t startLine, size_t endLine) -> PositionsNormalsUVs
+{
+	vector<float> positions;
+	vector<float> normals;
+	vector<float> uvs;
+
+	for (auto l = startLine; l < endLine; l++)
+	{
+		auto line = lines[l];
+		auto stripped = strip(line);
+
+		if (line.size() < 6)
+		{
+			continue;
+		}
+
+		auto components = split(stripped, ' ');
+
+		if (stripped[0] == '#')
+		{
+			continue;
+		}
+
+		if (components[0] == "v")
+		{
+			positions.push_back(stof(components[1]));
+			positions.push_back(stof(components[2]));
+			positions.push_back(stof(components[3]));
+		}
+
+		if (components[0] == "vn")
+		{
+			normals.push_back(stof(components[1]));
+			normals.push_back(stof(components[2]));
+			normals.push_back(stof(components[3]));
+		}
+
+		if (components[0] == "vt")
+		{
+			uvs.push_back(stof(components[1]));
+			uvs.push_back(stof(components[2]));
+		}
+	}
+
+	return PositionsNormalsUVs(positions, normals, uvs);
+}
+
+auto extractVerticesConcurrent(const vector<string>& lines) -> PositionsNormalsUVs
+{
+	auto cpuCores = thread::hardware_concurrency();
+	vector<thread> threads;
+	auto lineCount = lines.size();
+	auto linesPerThread = lineCount / cpuCores;
+
+	std::vector<PositionsNormalsUVs> results;
+
+	auto currentLine = 0;
+	for (auto i = 0u; i < cpuCores; i++)
+	{
+		results.emplace_back();
+		auto startLine = currentLine;
+		auto endLine = currentLine + linesPerThread;
+		threads.emplace_back([&lines, startLine, endLine, i, &results]()
+		{
+			results[i] = extractVertices(lines, startLine, endLine);
+		});
+
+		currentLine += linesPerThread;
+	}
+
+	PositionsNormalsUVs combinedResults;
+
+	for (auto i = 0u; i < cpuCores; i++)
+	{
+		threads[i].join();
+
+		const auto& resultPositions = std::get<0>(results[i]);
+		const auto& resultNormals = std::get<1>(results[i]);
+		const auto& resultUVs = std::get<2>(results[i]);
+
+		for (auto q = 0u; q < resultPositions.size(); q++)
+		{
+			std::get<0>(combinedResults).push_back(resultPositions[q]);
+		}
+
+		for (auto q = 0u; q < resultNormals.size(); q++)
+		{
+			std::get<1>(combinedResults).push_back(resultNormals[q]);
+		}
+
+		for (auto q = 0u; q < resultUVs.size(); q++)
+		{
+			std::get<2>(combinedResults).push_back(resultUVs[q]);
+		}
+	}
+
+	return combinedResults;
 }
 
 auto splitMesh(int maxVerticesPerBucket, const vector<Vertex>& verticesForSubMesh,
@@ -308,7 +423,6 @@ auto splitMesh(int maxVerticesPerBucket, const vector<Vertex>& verticesForSubMes
 		{
 			finalVertices.push_back(verticesForSubMesh[q]);
 		}
-
 
 		auto indexOffset = -i * maxVerticesPerBucket; //bucket offset. traslates from big (global) to local (small) idx
 
@@ -404,12 +518,13 @@ auto splitMesh(int maxVerticesPerBucket, const vector<Vertex>& verticesForSubMes
 	return submeshes;
 }
 
-auto splitToSubMeshes(const MaterialMap& materials, const vector<Vertex>& vertices) -> vector<SubMesh>
+auto splitToSubMeshes(const MaterialMap& materials, const vector<Vertex>& vertices, size_t materialStart, size_t materialEnd) -> vector<SubMesh>
 {
 	vector<SubMesh> submeshes;
 
-	for (auto& material : materials)
+	for (auto i = materialStart; i < materialEnd; i++)
 	{
+		auto& material = materials[i];
 		vector<Vertex> verticesForSubMesh;
 
 		set<int> uniqueIndices(material.second.begin(), material.second.end());
@@ -430,7 +545,7 @@ auto splitToSubMeshes(const MaterialMap& materials, const vector<Vertex>& vertic
 			subMeshIndices.push_back(globalToSubmeshIndicesMap[index]);
 		}
 
-		auto materialSubMeshes = splitMesh(600, verticesForSubMesh, subMeshIndices, material.first);
+		auto materialSubMeshes = splitMesh(MAX_VERTICES_PER_SUBMESH, verticesForSubMesh, subMeshIndices, material.first);
 
 		for (auto& matSubmesh : materialSubMeshes)
 		{
@@ -439,6 +554,45 @@ auto splitToSubMeshes(const MaterialMap& materials, const vector<Vertex>& vertic
 	}
 
 	return submeshes;
+}
+
+auto splitToSubMeshesConcurrent(const MaterialMap& materials, const vector<Vertex>& vertices) -> vector<SubMesh>
+{
+	auto cpuCores = thread::hardware_concurrency();
+	vector<thread> threads;
+	auto materialCount = materials.size();
+	auto materialsPerThread = floor(materialCount / cpuCores);
+	auto leftOver = materialCount % cpuCores;
+
+	vector<vector<SubMesh>> results;
+
+	auto currentMaterial = 0;
+	for (auto i = 0u; i < cpuCores; i++)
+	{
+		results.emplace_back();
+		auto startIndex = currentMaterial;
+		auto endIndex = currentMaterial + materialsPerThread + (i == (cpuCores - 1) ? leftOver : 0);
+		threads.emplace_back([&materials, &vertices, startIndex, endIndex, i, &results]()
+		{
+			results[i] = splitToSubMeshes(materials, vertices, startIndex, endIndex);
+		});
+
+		currentMaterial += materialsPerThread;
+	}
+
+	vector<SubMesh> combinedResults;
+
+	for (auto i = 0u; i < cpuCores; i++)
+	{
+		threads[i].join();
+
+		for (auto& mesh : results[i])
+		{
+			combinedResults.push_back(mesh);
+		}
+	}
+
+	return combinedResults;
 }
 
 auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName) -> void
@@ -454,7 +608,7 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName) ->
 	{
 		numFaces += submesh.indices.size() / 3;
 	}
-	cout << "generated a total of " << numFaces << endl;
+	cout << "generated a total of " << numFaces << " faces" << endl;
 
 	auto count = 0u;
 	for (auto& subMesh : submeshes)
@@ -508,7 +662,7 @@ int main(int argc, char** argv)
 
 	cout << lines.size() << " lines" << endl;
 
-	auto vertices = extractVertices(lines);
+	auto vertices = extractVerticesConcurrent(lines);
 
 	cout << "extracted " << std::get<0>(vertices).size() << " positions, " << std::get<1>(vertices).size() << " normals, " << std::get<2>(vertices).size() << " uvs" << endl;
 
@@ -524,7 +678,7 @@ int main(int argc, char** argv)
 		originalFacesCount += kv.second.size() / 3;
 	}
 
-	auto submeshes = splitToSubMeshes(materials, outVertices);
+	auto submeshes = splitToSubMeshesConcurrent(materials, outVertices);
 
 	cout << submeshes.size() << " submeshes generated" << endl;
 
