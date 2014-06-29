@@ -40,35 +40,28 @@ Application.prototype.extend(
 
 		var grid = new GameObject("Grid");
 		grid.addComponent(new GridRenderer(-100.0, -100.0, 100.0, 100.0));
-		this.sceneGraph.insert(grid);
+		//this.sceneGraph.insert(grid);
 
-		var testProgram = new Shader(ResourceLoader.getContent("show_normals_vertex"), ResourceLoader.getContent("show_normals_fragment"));
+		var testProgram = new Shader(ResourceLoader.getContent("diffuse_vertex"), ResourceLoader.getContent("diffuse_fragment"));
 
 		var testObject = new GameObject("testMesh");
 		testObject.addComponent(new OBJ2MeshProvider("sponza"));
 		testObject.addComponent(new MeshRenderer());
-		testObject.addComponent(new OctreeMeshProvider());
+		//testObject.addComponent(new OctreeMeshProvider());
 
-		var waht = new AABB();
-		waht.extents = vec3.fromValues(1, 1, 1);
-		waht.octreeSplit();
-
-		console.log(testObject.meshProvider.submeshes.length);
-		for(var i = 0; i < testObject.meshProvider.submeshes.length; i++)
+		for(var q = 0; q < testObject.meshProvider.submeshes.length; q++)
 		{
-			var material = new Material("de_dust2_material_" + (i + 1));
+			var submesh = testObject.meshProvider.submeshes[q];
+			var material = new Material(submesh.material);
 			material.setProgram(testProgram);
-			var texture = new Texture("de_dust2_material_" + (i + 1));
-			texture.setWrap(Texture.REPEAT);
+			var texture = new Texture(submesh.material);
+			texture.setWrap(Texture.WRAP_REPEAT);
 			material.addTexture("diffuse", texture);
 			testObject.renderer.materials.push(material);
 		}
 
-		testObject.transform.position = vec3.fromValues(0, 0, 0);
-
-		/*var unitTest = new UnitTest();
-		unitTest.addTest(new AABBTests());
-		unitTest.runTests();*/
+		testObject.transform.position = vec3.fromValues(0.0, 0, 0);
+		this.sceneGraph.insert(testObject);
 
 		var gameObjectEditor = null;
 
@@ -106,26 +99,8 @@ Application.prototype.extend(
 			}
 		}.bind(this));
 
-		testObject.addComponent(new AnimationController());
 
 		var time = 0.0;
-		/*testObject.animationController.setAnimate(function (gameObject, deltaTime)
-		{
-			time += deltaTime * 4.0;
-
-			var orientation = quat.create();
-			quat.rotateY(orientation, orientation, time * 0.0174532925);
-			quat.normalize(orientation, orientation);
-			gameObject.transform.orientation = orientation;
-			gameObject.transform.orientationEuler[1] = time;
-
-			while(gameObject.transform.orientationEuler[1] >= 360.0)
-			{
-				gameObject.transform.orientationEuler[1] -= 360.0;
-			}
-		});*/
-
-		this.sceneGraph.insert(testObject);
 
 		var player = this._createPlayer(vec3.fromValues(0.0, 0.0, 0.0));
 
@@ -141,157 +116,6 @@ Application.prototype.extend(
 		}.bind(this);
 
 		frameStatsWindow.show();
-
-		//Gui.debugLayout = true;
-
-		/*this._openResourceViewer();
-
-		var testTextBoxWindow = this._createWindow("TextBox test", vec2.fromValues(0, 0), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
-
-		var multiLineText = "hello world,\nthis is some multiline text\n123456";
-
-		var testShowButton = false;
-		var testSpinTires = false;
-
-		testTextBoxWindow.drawSelf = function (gui)
-		{
-			multiLineText = gui.textbox(multiLineText, 64, 16, false);
-			gui.button("nothing");
-
-			gui.dropdownmenu("MAIN MENU", {
-				"stuff1": {
-					"substuff1": function()
-					{
-						multiLineText = "SUCH GUI\nMUCH FUNCTIONALITY";
-					},
-					"substuff2": function()
-					{
-						setInterval(function() {
-							testSpinTires = testSpinTires ? false : true;
-						}, 500);
-					},
-					"substuff3": {
-						"subsubstuff1": function() {
-							console.log("spintires");
-						},
-						"SPINTIRES": function() {
-							console.log("SPINTIRES");
-						}
-					}
-				},
-				stuff2: function() {
-					testShowButton = testShowButton ? false : true;
-				}
-			});
-
-			if ( testShowButton ) {
-				gui.button("WHY AM I HERE")
-			}
-
-			if ( testSpinTires ) {
-				gui.beginHorizontalGroup();
-				gui.button("SPINTIRES!");
-				gui.button("SPINTIRES!");
-				gui.button("SPINTIRES!");
-				gui.endHorizontalGroup();
-			}
-		}.bind(this);
-
-		testTextBoxWindow.show();
-
-		var testWindow = this._createWindow("test window", vec2.fromValues(0, 0), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
-
-		var testInput = "hello world";
-
-		testWindow.onClose = function()
-		{
-			testWindow.close();
-		}.bind(this);
-
-		var testClicked = false;
-		var testChecked1 = false;
-		var testChecked2 = false;
-		var testChecked3 = false;
-
-		var testListboxItems = [ "apple", "orange", "banana" ];
-		var testListboxSelectedIndex = null;
-
-		testWindow.drawSelf = function (gui)
-		{
-			gui.label("hello world");
-
-			gui.beginHorizontalGroup();
-
-			gui.label("horizontal group");
-
-			if (gui.button("click me"))
-			{
-				testClicked = true;
-				console.log("click me");				
-			}
-
-			if (testClicked && gui.button("click me too"))
-			{
-				testClicked = false;
-			}
-
-			gui.endHorizontalGroup();
-
-			gui.horizontalSeparator();
-
-			gui.beginHorizontalGroup();
-
-			if (gui.button("test"))
-			{
-				console.log("test");				
-			}
-
-			if (gui.button("1234"))
-			{
-				console.log("1234");				
-			}
-
-			gui.endHorizontalGroup();
-
-			gui.beginHorizontalGroup();
-
-			gui.label("test input");
-
-			testInput = gui.inputbox(testInput, 32);
-			
-			gui.endHorizontalGroup();
-
-			gui.beginHorizontalGroup();
-			gui.label("image");
-			gui.image("heightmap", 64, 64);
-			gui.endHorizontalGroup();
-
-			gui.beginHorizontalGroup();
-			gui.label("cursor");
-			gui.image("cursor");
-			gui.endHorizontalGroup();
-
-			gui.beginHorizontalGroup();
-			gui.label("checkbox");
-			testChecked1 = gui.checkbox(testChecked1);
-			gui.endHorizontalGroup();
-
-			gui.beginHorizontalGroup();
-			gui.label("checkbox2");
-			testChecked2 = gui.checkbox(testChecked2);
-			gui.label("checkbox3");
-			testChecked3 = gui.checkbox(testChecked3);
-			gui.endHorizontalGroup();
-
-			testListboxSelectedIndex = gui.listbox(testListboxItems, 140, 140, testListboxSelectedIndex);
-
-		}.bind(this);
-
-		testWindow.show();
-
-		Gui.bringToFront(testTextBoxWindow);
-
-		var terrainGameObject = this._createTerrain();*/
 	},
 
 	update: function (deltaTime)

@@ -121,6 +121,8 @@ include([], function ()
 			var index = 0;
 			for (var name in material.textures)
 			{
+				debugger;
+
 				if (!material.textures.hasOwnProperty(name))
 				{
 					continue;
@@ -128,9 +130,11 @@ include([], function ()
 
 				if (program[name] == undefined)
 				{
-					//console.log("no uniform sampler2D for texture \"" + name + "\"");
+					GL.activeTexture(GL.TEXTURE0 + index);
+					GL.bindTexture(GL.TEXTURE_2D, null);
 					continue;
 				}
+
 
 				Shader.setUniformInt(name, index);
 				GL.activeTexture(GL.TEXTURE0 + index);
