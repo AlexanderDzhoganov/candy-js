@@ -22,6 +22,8 @@ include(
 		this.onBecomeInvisible = null;
 
 		this.onPreRender = null;
+		this.onSetupMaterial = null;
+		this.onRender = null;
 		this.onPostRender = null;
 
 		this.onUpdate = null;

@@ -26,7 +26,11 @@ RenderQueue.prototype.extend(
 	{
 		for (var i = 0; i < this._enqueued.length; i++)
 		{
-			this._enqueued[i].renderer.onRender(this._enqueued[i].modelMatrix);
+			for (var q = 0; q < this._enqueued[i].renderer.mesh.submeshes.length; q++)
+			{
+				this._enqueued[i].renderer.onSetupMaterial(q);
+				this._enqueued[i].renderer.onRender(q, this._enqueued[i].modelMatrix);
+			}
 		}
 
 		if(doFlush)

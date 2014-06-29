@@ -53,7 +53,7 @@ include([], function ()
 			}
 		},
 
-		onRender: function (worldModelMatrix)
+		onRender: function (subMeshIndex, worldModelMatrix)
 		{                                                                 
 			if (this.materials.length == 0)
 			{
@@ -67,13 +67,10 @@ include([], function ()
 
 			if (this.wireframe)
 			{
-				for (var i = 0; i < this.mesh.submeshes.length; i++)
-				{
-					Shader.setActiveProgram(MeshRenderer.getWireframeProgram());
-					Shader.setUniformVec3("wireframeColor", vec3.fromValues(0, 0.2, 1));
-					Shader.setUniformMat4("model", worldModelMatrix);
-					this._drawWireframeSubmesh(this.mesh.submeshes[i]);
-				}
+				Shader.setActiveProgram(MeshRenderer.getWireframeProgram());
+				Shader.setUniformVec3("wireframeColor", vec3.fromValues(0, 0.2, 1));
+				Shader.setUniformMat4("model", worldModelMatrix);
+				this._drawWireframeSubmesh(this.mesh.submeshes[subMeshIndex]);
 			}
 			else
 			{
@@ -81,36 +78,32 @@ include([], function ()
 				var frustum = Renderer._activeCamera.getFrustum();
 				var meshBoundsProvider = this.gameObject.meshBoundsProvider;
 
-				for (var i = 0; i < this.mesh.submeshes.length; i++)
+				var indicesCount = this.mesh.submeshes[subMeshIndex].indices.length;
+
+				if(octreeMeshProvider)
 				{
-					var indicesCount = this.mesh.submeshes[i].indices.length;
-
-					if(octreeMeshProvider)
+					var visibleSet = octreeMeshProvider.intersectFrustum(frustum, subMeshIndex);
+					if(visibleSet == null || visibleSet.length == 0)
 					{
-						var visibleSet = octreeMeshProvider.intersectFrustum(frustum, i);
-						if(visibleSet == null || visibleSet.length == 0)
-						{
-							continue;
-						}
-
-						if(visibleSet.length % 3 != 0)
-						{
-							debugger;
-						}
-
-						GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.mesh.submeshes[i].indexBuffer);
-						GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(visibleSet), GL.STREAM_DRAW);
-						indicesCount = visibleSet.length;
-					}
-					else if(this._isCulled(i, frustum))
-					{
-						continue;
+						return;
 					}
 
-					this._setupMaterial(i);
-					Shader.setUniformMat4("model", worldModelMatrix);
-					this._drawSubmesh(this.mesh.submeshes[i], indicesCount);
+					if(visibleSet.length % 3 != 0)
+					{
+						debugger;
+					}
+
+					GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.mesh.submeshes[subMeshIndex].indexBuffer);
+					GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(visibleSet), GL.STREAM_DRAW);
+					indicesCount = visibleSet.length;
 				}
+				else if(this._isCulled(subMeshIndex, frustum))
+				{
+					return;
+				}
+
+				Shader.setUniformMat4("model", worldModelMatrix);
+				this._drawSubmesh(this.mesh.submeshes[subMeshIndex], indicesCount);
 			}
 
 			if (this.drawBounds)
@@ -126,9 +119,9 @@ include([], function ()
 			return result == Frustum.INTERSECT_RESULT.OUTSIDE;
 		},
 
-		_setupMaterial: function (idx)
+		onSetupMaterial: function (subMeshIndex)
 		{
-			var material = this.materials[idx];
+			var material = this.materials[subMeshIndex];
 			var program = material.program;
 
 			Shader.setActiveProgram(program);
