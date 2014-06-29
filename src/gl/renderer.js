@@ -12,6 +12,11 @@ Renderer = function ()
 
 	this._Canvas = document.getElementById("gl-canvas");
 	GL = this._Canvas.getContext("experimental-webgl");
+	
+	if(GL.getExtension("WEBGL_draw_buffers") != null)
+	{
+		alert("draw bufffers");
+	}
 
 	this.debug = new DebugRenderer();
 

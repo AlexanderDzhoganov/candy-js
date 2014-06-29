@@ -33,6 +33,7 @@ Application.prototype.extend(
 
 	init: function ()
 	{
+		
 		InputController = new InputController();	
 		Renderer = new Renderer();
 		Gui = new Gui();
@@ -64,6 +65,8 @@ Application.prototype.extend(
 
 		testObject.transform.position = vec3.fromValues(0.0, 0, 0);
 		this.sceneGraph.insert(testObject);
+
+		var rt = new RenderTexture(1280, 720);
 
 		var gameObjectEditor = null;
 
