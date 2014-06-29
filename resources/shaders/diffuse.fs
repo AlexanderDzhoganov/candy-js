@@ -10,5 +10,5 @@ void main()
 	float l = length(position_out.xyz);
 	vec3 lightDir = -position_out.xyz / l;
 	float invSq = 1.0 / sqrt(l);
-	gl_FragColor = vec4(texture2D(diffuse, uvs_out).xyz * max(0.0, dot(lightDir, normal_out) * invSq), 1.0);
+	gl_FragColor = vec4(texture2D(diffuse, uvs_out).xyz * max(0.0, dot(lightDir, normal_out) * invSq * 2.0), 1.0);
 }
