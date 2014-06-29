@@ -6,5 +6,8 @@ include(
 	"gl/material",
 	"gl/renderer",
 	"gl/debugrenderer",
-
+	"gl/renderqueue",
+	"gl/framebuffer",
+	"gl/rendertexture",
+	
 ]);

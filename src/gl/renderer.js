@@ -1,7 +1,5 @@
 Renderer = function ()
 {
-	this.lightPos = vec3.create();
-	this.lightD = 0.0;
 	this.screenWidth = 0;
 	this.screenHeight = 0;
 	this._Canvas = null;
@@ -12,8 +10,9 @@ Renderer = function ()
 
 	this._Canvas = document.getElementById("gl-canvas");
 	GL = this._Canvas.getContext("experimental-webgl");
-
+	
 	this.debug = new DebugRenderer();
+	this.renderQueue = new RenderQueue();
 
 	this.screenWidth = window.innerWidth;
 	this.screenHeight = window.innerHeight;
