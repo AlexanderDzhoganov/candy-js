@@ -6,6 +6,7 @@ include([], function ()
 		this.name = "MeshRenderer";
 		this.type = "renderer";
 		this.materials = [];
+		this.mesh = null;
 
 		this.drawBounds = false;
 		this.wireframe = false;
@@ -37,38 +38,52 @@ include([], function ()
 	MeshRenderer.prototype.extend(
 	{
 
-		onRender: function (worldModelMatrix)
+		onInit: function ()
 		{
+		},
+
+		setMesh: function (mesh)
+		{
+			this.mesh = mesh;
+			if (!this.gameObject.getComponent("meshBoundsProvider"))
+			{
+				this.gameObject.addComponent(new MeshBoundsProvider());
+				var boundsProvider = this.gameObject.getComponent("meshBoundsProvider");
+				boundsProvider.recalculateMinimumAABB();
+			}
+		},
+
+		onRender: function (worldModelMatrix)
+		{                                                                 
 			if (this.materials.length == 0)
 			{
 				return;
 			}
 
-			var meshProvider = this.gameObject.getComponent("meshProvider");
-			if (!meshProvider)
+			if(this.mesh == null)
 			{
 				return;
 			}
 
 			if (this.wireframe)
 			{
-				for (var i = 0; i < meshProvider.submeshes.length; i++)
+				for (var i = 0; i < this.mesh.submeshes.length; i++)
 				{
 					Shader.setActiveProgram(MeshRenderer.getWireframeProgram());
 					Shader.setUniformVec3("wireframeColor", vec3.fromValues(0, 0.2, 1));
 					Shader.setUniformMat4("model", worldModelMatrix);
-					this._drawWireframeSubmesh(meshProvider.submeshes[i]);
+					this._drawWireframeSubmesh(this.mesh.submeshes[i]);
 				}
 			}
 			else
 			{
-				var octreeMeshProvider = this.gameObject.octreeMeshProvider;
+				var octreeMeshProvider = this.gameObject.octreeFrustumCullingProvider;
 				var frustum = Renderer._activeCamera.getFrustum();
 				var meshBoundsProvider = this.gameObject.meshBoundsProvider;
 
-				for (var i = 0; i < meshProvider.submeshes.length; i++)
+				for (var i = 0; i < this.mesh.submeshes.length; i++)
 				{
-					var indicesCount = meshProvider.submeshes[i].indices.length;
+					var indicesCount = this.mesh.submeshes[i].indices.length;
 
 					if(octreeMeshProvider)
 					{
@@ -83,7 +98,7 @@ include([], function ()
 							debugger;
 						}
 
-						GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, meshProvider.submeshes[i].indexBuffer);
+						GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.mesh.submeshes[i].indexBuffer);
 						GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(visibleSet), GL.STREAM_DRAW);
 						indicesCount = visibleSet.length;
 					}
@@ -94,7 +109,7 @@ include([], function ()
 
 					this._setupMaterial(i);
 					Shader.setUniformMat4("model", worldModelMatrix);
-					this._drawSubmesh(meshProvider.submeshes[i], indicesCount);
+					this._drawSubmesh(this.mesh.submeshes[i], indicesCount);
 				}
 			}
 
@@ -189,9 +204,7 @@ include([], function ()
 				return;
 			}
 
-			var meshProvider = this.gameObject.meshProvider;
-
-			for(var i = 0; i < meshProvider.submeshes.length; i++)
+			for(var i = 0; i < this.mesh.submeshes.length; i++)
 			{
 				var aabb = AABB.transform(boundsProvider.aabbs[i], worldModelMatrix);
 				Renderer.debug.drawAABB(aabb.center, aabb.extents);

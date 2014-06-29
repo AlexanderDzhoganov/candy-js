@@ -38,16 +38,18 @@ include ([ "aabb" ], function ()
 
 		recalculateMinimumAABB: function ()
 		{
-			var meshProvider = this.gameObject.getComponent("meshProvider");
-			if (!meshProvider)
+			var renderer = this.gameObject.getComponent("renderer");
+			if (!renderer)
 			{
-				console.log("MeshBoundsProvider: cannot recalculate AABB as no meshProvider is present on the gameobject");
+				console.log("MeshBoundsProvider: cannot recalculate AABB as no renderer is present on the gameobject");
 				return;
 			}
 
-			for (var q = 0; q < meshProvider.submeshes.length; q++)
+			var mesh = renderer.mesh;
+
+			for (var q = 0; q < mesh.submeshes.length; q++)
 			{
-				var subMesh = meshProvider.submeshes[q];
+				var subMesh = mesh.submeshes[q];
 
 				if (subMesh.vertexFormat != Renderer.VERTEX_FORMAT.PPPNNNTT)
 				{

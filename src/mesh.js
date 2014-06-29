@@ -1,23 +1,20 @@
 include([], function ()
 {
 
-	OBJ2MeshProvider = function (name)
+	Mesh = function (name)
 	{
-		this.name = "OBJ2MeshProvider";
-		this.type = "meshProvider";
-
 		this.submeshes = this._extractDataFromOBJ2(ResourceLoader.getContent(name));
 		this._uploadVertexData();
 	};
 
-	OBJ2MeshProvider.prototype = new Component();
+	Mesh.prototype = new Component();
 
-	OBJ2MeshProvider.extend(
+	Mesh.extend(
 	{
 
 	})
 
-	OBJ2MeshProvider.prototype.extend(
+	Mesh.prototype.extend(
 	{
 
 		dispose: function ()
@@ -28,17 +25,6 @@ include([], function ()
 				GL.deleteBuffer(subMesh.vertexBuffer);
 				GL.deleteBuffer(subMesh.indexBuffer);
 			}
-		},
-
-		onInit: function ()
-		{
-			if (!this.gameObject.getComponent("meshBoundsProvider"))
-			{
-				this.gameObject.addComponent(new MeshBoundsProvider());
-			}
-
-			var boundsProvider = this.gameObject.getComponent("meshBoundsProvider");
-			boundsProvider.recalculateMinimumAABB();
 		},
 
 		_uploadVertexData: function ()

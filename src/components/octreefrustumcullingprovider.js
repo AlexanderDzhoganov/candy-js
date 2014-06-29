@@ -1,29 +1,28 @@
 include([ "octree" ], function ()
 {
 
-	OctreeMeshProvider = function ()
+	OctreeFrustumCullingProvider = function ()
 	{
-		this.name = "OctreeMeshProvider";
-		this.type = "octreeMeshProvider";
+		this.name = "OctreeFrustumCullingProvider";
+		this.type = "octreeFrustumCullingProvider";
 
 		this.octrees = [];
-
 		this.debugDrawOctrees = false;
 	};
 
-	OctreeMeshProvider.prototype = new Component();
+	OctreeFrustumCullingProvider.prototype = new Component();
 
-	OctreeMeshProvider.extend(
+	OctreeFrustumCullingProvider.extend(
 	{
 
 	});
 
-	OctreeMeshProvider.prototype.extend(
+	OctreeFrustumCullingProvider.prototype.extend(
 	{
 
 		onInit: function ()
 		{
-			var mesh = this.gameObject.meshProvider;
+			var mesh = this.gameObject.renderer.mesh;
 			var bounds = this.gameObject.meshBoundsProvider;
 
 			if(mesh && bounds)
@@ -37,7 +36,7 @@ include([ "octree" ], function ()
 				{
 					this.octrees.push
 					(
-						new Octree(bounds.aabbs[i], 65535, mesh.submeshes[i].vertices, mesh.submeshes[i].indices)
+						new Octree(bounds.aabbs[i], 3000, mesh.submeshes[i].vertices, mesh.submeshes[i].indices)
 					);
 				}
 			}
@@ -45,9 +44,7 @@ include([ "octree" ], function ()
 
 		intersectFrustum: function (frustum, subMeshIndex)
 		{
-			//debugger;
-			var result =  this.octrees[subMeshIndex].intersectFrustum(frustum);
-			return result;
+			return this.octrees[subMeshIndex].intersectFrustum(frustum);
 		},
 
 	});

@@ -88,8 +88,7 @@ include([], function ()
 
 				GL.deleteBuffer(subMesh.vertexBuffer);
 				GL.deleteBuffer(subMesh.indexBuffer);
-			}
-		},
+					},
 
 		onInit: function ()
 		{
@@ -135,7 +134,7 @@ include([], function ()
 				var components = line.trim().split(' ');
 
 				if (components[0] == 'v')
-				{
+	+			{
 					positions.push
 					(
 						vec3.fromValues
@@ -191,7 +190,7 @@ include([], function ()
 
 					for (var q = 0; q < numVertices - 2; q++) // works fine
 					{
-						materials[current].faces.push
+						materials[i].faces.push
 						([
 							components[1].split("/"),
 							components[2 + q].split("/"),
