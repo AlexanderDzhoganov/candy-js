@@ -19,7 +19,7 @@ ResourceLoader.extend(
 		image: ["jpg", "png", "gif"],
 		text: ["txt", "vs", "fs", "obj", "obj2"],
 		json: ["json"],
-		uint8array: ["bin"]
+		uint8array: ["bin", "obj2b"]
 	}
 });
 

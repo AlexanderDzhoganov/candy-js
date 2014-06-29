@@ -22,14 +22,17 @@ RenderQueue.prototype.extend(
 		});
 	},
 
-	dispatchQueue: function ()
+	dispatchQueue: function (doFlush)
 	{
 		for (var i = 0; i < this._enqueued.length; i++)
 		{
-			this._enqueued.renderer.renderSelf(modelMatrix);
+			this._enqueued[i].renderer.onRender(this._enqueued[i].modelMatrix);
 		}
 
-		this._enqueued = [];
+		if(doFlush)
+		{
+			this._enqueued = [];
+		}
 	},
 
 	flushQueue: function ()

@@ -130,7 +130,6 @@ Application.prototype.extend(
 	{
 		this.sceneGraph.render();
 		Renderer.debug.renderSelf();
-		Gui.renderSelf();
 	},
 
 	run: function (tickRate)
@@ -165,8 +164,11 @@ Application.prototype.extend(
 				timeUntilNextTick = 1.0 / tickRate + timeUntilNextTick;
 			}
 
-			Renderer.beginFrame();
 			this.render();
+
+			Renderer.doFrame();
+			Gui.renderSelf();
+
 			if (!this.doStop)
 			{
 				window.requestAnimationFrame(doFrame);

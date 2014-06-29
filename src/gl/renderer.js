@@ -46,16 +46,15 @@ Renderer.prototype.extend(
 		INDEXED_TRIANGLES: 3,
 		INDEXED_TRIANGLE_STRIP: 4,
 	},
+
+	doDepthPrepass: function ()
+	{
 		
-	beginFrame: function ()
+	},
+		
+	doFrame: function ()
 	{
 		this.clearFramebuffer(vec4.fromValues(0, 0, 0, 1));
-
-		this.lightPos[0] = Math.sin(this.lightD) * 3.0;
-		this.lightPos[1] = 1;
-		this.lightPos[2] = Math.cos(this.lightD) * 3.0;
-
-		this.lightD += Math.random() * 0.01;
 
 		this._ViewMatrix = this._activeCamera.getViewMatrix();
 
@@ -68,6 +67,8 @@ Renderer.prototype.extend(
 
 		this.frameStats.numberOfLinesDrawn = 0;
 		this.frameStats.numberOfTrianglesDrawn = 0;
+
+		this.renderQueue.dispatchQueue(true);
 	},
 		
 	setViewport: function ()
@@ -185,7 +186,6 @@ Renderer.prototype.extend(
 			Shader.setUniformMat4("viewProjection", this._ViewProjectionMatrix);
 			Shader.setUniformMat4("view", this._ViewMatrix);
 			Shader.setUniformMat4("inverseModelView", this._InverseModelViewMatrix);
-			Shader.setUniformVec3("lightPosition", this.lightPos);
 		}
 	},
 
