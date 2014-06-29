@@ -132,7 +132,7 @@ include ([ "aabb" ], function ()
 
 				if(boundsProvider)
 				{
-					for(var i = 0; i < gameObject.meshProvider.submeshes[i]; i++)
+					for(var i = 0; i < gameObject.renderer.mesh.submeshes[i]; i++)
 					{
 						var aabb = AABB.transform(boundsProvider.aabbs[i], model);
 						var result = aabb.intersectRay(ray);

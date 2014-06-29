@@ -1,4 +1,4 @@
-OctreeMeshProvider.prototype.extend(
+OctreeFrustumCullingProvider.prototype.extend(
 {
 
 	createConfigWindow: function ()

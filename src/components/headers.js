@@ -6,11 +6,9 @@ include(
 	"components/meshrenderer",
 	"components/terrainmeshprovider",
 	"components/firstpersoncontroller",
-	"components/objmeshprovider",
-	"components/obj2meshprovider",
 	"components/meshboundsProvider",
 	"components/animationcontroller",
 	"components/gridrenderer",
-	"components/octreemeshprovider",
+	"components/octreefrustumcullingprovider",
 	
 ], function () {});
