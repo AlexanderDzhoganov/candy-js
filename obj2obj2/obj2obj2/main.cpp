@@ -11,29 +11,17 @@
 #include <thread>
 #include <future>
 
-using std::thread;
-using std::set;
-using std::vector;
-using std::unordered_map;
-using std::ifstream;
-using std::fstream;
-using std::string;
-using std::stringstream;
+using namespace std;
 
-using std::cout;
-using std::cin;
-using std::endl;
-using std::stof;
-
-const static auto MAX_VERTICES_PER_SUBMESH = 65535;
+const auto MAX_VERTICES_PER_SUBMESH = 65535; // max of Uint16.
+vector<string> lines;
 
 struct Vertex
 {
-	float x, y, z, nx, ny, nz, u, v; // engine format (PPPNNNTTT
+	float x, y, z, nx, ny, nz, u, v;
 };
 
-
-struct SubMesh 
+struct SubMesh
 {
 	vector<Vertex> vertices;
 	vector<size_t> indices;
@@ -43,7 +31,10 @@ struct SubMesh
 	SubMesh() { vertices.reserve(65536); }
 };
 
-string strip(const string& s)
+typedef tuple<vector<float>, vector<float>, vector<float>> PositionsNormalsUVs;
+typedef vector<pair<string, vector<size_t>>> MaterialMap;
+
+auto strip(const string& s) -> string
 {
 	size_t spacesFront = 0;
 	size_t spacesBack = 0;
@@ -71,6 +62,14 @@ string strip(const string& s)
 	stringstream ss;
 	for (auto it = s.begin() + spacesFront; it != s.end() - spacesBack; it++)
 	{
+		if (it < s.end() - spacesBack - 1)
+		{
+			if (*it == ' ' && *(it + 1) == ' ')
+			{
+				continue;
+			}
+		}
+
 		ss << *it;
 	}
 
@@ -78,130 +77,76 @@ string strip(const string& s)
 	return s;
 }
 
-/*vector<string> split(const string& s, char delimiter)
+auto split(const string& s, char delim) -> vector<string>
 {
-	vector<stringstream> ss;
-	ss.emplace_back();
-
-	for (auto& c : s)
-	{
-		if (c == delimiter)
-		{
-			ss.emplace_back();
-			continue;
-		}
-
-		ss[ss.size() - 1] << c;
-	}
-
-	vector<string> result;
-
-	for (auto& sss : ss)
-	{
-		result.push_back(sss.str());
-	}
-
-	return result;
-}*/
-
-vector<string>& split2(const std::string& s, char delim, std::vector<std::string>& elems) {
+	vector<string> elems;
 	stringstream ss(s);
-	std::string item;
-	while (std::getline(ss, item, delim))
+	string item;
+	while (getline(ss, item, delim))
 	{
 		elems.push_back(item);
 	}
 	return elems;
 }
 
-
-std::vector<std::string> split2(const std::string& s, char delim) {
-	std::vector<std::string> elems;
-	split2(s, delim, elems);
-	return elems;
-}
-
-
-vector<string> split(const std::string& s, char delim)
+auto splitNewlines(const string& s) -> size_t
 {
-	if (s.size() == 0)
-	{
-		return vector<string>();
-	}
+	char* ptr = (char*) s.c_str();
+	char* start = ptr;
 
-	vector<string> lines;
-
-	vector<size_t> lenghts;
-	size_t currentLength = 0;
+	size_t newLinesCount = 0;
 
 	for (auto i = 0u; i < s.size(); i++)
 	{
-		currentLength++;
-
-		if (s[i] == delim)
+		if (ptr[i] == '\n')
 		{
-			lenghts.push_back(currentLength);
-			currentLength = 0;
+			ptr[i] = '\0';
+			auto length = (ptr + i) - start;
+			lines.emplace_back(start, length);
+			start = ptr + i + 1;
 		}
 	}
-
-	if (s[s.size() - 1] != delim)
-	{
-		lenghts.push_back(currentLength);
-	}
-
-	size_t current = 0;
-	lines.resize(lenghts.size());
-	for (auto i = 0u; i < lenghts.size(); i++)
-	{
-		auto length = lenghts[i];
-		lines[i].resize(length - 1);
-		memcpy((void*)(lines[i].c_str()), (void*)(s.c_str() + current), length -  1);
-		current += length;
-	}
-
-	return lines;
+	return lines.size();
 }
 
-
-vector<string> readFile(const string& fileName)
-{	
+auto readFile(const string& fileName) -> vector<string>&
+{
 	cout << "Reading file.." << endl;
 
 	ifstream f(fileName);
 	if (!f.is_open())
 	{
-		throw std::runtime_error("error opening file");
+		throw runtime_error("error opening file");
 	}
 
 	string s;
 
-	f.seekg(0, std::ios::end);
+	f.seekg(0, ios::end);
 	auto length = f.tellg();
 	s.reserve(length);
-	f.seekg(0, std::ios::beg);
+	f.seekg(0, ios::beg);
 
-	s.assign(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
-	
-	auto result = split(s, '\n');
-	cout << "Done! " << result.size() << " lines read" << endl;
-	return result;
+	s.assign(istreambuf_iterator<char>(f), istreambuf_iterator<char>());
+
+	auto linesCount = splitNewlines(s);
+
+	cout << "Done! " << linesCount << " lines read" << endl;
+	return lines;
 }
 
-typedef std::tuple<vector<float>, vector<float>, vector<float>> PositionsNormalsUVs;
-typedef vector<std::pair<string, vector<size_t>>> MaterialMap;
-
-size_t addUniqueVertex(const string& hash, unordered_map<string, size_t>& indices, vector<Vertex>& vertices, const PositionsNormalsUVs& input)
+auto addUniqueVertex(const string& hash, unordered_map<string, size_t>& indices,
+					 vector<Vertex>& vertices,
+					 const PositionsNormalsUVs& input) -> size_t
 {
-	auto components = split2(hash, '/');
+	auto components = split(hash, '/');
 
-	size_t positionIndex = std::stoi(components[0]) - 1;
-	size_t normalsIndex = std::stoi(components[2]) - 1;
-	size_t uvsIndex = std::stoi(components[1]) - 1;
+	size_t positionIndex = stoi(components[0]) - 1;
+	size_t normalsIndex = stoi(components[2]) - 1;
+	size_t uvsIndex = stoi(components[1]) - 1;
 
-	const auto& positions = std::get<0>(input);
-	const auto& normals = std::get<1>(input);
-	const auto& uvs = std::get<2>(input);
+	const auto& positions = get<0>(input);
+	const auto& normals = get<1>(input);
+	const auto& uvs = get<2>(input);
 
 	Vertex vertex;
 	vertex.x = positions[positionIndex * 3 + 0];
@@ -220,20 +165,20 @@ size_t addUniqueVertex(const string& hash, unordered_map<string, size_t>& indice
 	return indices[hash];
 }
 
-auto extractFaces(const vector<string>& lines, const PositionsNormalsUVs& input, vector<Vertex>& vertices) -> MaterialMap
+auto extractFaces(const PositionsNormalsUVs& input, vector<Vertex>& vertices) -> MaterialMap
 {
 	cout << "Extracing faces.." << endl;
 
-	std::unordered_map<string, vector<size_t>> materials;
+	unordered_map<string, vector<size_t>> materials;
 	unordered_map<string, size_t> indices;
 
-	std::string currentMaterial = "default";
+	string currentMaterial = "default";
 
 	for (auto line : lines)
 	{
 		auto stripped = strip(line);
 
-		auto components = split2(stripped, ' ');
+		auto components = split(stripped, ' ');
 
 		if (stripped.size() < 6)
 		{
@@ -295,14 +240,14 @@ auto extractFaces(const vector<string>& lines, const PositionsNormalsUVs& input,
 	for (auto& kv : materials)
 	{
 		numberOfFaces += kv.second.size();
-		result.push_back(std::make_pair(kv.first, std::move(kv.second)));
+		result.push_back(make_pair(kv.first, move(kv.second)));
 	}
 
 	cout << "Done! Extracted " << result.size() << " materials with " << numberOfFaces / 3 << " faces" << endl;
 	return result;
 }
 
-auto extractVertices(const vector<string>& lines, size_t startLine, size_t endLine) -> PositionsNormalsUVs
+auto extractVertices(size_t startLine, size_t endLine) -> PositionsNormalsUVs
 {
 	vector<float> positions;
 	vector<float> normals;
@@ -349,7 +294,7 @@ auto extractVertices(const vector<string>& lines, size_t startLine, size_t endLi
 	return PositionsNormalsUVs(positions, normals, uvs);
 }
 
-auto extractVerticesConcurrent(const vector<string>& lines) -> PositionsNormalsUVs
+auto extractVerticesConcurrent() -> PositionsNormalsUVs
 {
 	size_t cpuCores = thread::hardware_concurrency();
 	cout << "Extracting vertices (" << cpuCores << " threads)" << endl;
@@ -358,7 +303,7 @@ auto extractVerticesConcurrent(const vector<string>& lines) -> PositionsNormalsU
 	size_t lineCount = lines.size();
 	size_t linesPerThread = lineCount / cpuCores;
 
-	std::vector<PositionsNormalsUVs> results;
+	vector<PositionsNormalsUVs> results;
 
 	size_t currentLine = 0;
 	for (auto i = 0u; i < cpuCores; i++)
@@ -366,9 +311,9 @@ auto extractVerticesConcurrent(const vector<string>& lines) -> PositionsNormalsU
 		results.emplace_back();
 		auto startLine = currentLine;
 		auto endLine = currentLine + linesPerThread;
-		threads.emplace_back([&lines, startLine, endLine, i, &results]()
+		threads.emplace_back([startLine, endLine, i, &results]()
 		{
-			results[i] = extractVertices(lines, startLine, endLine);
+			results[i] = extractVertices(startLine, endLine);
 		});
 
 		currentLine += linesPerThread;
@@ -379,30 +324,30 @@ auto extractVerticesConcurrent(const vector<string>& lines) -> PositionsNormalsU
 	{
 		threads[i].join();
 
-		const auto& resultPositions = std::get<0>(results[i]);
-		const auto& resultNormals = std::get<1>(results[i]);
-		const auto& resultUVs = std::get<2>(results[i]);
+		const auto& resultPositions = get<0>(results[i]);
+		const auto& resultNormals = get<1>(results[i]);
+		const auto& resultUVs = get<2>(results[i]);
 
 		for (auto q = 0u; q < resultPositions.size(); q++)
 		{
-			std::get<0>(combinedResults).push_back(resultPositions[q]);
+			get<0>(combinedResults).push_back(resultPositions[q]);
 		}
 
 		for (auto q = 0u; q < resultNormals.size(); q++)
 		{
-			std::get<1>(combinedResults).push_back(resultNormals[q]);
+			get<1>(combinedResults).push_back(resultNormals[q]);
 		}
 
 		for (auto q = 0u; q < resultUVs.size(); q++)
 		{
-			std::get<2>(combinedResults).push_back(resultUVs[q]);
+			get<2>(combinedResults).push_back(resultUVs[q]);
 		}
 	}
 
 	cout << "Done! Extracted " <<
-		std::get<0>(combinedResults).size() <<
-		" positions, " << std::get<1>(combinedResults).size() <<
-		" normal and " << std::get<2>(combinedResults).size() << " uvs" << endl;
+		get<0>(combinedResults).size() <<
+		" positions, " << get<1>(combinedResults).size() <<
+		" normal and " << get<2>(combinedResults).size() << " uvs" << endl;
 
 	return combinedResults;
 }
@@ -411,10 +356,10 @@ auto splitMesh(size_t maxVerticesPerBucket, const vector<Vertex>& verticesForSub
 			   const vector<size_t>& subMeshIndices,
 			   const string& materialName) -> vector<SubMesh>
 {
-	auto bucketCount = (size_t)(ceil(verticesForSubMesh.size() / (float)maxVerticesPerBucket));
+	auto bucketCount = (size_t) (ceil(verticesForSubMesh.size() / (float) maxVerticesPerBucket));
 
 	vector<SubMesh> submeshes; // result of split. holds all ( disjoint and normal submeshes
-	unordered_map<size_t, bool> disjointTrianglesMap; 
+	unordered_map<size_t, bool> disjointTrianglesMap;
 	vector<size_t> disjointTriangles;
 
 	for (auto i = 0; i < bucketCount; i++)
@@ -574,7 +519,7 @@ auto splitToSubMeshesConcurrent(const MaterialMap& materials, const vector<Verte
 
 	vector<thread> threads;
 	size_t materialCount = materials.size();
-	size_t materialsPerThread = (size_t)floor(materialCount / cpuCores);
+	size_t materialsPerThread = (size_t) floor(materialCount / cpuCores);
 	size_t leftOver = materialCount % cpuCores;
 
 	vector<vector<SubMesh>> results;
@@ -596,23 +541,26 @@ auto splitToSubMeshesConcurrent(const MaterialMap& materials, const vector<Verte
 
 	vector<SubMesh> combinedResults;
 
+	size_t numFaces = 0;
+
 	for (auto i = 0u; i < cpuCores; i++)
 	{
 		threads[i].join();
 
 		for (auto& mesh : results[i])
 		{
+			numFaces += mesh.indices.size() / 3;
 			combinedResults.push_back(mesh);
 		}
 	}
 
-	cout << "Done! Total of " << combinedResults.size() << " submeshes in resulting mesh" << endl;
+	cout << "Done! Total of " << combinedResults.size() << " submeshes with " << numFaces << " faces in resulting mesh" << endl;
 	return combinedResults;
 }
 
 auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName) -> void
 {
-	fstream f(fileName, std::ios::out);
+	fstream f(fileName, ios::out);
 
 	stringstream ss;
 
@@ -648,7 +596,7 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName) ->
 	cout << "Done!" << endl;
 }
 
-int main(int argc, char** argv)
+auto main(int argc, char** argv) -> int
 {
 	if (argc == 1)
 	{
@@ -660,14 +608,18 @@ int main(int argc, char** argv)
 	cout << "Starting conversion for mesh \"" << argv[1] << "\"" << endl;
 
 	auto lines = readFile(argv[1]);
-	auto vertices = extractVerticesConcurrent(lines);
+	auto vertices = extractVerticesConcurrent();
 
 	vector<Vertex> outVertices;
-	auto materials = extractFaces(lines, vertices, outVertices);
+	auto materials = extractFaces(vertices, outVertices);
 
 	auto submeshes = splitToSubMeshesConcurrent(materials, outVertices);
 
-	string fileName = string(argv[1]) + "2";
+	auto fileName = string(argv[1]) + "2";
 	writeOutToFile(submeshes, fileName);
+
+	cout << "Press Enter to exit" << endl;
+	cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
 	return 0;
 }
