@@ -122,6 +122,7 @@ DebugRenderer.prototype.extend(
 		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(this._lineIndices), GL.STREAM_DRAW);
 
 		Shader.setActiveProgram(this._material.program);
+		
 		Shader.setUniformVec3("wireframeColor", vec3.fromValues(1, 0, 0));
 		Shader.setUniformMat4("model", mat4.create());
 
