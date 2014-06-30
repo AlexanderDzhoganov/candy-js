@@ -6,9 +6,9 @@
     <LocalDebuggerWorkingDirectory>.</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>C:\Users\Sasho\Desktop\Documents\GitHub\candy-js\obj2obj2\x64\Debug\test.fbx</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>..\x64\Debug\cube.fbx</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerWorkingDirectory>..\..\resources\meshes</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>.</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LocalDebuggerCommandArguments>de_dust2.obj</LocalDebuggerCommandArguments>

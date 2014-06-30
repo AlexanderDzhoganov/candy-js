@@ -26,10 +26,10 @@
     <ClInclude Include="vec3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="fbxwrapper.h">
+    <ClInclude Include="obj2scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="obj2scene.h">
+    <ClInclude Include="fbxutil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -81,11 +81,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>E:\FBX\FBX SDK\2015.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\FBX\FBX SDK\2015.1\lib\vs2013\x64\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2015.1\lib\vs2013\x64\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -131,7 +131,7 @@
     <ClCompile Include="main2.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="fbxwrapper.h" />
+    <ClInclude Include="fbxutil.h" />
     <ClInclude Include="obj2scene.h" />
     <ClInclude Include="vec3.h" />
   </ItemGroup>
