@@ -6,7 +6,7 @@
     <LocalDebuggerWorkingDirectory>.</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LocalDebuggerCommandArguments>level.obj</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>C:\Users\Sasho\Desktop\Documents\GitHub\candy-js\obj2obj2\x64\Debug\test.fbx</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>..\..\resources\meshes</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
