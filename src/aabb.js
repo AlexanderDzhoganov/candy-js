@@ -215,16 +215,16 @@ AABB.prototype.extend(
 	expandToFit: function (aabb)
 	{
 		var thisTopLeft = vec3.create();
-		vec3.subtract(this.center, this.extents);
+		vec3.subtract(thisTopLeft, this.center, this.extents);
 
 		var thisBottomRight = vec3.create();
-		vec3.add(this.center, this.extents);
+		vec3.add(thisBottomRight, this.center, this.extents);
 
 		var otherTopLeft = vec3.create();
-		vec3.subtract(aabb.center, aabb.extents);
+		vec3.subtract(otherTopLeft, aabb.center, aabb.extents);
 
 		var otherBottomRight = vec3.create();
-		vec3.add(aabb.center, aabb.extents);
+		vec3.add(otherBottomRight, aabb.center, aabb.extents);
 
 		var max = function (x, y)
 		{

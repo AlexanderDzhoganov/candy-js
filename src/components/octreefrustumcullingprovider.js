@@ -3,11 +3,16 @@ include([ "octree" ], function ()
 
 	OctreeFrustumCullingProvider = function ()
 	{
+		// public
+
 		this.name = "OctreeFrustumCullingProvider";
 		this.type = "octreeFrustumCullingProvider";
-
-		this.octrees = [];
 		this.debugDrawOctrees = false;
+		this.maxTrianglesPerLeaf = 65535;
+
+		// private
+
+		this._octree = [];
 	};
 
 	OctreeFrustumCullingProvider.prototype = new Component();
@@ -32,19 +37,13 @@ include([ "octree" ], function ()
 					bounds.recalculateMinimumAABB();
 				}
 
-				for(var i = 0; i < mesh.submeshes.length; i++)
-				{
-					this.octrees.push
-					(
-						new Octree(bounds.aabbs[i], 3000, mesh.submeshes[i].vertices, mesh.submeshes[i].indices)
-					);
-				}
+				this._octree = new Octree(bounds.meshAABB, this.maxTrianglesPerLeaf, mesh.submeshes);
 			}
 		},
 
-		intersectFrustum: function (frustum, subMeshIndex)
+		intersectFrustum: function (frustum)
 		{
-			return this.octrees[subMeshIndex].intersectFrustum(frustum);
+			return this._octree.intersectFrustum(frustum);
 		},
 
 	});

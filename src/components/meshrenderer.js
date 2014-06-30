@@ -10,6 +10,8 @@ include([], function ()
 
 		this.drawBounds = false;
 		this.wireframe = false;
+
+		this.disableCulling = false;
 	};
 
 	MeshRenderer.prototype = new Component();
@@ -45,6 +47,7 @@ include([], function ()
 		setMesh: function (mesh)
 		{
 			this.mesh = mesh;
+
 			if (!this.gameObject.getComponent("meshBoundsProvider"))
 			{
 				this.gameObject.addComponent(new MeshBoundsProvider());
@@ -53,7 +56,7 @@ include([], function ()
 			}
 		},
 
-		onRender: function (subMeshIndex, worldModelMatrix)
+		onRender: function (worldModelMatrix)
 		{                                                                 
 			if (this.materials.length == 0)
 			{
@@ -65,45 +68,65 @@ include([], function ()
 				return;
 			}
 
-			if (this.wireframe)
+			var octreeMeshProvider = this.gameObject.octreeFrustumCullingProvider;
+			var boundsProvider = this.gameObject.meshBoundsProvider;
+			var frustum = Renderer._activeCamera.getFrustum();
+
+			if (!this.disableCulling && frustum.intersectAABB(boundsProvider.meshAABB) == Frustum.INTERSECT_RESULT.OUTSIDE)
 			{
-				Shader.setActiveProgram(MeshRenderer.getWireframeProgram());
-				Shader.setUniformVec3("wireframeColor", vec3.fromValues(0, 0.2, 1));
-				Shader.setUniformMat4("model", worldModelMatrix);
-				this._drawWireframeSubmesh(this.mesh.submeshes[subMeshIndex]);
+				return;
 			}
-			else
+
+			var visibleSet = null;
+
+			if(octreeMeshProvider)
 			{
-				var octreeMeshProvider = this.gameObject.octreeFrustumCullingProvider;
-				var frustum = Renderer._activeCamera.getFrustum();
-				var meshBoundsProvider = this.gameObject.meshBoundsProvider;
+				visibleSet = octreeMeshProvider.intersectFrustum(frustum);
+			}
 
-				var indicesCount = this.mesh.submeshes[subMeshIndex].indices.length;
+			for (var i = 0; i < this.mesh.submeshes.length; i++)
+			{
+				var submesh = this.mesh.submeshes[i];
+				var indicesCount = submesh.indices.length;
+				var culled = false;
 
-				if(octreeMeshProvider)
+				if(!this.disableCulling && this._isCulled(i, frustum))
 				{
-					var visibleSet = octreeMeshProvider.intersectFrustum(frustum, subMeshIndex);
-					if(visibleSet == null || visibleSet.length == 0)
-					{
-						return;
-					}
-
-					if(visibleSet.length % 3 != 0)
-					{
-						debugger;
-					}
-
-					GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this.mesh.submeshes[subMeshIndex].indexBuffer);
-					GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(visibleSet), GL.STREAM_DRAW);
-					indicesCount = visibleSet.length;
+					culled = true;
 				}
-				else if(this._isCulled(subMeshIndex, frustum))
+				else if(!this.disableCulling && visibleSet != null)
 				{
-					return;
+					if(visibleSet[i].length == 0)
+					{
+						culled = true;
+					}
+					else
+					{
+						GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, submesh.indexBuffer);
+						GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(visibleSet[i]), GL.STREAM_DRAW);
+						indicesCount = visibleSet[i].length;	
+					}
 				}
 
-				Shader.setUniformMat4("model", worldModelMatrix);
-				this._drawSubmesh(this.mesh.submeshes[subMeshIndex], indicesCount);
+				if(culled)
+				{
+					continue;
+				}
+
+				this._setupMaterial(i);
+
+				if (this.wireframe)
+				{
+					Shader.setActiveProgram(MeshRenderer.getWireframeProgram());
+					Shader.setUniformVec3("wireframeColor", vec3.fromValues(0, 0.2, 1));
+					Shader.setUniformMat4("model", worldModelMatrix);
+					this._drawWireframeSubmesh(this.mesh.submeshes[i]);
+				}
+				else
+				{
+					Shader.setUniformMat4("model", worldModelMatrix);
+					this._drawSubmesh(submesh, indicesCount);
+				}
 			}
 
 			if (this.drawBounds)
@@ -115,11 +138,10 @@ include([], function ()
 		_isCulled: function (index, frustum)
 		{
 			var boundsProvider = this.gameObject.getComponent("meshBoundsProvider");
-			var result = frustum.intersectAABB(boundsProvider.aabbs[index]);
-			return result == Frustum.INTERSECT_RESULT.OUTSIDE;
+			return frustum.intersectAABB(boundsProvider.aabbs[index]) == Frustum.INTERSECT_RESULT.OUTSIDE;
 		},
 
-		onSetupMaterial: function (subMeshIndex)
+		_setupMaterial: function (subMeshIndex)
 		{
 			var material = this.materials[subMeshIndex];
 			var program = material.program;

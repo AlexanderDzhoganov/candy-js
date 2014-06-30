@@ -61,7 +61,7 @@ Loader = function ()
 
 		script.onerror = function ()
 		{
-			console.log("failed to load" + fullPath);
+			console.log("failed to load " + fullPath);
 			onload();
 		}.bind(this);
 

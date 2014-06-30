@@ -21,6 +21,8 @@ var Application = function()
 	this.cube = null;
 	this.sceneGraph = null;
 
+	this.renderGui = false;
+
 	this.init();
 };
 
@@ -33,10 +35,18 @@ Application.prototype.extend(
 
 	init: function ()
 	{
-		
+		console.log("Application.init()");
+
 		InputController = new InputController();	
 		Renderer = new Renderer();
 		Gui = new Gui();
+
+		InputController.add(InputController.keys.G, InputController.modes.DOWN, function (key)
+		{
+		 	this.renderGui = !this.renderGui;
+		}.bind(this));
+
+		console.log(GL.getExtension('WEBGL_draw_buffers'));
 
 		this.sceneGraph = new SceneGraph();
 
@@ -44,13 +54,14 @@ Application.prototype.extend(
 		grid.addComponent(new GridRenderer(-100.0, -100.0, 100.0, 100.0));
 		//this.sceneGraph.insert(grid);
 
-		var testProgram = new Shader(ResourceLoader.getContent("show_normals_vertex"), ResourceLoader.getContent("show_normals_fragment"));
+		var testProgram = new Shader(ResourceLoader.getContent("diffuse_vertex"), ResourceLoader.getContent("diffuse_fragment"));
 		var testMesh = new Mesh("sponza");
 
 		var testObject = new GameObject("testMesh");
 		testObject.addComponent(new MeshRenderer());
 		testObject.getComponent("renderer").setMesh(testMesh);
 		testObject.addComponent(new OctreeFrustumCullingProvider());
+		//testObject.getComponent("renderer").disableCulling = true;
 
 		for(var q = 0; q < testMesh.submeshes.length; q++)
 		{
@@ -167,7 +178,11 @@ Application.prototype.extend(
 			this.render();
 
 			Renderer.doFrame();
-			Gui.renderSelf();
+
+			if(this.renderGui)
+			{
+				Gui.renderSelf();
+			}
 
 			if (!this.doStop)
 			{

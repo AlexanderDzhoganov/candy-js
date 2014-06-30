@@ -8,6 +8,7 @@ include ([ "aabb" ], function ()
 		this.name = "MeshBoundsProvider";
 		this.type = "meshBoundsProvider";
 
+		this.meshAABB = null;
 		this.aabbs = [];
 	};
 
@@ -38,6 +39,9 @@ include ([ "aabb" ], function ()
 
 		recalculateMinimumAABB: function ()
 		{
+			this.meshAABB = null;
+			this.aabbs = [];
+
 			var renderer = this.gameObject.getComponent("renderer");
 			if (!renderer)
 			{
@@ -46,7 +50,6 @@ include ([ "aabb" ], function ()
 			}
 
 			var mesh = renderer.mesh;
-
 			for (var q = 0; q < mesh.submeshes.length; q++)
 			{
 				var subMesh = mesh.submeshes[q];
@@ -71,6 +74,12 @@ include ([ "aabb" ], function ()
 				}
 
 				this.aabbs.push(aabb);
+			}
+
+			this.meshAABB = new AABB();
+			for (var i = 0; i < this.aabbs.length; i++)
+			{
+				this.meshAABB.expandToFit(this.aabbs[i]);
 			}
 		},
 
