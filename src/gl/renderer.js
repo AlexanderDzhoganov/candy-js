@@ -17,6 +17,9 @@ Renderer = function ()
 	this.screenWidth = window.innerWidth;
 	this.screenHeight = window.innerHeight;
 
+	var maxUniformVectors = GL.getParameter(GL.MAX_VERTEX_UNIFORM_VECTORS);
+	console.log("Max vertex uniform vectors: " + maxUniformVectors);
+
 	this.frameStats =
 	{
 		frameTime: 0.0,
@@ -36,6 +39,7 @@ Renderer.prototype.extend(
 		PPPNNN: 2,
 		PPPNNNTT: 3,
 		PPPXXXXX: 4,
+		PPPNNNTTIIIIWWWW: 5,
 	},
 
 	PRIMITIVE_TYPE:
@@ -244,6 +248,38 @@ Renderer.prototype.extend(
 			{
 				GL.enableVertexAttribArray(Shader._ActiveProgram.position);
 				GL.vertexAttribPointer(Shader._ActiveProgram.position, 3, GL.FLOAT, false, 32, 0);
+			}
+		}
+		else if (vertexFormat == Renderer.VERTEX_FORMAT.PPPNNNTTIIIIWWWW)
+		{
+			if (Shader._ActiveProgram.position != undefined)
+			{
+				GL.enableVertexAttribArray(Shader._ActiveProgram.position);
+				GL.vertexAttribPointer(Shader._ActiveProgram.position, 3, GL.FLOAT, false, 64, 0);
+			}
+
+			if (Shader._ActiveProgram.normal != undefined)
+			{
+				GL.enableVertexAttribArray(Shader._ActiveProgram.normal);
+				GL.vertexAttribPointer(Shader._ActiveProgram.normal, 3, GL.FLOAT, false, 64, 12);
+			}
+
+			if (Shader._ActiveProgram.uvs != undefined)
+			{
+				GL.enableVertexAttribArray(Shader._ActiveProgram.uvs);
+				GL.vertexAttribPointer(Shader._ActiveProgram.uvs, 2, GL.FLOAT, false, 64, 24);
+			}
+
+			if(Shader._ActiveProgram.boneIndices != undefined)
+			{
+				GL.enableVertexAttribArray(Shader._ActiveProgram.boneIndices);
+				GL.vertexAttribPointer(Shader._ActiveProgram.boneIndices, 4, GL.FLOAT, false, 64, 32);
+			}
+
+			if (Shader._ActiveProgram.boneWeights != undefined)
+			{
+				GL.enableVertexAttribArray(Shader._ActiveProgram.boneWeights);
+				GL.vertexAttribPointer(Shader._ActiveProgram.boneWeights, 4, GL.FLOAT, false, 64, 48);
 			}
 		}
 		else

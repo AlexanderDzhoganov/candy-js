@@ -7,7 +7,7 @@ include([ "shim", "resourceloader", "application" ], function ()
 		"cursor": "resources/images/cursor.png",
 		"grass": "resources/images/grass.png",
 		"checker": "resources/images/checker.png",
-
+/*
 		"sponza:floor": "resources/images/sponza/floor_diffuse.png",
 		"sponza:column_a": "resources/images/sponza/column_a_diffuse.png",
 		"sponza:ceiling": "resources/images/sponza/ceiling.png",
@@ -33,11 +33,12 @@ include([ "shim", "resourceloader", "application" ], function ()
 		"sponza:chain": "resources/images/sponza/chain.png",
 		"sponza:vase": "resources/images/sponza/vase.png",
 		"sponza:roof": "resources/images/sponza/roof.png",
-
+*/
 		// meshes
 		//"mesh": "resources/meshes/teapot_lowres.obj",
-		"sponza": "resources/meshes/sponza_fbx.obj2",
+		//"sponza": "resources/meshes/sponza_fbx.obj2",
 		//"city": "resources/meshes/city.obj2",
+		"lerpz": "resources/meshes/lerpz.obj2",
 		//"sibenik": "resources/meshes/sibenik.obj2",
 		//"de_dust2": "resources/meshes/de_dust2/de_dust2.obj",
 		//"de_dust22": "resources/meshes/de_dust2/de_dust2.obj2",
@@ -60,6 +61,9 @@ include([ "shim", "resourceloader", "application" ], function ()
 
 		"wireframe_vertex": "resources/shaders/wireframe.vs",
 		"wireframe_fragment": "resources/shaders/wireframe.fs",
+
+		"skin_vertex": "resources/shaders/skin.vs",
+		
 	},
 	function (resName, progress, final)
 	{

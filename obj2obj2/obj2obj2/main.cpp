@@ -49,6 +49,15 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, Sk
 
 	cout << "Writing out to \"" << fileName << "\"" << endl;
 
+	ss << "flags: ";
+
+	if (skeleton)
+	{
+		ss << "animated ";
+	}
+
+	ss << endl;
+
 	auto count = 0u;
 	for (auto& subMesh : submeshes)
 	{

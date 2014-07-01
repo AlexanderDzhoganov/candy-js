@@ -54,12 +54,6 @@ include ([ "aabb" ], function ()
 			{
 				var subMesh = mesh.submeshes[q];
 
-				if (subMesh.vertexFormat != Renderer.VERTEX_FORMAT.PPPNNNTT)
-				{
-					console.log("MeshBoundsProvider: invalid vertex format, only 'PPPNNNTT' supported");
-					return;
-				}
-
 				var vertices = subMesh.vertices;
 
 				var aabb = null;
@@ -70,6 +64,11 @@ include ([ "aabb" ], function ()
 				}
 				else
 				{	
+					if (subMesh.vertexFormat != Renderer.VERTEX_FORMAT.PPPNNNTT)
+					{
+						console.log("MeshBoundsProvider: invalid vertex format, only 'PPPNNNTT' supported");
+						return;
+					}
 					aabb = AABB.fromVertices(vertices);
 				}
 

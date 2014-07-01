@@ -11,7 +11,7 @@ include([], function ()
 		this.roll = 0.0;
 		this.upVector = vec3.create(0.0, 1.0, 0.0);
 
-		this.moveSpeed = 128.0;
+		this.moveSpeed = 6.0;
 		this._Movement = vec3.create();
 
 		InputController.add(InputController.keys.Q, InputController.modes.DOWN, function (key)

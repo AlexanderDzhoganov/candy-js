@@ -125,6 +125,12 @@ include([], function ()
 				else
 				{
 					Shader.setUniformMat4("model", worldModelMatrix);
+
+					if (submesh.animationFrames != undefined)
+					{
+						Shader.setUniformMat4("boneMatrices", submesh.animationFrames[0]);
+					}
+
 					this._drawSubmesh(submesh, indicesCount);
 				}
 			}

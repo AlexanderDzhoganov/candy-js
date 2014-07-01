@@ -43,23 +43,52 @@ include([], function ()
 		{
 			var lines = obj.split('\n');
 
+			var animated = false;
+			var flags = lines[0].split(':')[1].split(' ');
+			for(var i = 0; i < flags.length; i++)
+			{
+				var flag = flags[i].trim();
+				if(flag == "animated")
+				{
+					animated = true;
+				}
+			}
+
 			var submeshes = [];
 			var newSubmesh = function (vertexCount, indexCount, materialName)
 			{
-				return {
+				var submesh =
+				{
 					material: materialName,
-					vertices: new Float32Array(vertexCount * 8),
+					vertices: null,
 					indices: new Uint16Array(indexCount),
 					vertexBuffer: GL.createBuffer(),
 					indexBuffer: GL.createBuffer(),
 					primitiveType: Renderer.PRIMITIVE_TYPE.INDEXED_TRIANGLES,
 					vertexFormat: Renderer.VERTEX_FORMAT.PPPNNNTT,
 				};
+
+				if(animated)
+				{
+					submesh.vertexFormat = Renderer.VERTEX_FORMAT.PPPNNNTTIIIIWWWW;
+					submesh.vertices = new Float32Array(vertexCount * 16);
+				}
+				else
+				{
+					submesh.vertices = new Float32Array(vertexCount * 8);
+				}
+
+				return submesh;
 			}.bind(this);
 
 			var currentSubmesh = null;
 			var vertexCursor = 0;
 			var indexCursor = 0;
+
+			var animationFrames = [];
+			var numberOfJoints = 0;
+			var currentAnimationFrame = null;
+			var currentAnimationFrameIndex = 0;
 
 			for (var i = 0; i < lines.length; i++)
 			{
@@ -83,7 +112,13 @@ include([], function ()
 				}
 				else if (components[0] == 'vnt')
 				{
-					for(var p = 1; p < 9; p++)
+					var vertexComponents = 8;
+					if(animated)
+					{
+						vertexComponents = 16;
+					}
+
+					for(var p = 1; p < vertexComponents + 1; p++)
 					{
 						currentSubmesh.vertices[vertexCursor++] = parseFloat(components[p]);
 					}
@@ -108,10 +143,34 @@ include([], function ()
 						currentSubmesh.aabb.extents[p - 4] = components[p];
 					}
 				}
+				else if (components[0] == 'a')
+				{
+					numberOfJoints = parseInt(components[2]);
+				}
+				else if (components[0] == 'f')
+				{
+					if(currentAnimationFrame != null)
+					{
+						animationFrames.push(currentAnimationFrame);
+					}
+
+					currentAnimationFrame = new Float32Array(numberOfJoints * 16);
+					currentAnimationFrameIndex = 0;
+				}
+				else if (components[0] == 'mat4')
+				{
+					for(var q = 0; q < 16; q++)
+					{
+						currentAnimationFrame[currentAnimationFrameIndex + q] = parseFloat(components[1 + q]);
+					}
+
+					currentAnimationFrameIndex += 16;
+				}
 			}
 
 			if (currentSubmesh)
 			{
+				currentSubmesh.animationFrames = animationFrames;
 				submeshes.push(currentSubmesh);
 			}
 

@@ -83,17 +83,6 @@ vector<vector<BlendingIndexWeightPair>> ReadAnimationBlendingIndexWeightPairs(Fb
 			auto currentJointName = currentCluster->GetLink()->GetName();
 			auto currentJointIndex = skeleton.GetJointIndexByName(currentJointName);
 
-			FbxAMatrix transformMatrix;
-			FbxAMatrix transformLinkMatrix;
-			FbxAMatrix globalBindPoseInverseMatrix;
-
-			currentCluster->GetTransformMatrix(transformMatrix);
-			currentCluster->GetTransformLinkMatrix(transformLinkMatrix);
-			globalBindPoseInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix;
-
-			skeleton.joints[currentJointIndex].globalBindPoseInverse = globalBindPoseInverseMatrix;
-			skeleton.joints[currentJointIndex].node = currentCluster->GetLink();
-
 			auto indicesCount = currentCluster->GetControlPointIndicesCount();
 			auto indices = currentCluster->GetControlPointIndices();
 			auto weights = currentCluster->GetControlPointWeights();
@@ -153,6 +142,17 @@ void ReadAnimations(FbxScene* scene, FbxMesh* mesh, Skeleton& skeleton)
 			auto currentJointName = currentCluster->GetLink()->GetName();
 			auto currentJointIndex = skeleton.GetJointIndexByName(currentJointName);
 
+			FbxAMatrix transformMatrix;
+			FbxAMatrix transformLinkMatrix;
+			FbxAMatrix globalBindPoseInverseMatrix;
+
+			currentCluster->GetTransformMatrix(transformMatrix);
+			currentCluster->GetTransformLinkMatrix(transformLinkMatrix);
+			globalBindPoseInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix;
+
+			skeleton.joints[currentJointIndex].globalBindPoseInverse = globalBindPoseInverseMatrix;
+			skeleton.joints[currentJointIndex].node = currentCluster->GetLink();
+
 			for (auto frame = startTimeFrames; frame < endTimeFrames; frame++)
 			{
 				FbxTime currentTime;
@@ -161,10 +161,12 @@ void ReadAnimations(FbxScene* scene, FbxMesh* mesh, Skeleton& skeleton)
 				KeyFrame currentFrame;
 				currentFrame.frameNum = frame;
 
-				auto currentTransformOffset = mesh->GetNode()->EvaluateGlobalTransform(frame);
+				auto currentTransformOffset = mesh->GetNode()->EvaluateGlobalTransform(currentTime);
 
 				currentFrame.globalTransform = currentTransformOffset.Inverse() *
-					currentCluster->GetLink()->EvaluateGlobalTransform(frame);
+					currentCluster->GetLink()->EvaluateGlobalTransform(currentTime);
+
+				currentFrame.globalTransform = currentFrame.globalTransform * globalBindPoseInverseMatrix;
 
 				skeleton.joints[currentJointIndex].animation.push_back(currentFrame);
 			}

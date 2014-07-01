@@ -52,15 +52,15 @@ Application.prototype.extend(
 
 		var grid = new GameObject("Grid");
 		grid.addComponent(new GridRenderer(-100.0, -100.0, 100.0, 100.0));
-		//this.sceneGraph.insert(grid);
+		this.sceneGraph.insert(grid);
 
-		var testProgram = new Shader(ResourceLoader.getContent("diffuse_vertex"), ResourceLoader.getContent("diffuse_fragment"));
-		var testMesh = new Mesh("sponza");
+		var testProgram = new Shader(ResourceLoader.getContent("skin_vertex"), ResourceLoader.getContent("show_normals_fragment"));
+		var testMesh = new Mesh("lerpz");
 
 		var testObject = new GameObject("testMesh");
 		testObject.addComponent(new MeshRenderer());
 		testObject.getComponent("renderer").setMesh(testMesh);
-		testObject.addComponent(new OctreeFrustumCullingProvider());
+		//testObject.addComponent(new OctreeFrustumCullingProvider());
 		//testObject.getComponent("renderer").disableCulling = true;
 
 		for(var q = 0; q < testMesh.submeshes.length; q++)
@@ -116,7 +116,7 @@ Application.prototype.extend(
 
 		var time = 0.0;
 
-		var player = this._createPlayer(vec3.fromValues(0.0, 0.0, 0.0));
+		var player = this._createPlayer(vec3.fromValues(0.0, 0.6, 5.0));
 
 		var frameStatsWindow = this._createWindow("Frame stats", vec2.fromValues(0, 0), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
 		frameStatsWindow.autoSize = true;

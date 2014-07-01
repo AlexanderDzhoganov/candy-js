@@ -74,11 +74,16 @@ Shader.extend(
 		GL.uniformMatrix3fv(Shader._ActiveProgram[uniform], GL.FALSE, matrix);
 	},
 
-	setUniformMat4: function (uniform, matrix)
+	setUniformMat4: function (uniform, matrix, transpose)
 	{
-		GL.uniformMatrix4fv(Shader._ActiveProgram[uniform], GL.FALSE, matrix);
-	},
+		if(transpose == undefined)
+		{
+			transpose = false;
+		}
 
+		GL.uniformMatrix4fv(Shader._ActiveProgram[uniform], transpose ? GL.TRUE : GL.FALSE, matrix);
+	},
+	
 	_ActiveProgram: null,
 
 });
