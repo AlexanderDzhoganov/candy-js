@@ -38,7 +38,7 @@ FbxScene* ImportFbxScene(const string& fileName, FbxManager* manager)
 	if (!importStatus)
 	{
 		cout << "Error initializing fbx importer: " << importer->GetStatus().GetErrorString() << endl;
-		throw runtime_error("");
+		return nullptr;
 	}
 
 	FbxScene* scene = FbxScene::Create(manager, "Scene");

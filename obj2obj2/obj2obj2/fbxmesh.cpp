@@ -114,47 +114,6 @@ vector<Vertex> CombineFbxVertices(const vector<vec3>& positions, const vector<ve
 	return vertices;
 }
 
-pair<vector<Vertex>, vector<size_t>> DeduplicateVertices(const vector<Vertex>& vertices)
-{
-	cout << "Deduplicating " << vertices.size() << " vertices.. ";
-
-	vector<int> vertexHashes;
-	for (auto i = 0u; i < vertices.size(); i++)
-	{
-		vertexHashes.push_back(GetVertexHash(vertices[i]));
-	}
-
-	vector<Vertex> dedupedVertices;
-	unordered_map<int, size_t> dedupeIndexMap;
-
-	for (auto i = 0u; i < vertices.size(); i++)
-	{
-		const auto& hash = vertexHashes[i];
-		if (dedupeIndexMap.find(hash) == dedupeIndexMap.end())
-		{
-			dedupedVertices.push_back(vertices[i]);
-			dedupeIndexMap[hash] = dedupedVertices.size() - 1;
-		}
-	}
-
-	auto duplicatesCount = vertices.size() - dedupedVertices.size();
-
-	cout << "Done! Removed " << duplicatesCount << " duplicate vertices." << endl;
-
-	cout << "Writing out indices..";
-	vector<size_t> indices;
-	indices.reserve(vertices.size());
-
-	for (auto i = 0u; i < vertices.size(); i++)
-	{
-		const auto& hash = vertexHashes[i];
-		indices.push_back(dedupeIndexMap[hash]);
-	}
-
-	cout << "Done! Written out " << indices.size() << " indices." << endl;
-	return make_pair(dedupedVertices, indices);
-}
-
 vector<vector<Vertex>> SplitFbxMeshByMaterial(FbxMesh* mesh)
 {
 	auto positions = GetPositionsFromFbxMesh(mesh);
@@ -361,15 +320,15 @@ ConvertedMesh ConvertMesh(FbxMesh* mesh)
 
 	auto materialsCount = materialIndex;
 
-	for (auto i = 0; i < materialsCount; i++)
+	for (auto i = 0u; i < materialsCount; i++)
 	{
 		result.materials.push_back(mesh->GetNode()->GetMaterial(i));
 	}
 
 	auto submeshesCount = result.submeshes.size();
 
-	auto vertexCount = 0;
-	auto trianglesCount = 0;
+	size_t vertexCount = 0;
+	size_t trianglesCount = 0;
 
 	for (auto& submesh : result.submeshes)
 	{
