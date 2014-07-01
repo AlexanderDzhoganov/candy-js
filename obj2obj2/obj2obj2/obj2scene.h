@@ -84,12 +84,6 @@ struct VertexAttribute
 	size_t size;
 };
 
-struct AABB
-{
-	vec3 center;
-	vec3 extents;
-};
-
 class SubMesh
 {
 	vector<VertexAttribute> vertexAttributes;

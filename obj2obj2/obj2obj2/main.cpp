@@ -1,3 +1,6 @@
+#include <fbxsdk.h>
+#include <fbxsdk/fileio/fbxiosettings.h>
+
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -11,7 +14,16 @@
 #include <thread>
 #include <future>
 
-#include "vec3.h"
+#include "glm\glm.hpp"
+
+using namespace std;
+using namespace glm;
+
+#include "util.h"
+
+#include "fbxutil.h"
+#include "fbxelement.h"
+#include "fbxmesh.h"
 
 using namespace std;
 
@@ -19,16 +31,6 @@ const auto MAX_VERTICES_PER_SUBMESH = 65535; // max of Uint16.
 const auto MAX_TRIANGLES_PER_LEAF = 3000;
 
 vector<string> lines;
-
-struct Vertex
-{
-	float x, y, z, nx, ny, nz, u, v;
-
-	operator vec3 () const
-	{
-		return vec3(x, y, z);
-	}
-};
 
 struct AABB
 {
@@ -45,13 +47,13 @@ struct AABB
 
 		for (auto i = 0u; i < vertices.size(); i++)
 		{
-			vec3 position = vertices[i];
+			vec3 position = vertices[i].position;
 
 			vmin = min(vmin, position);
 			vmax = max(vmax, position);
 		}
 		vec3 diff = vmax - vmin;
-		diff.scale(0.5f);
+		diff *= 0.5f;
 
 		vec3 center = vmin + diff;
 		vec3 extents = diff;
@@ -193,16 +195,16 @@ auto addUniqueVertex(const string& hash, unordered_map<string, size_t>& indices,
 	const auto& uvs = get<2>(input);
 
 	Vertex vertex;
-	vertex.x = positions[positionIndex * 3 + 0];
-	vertex.y = positions[positionIndex * 3 + 1];
-	vertex.z = positions[positionIndex * 3 + 2];
+	vertex.position.x = positions[positionIndex * 3 + 0];
+	vertex.position.y = positions[positionIndex * 3 + 1];
+	vertex.position.z = positions[positionIndex * 3 + 2];
 
-	vertex.nx = normals[normalsIndex * 3 + 0];
-	vertex.ny = normals[normalsIndex * 3 + 1];
-	vertex.nz = normals[normalsIndex * 3 + 2];
+	vertex.normal.x = normals[normalsIndex * 3 + 0];
+	vertex.normal.y = normals[normalsIndex * 3 + 1];
+	vertex.normal.z = normals[normalsIndex * 3 + 2];
 
-	vertex.u = uvs[uvsIndex * 2 + 0];
-	vertex.v = uvs[uvsIndex * 2 + 1];
+	vertex.uv.x = uvs[uvsIndex * 2 + 0];
+	vertex.uv.y = uvs[uvsIndex * 2 + 1];
 
 	vertices.push_back(vertex);
 	indices[hash] = vertices.size() - 1;
@@ -563,7 +565,7 @@ auto splitToSubMeshesConcurrent(const MaterialMap& materials, const vector<Verte
 
 	vector<thread> threads;
 	size_t materialCount = materials.size();
-	size_t materialsPerThread = (size_t) floor(materialCount / cpuCores);
+	size_t materialsPerThread = (size_t)std::floor(materialCount / cpuCores);
 	size_t leftOver = materialCount % cpuCores;
 
 	vector<vector<SubMesh>> results;
@@ -629,9 +631,9 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName) ->
 
 		for (auto& vertex : subMesh.vertices)
 		{
-			ss << "vnt " << vertex.x << " " << vertex.y << " " << vertex.z << " "
-				<< vertex.nx << " " << vertex.ny << " " << vertex.nz << " "
-				<< vertex.u << " " << vertex.v << endl;
+			ss << "vnt " << vertex.position.x << " " << vertex.position.y << " " << vertex.position.z << " "
+				<< vertex.normal.x << " " << vertex.normal.y << " " << vertex.normal.z << " "
+				<< vertex.uv.x << " " << vertex.uv.y << endl;
 		}
 
 		ss << "i ";
@@ -656,6 +658,62 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName) ->
 	cout << "Done!" << endl;
 }
 
+void ProcessFbx(const string& fileName)
+{
+	FbxManager* manager = FbxManager::Create();
+	FbxScene* scene = ImportFbxScene(fileName, manager);
+	auto convertedMeshes = TraverseFbxScene(scene);
+	if (convertedMeshes.size() == 0)
+	{
+		cout << "No meshes present in the FBX file, exiting.." << endl;
+		return;
+	}
+	
+	if (convertedMeshes.size() > 1)
+	{
+		cout << "Convertor doesn't support more than one object per .fbx, only the first object will be converted" << endl;
+	}
+
+	auto& mesh = convertedMeshes[0];
+	
+	vector<string> materialNames;
+	for (auto& material : mesh.materials)
+	{
+		materialNames.push_back(material->GetName());
+	}
+
+	vector<SubMesh> submeshes;
+	for (auto& convertedSubmesh : mesh.submeshes)
+	{
+		SubMesh submesh;
+		submesh.indices = convertedSubmesh.indices;
+		submesh.vertices = convertedSubmesh.vertices;
+		submesh.material = materialNames[convertedSubmesh.materialIndex];
+		submeshes.push_back(submesh);
+	}
+
+	string outFilename = fileName.substr(0, fileName.find_last_of(".")) + "_fbx.obj2";
+	calculateSubmeshesAABBs(submeshes);
+	writeOutToFile(submeshes, outFilename);
+}
+
+void ProcessObj(const string& fileName)
+{
+	cout << "Starting conversion for mesh \"" << fileName << "\"" << endl;
+
+	auto lines = readFile(fileName);
+	auto vertices = extractVerticesConcurrent();
+
+	vector<Vertex> outVertices;
+	auto materials = extractFaces(vertices, outVertices);
+
+	auto submeshes = splitToSubMeshesConcurrent(materials, outVertices);
+	calculateSubmeshesAABBs(submeshes);
+
+	string outFilename = fileName.substr(0, fileName.find_last_of(".")) + "_obj.obj2";
+	writeOutToFile(submeshes, outFilename);
+}
+
 auto main(int argc, char** argv) -> int
 {
 	if (argc == 1)
@@ -665,19 +723,19 @@ auto main(int argc, char** argv) -> int
 		return -1;
 	}
 
-	cout << "Starting conversion for mesh \"" << argv[1] << "\"" << endl;
+	string fileName(argv[1]);
+	string extension = fileName.substr(fileName.find_last_of(".") + 1);
 
-	auto lines = readFile(argv[1]);
-	auto vertices = extractVerticesConcurrent();
-
-	vector<Vertex> outVertices;
-	auto materials = extractFaces(vertices, outVertices);
-
-	auto submeshes = splitToSubMeshesConcurrent(materials, outVertices);
-	calculateSubmeshesAABBs(submeshes);
-
-	auto fileName = string(argv[1]) + "2";
-	writeOutToFile(submeshes, fileName);
+	if (extension == "fbx")
+	{
+		cout << "Extension is .fbx, assuming FBX format.." << endl;
+		ProcessFbx(fileName);
+	}
+	else if (extension == "obj")
+	{
+		cout << "Extension is .obj, assuming OBJ format.." << endl;
+		ProcessObj(fileName);
+	}
 
 	cout << "Press Enter to exit" << endl;
 	cin.ignore(numeric_limits<streamsize>::max(), '\n');
