@@ -65,3 +65,38 @@ void PrintFbxMeshInfo(FbxMesh* mesh)
 		cout << "  Mapping mode: " << EnumToString(materialMappingMode) << endl;
 	}
 }
+
+void PrintNode(FbxNode* node, int depth = 0)
+{
+	// print node type etc..
+	auto attrib = node->GetNodeAttribute();
+	auto type = FbxNodeAttribute::eUnknown;
+
+	if (attrib != nullptr)
+	{
+		type = attrib->GetAttributeType();;
+	}
+
+	for (auto i = 0; i < depth; i++)
+	{
+		cout << " ";
+	}
+
+	cout << "- " << EnumToString(type) << endl;
+
+	// for each child - recurse
+	auto childCount = node->GetChildCount();
+
+	for (auto i = 0; i < childCount; i++)
+	{
+		PrintNode(node->GetChild(i), depth + 1);
+	}
+
+}
+void PrintScene(FbxScene* scene)
+{
+	auto root = scene->GetRootNode();
+
+	PrintNode(root);
+
+}

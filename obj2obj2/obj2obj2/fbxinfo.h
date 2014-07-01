@@ -3,4 +3,6 @@
 
 void PrintFbxMeshInfo(FbxMesh* mesh);
 
+void PrintScene(FbxScene* scene);
+
 #endif

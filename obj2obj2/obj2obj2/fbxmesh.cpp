@@ -24,6 +24,7 @@ using namespace glm;
 #include "fbxutil.h"
 #include "fbxmesh.h"
 #include "fbxelement.h"
+#include "fbxanim.h"
 
 vector<vec3> GetPositionsFromFbxMesh(FbxMesh* mesh)
 {
@@ -114,11 +115,41 @@ vector<Vertex> CombineFbxVertices(const vector<vec3>& positions, const vector<ve
 	return vertices;
 }
 
-vector<vector<Vertex>> SplitFbxMeshByMaterial(FbxMesh* mesh)
+vector<Vertex> CombineFbxVerticesWithAnimation(const vector<vec3>& positions, const vector<vec3>& normals, const vector<vec2>& uvs, 
+														const vector<vector<BlendingIndexWeightPair>>& weightPairs)
+{
+	assert(positions.size() == normals.size() == uvs.size());
+	vector<Vertex> vertices;
+
+	for (auto i = 0; i < positions.size(); i++)
+	{
+		vertices.emplace_back();
+		vertices[i].position = positions[i];
+		vertices[i].normal = normals[i];
+		vertices[i].uv = uvs[i];
+
+		for (auto q = 0u; q < 4; q++)
+		{
+			vertices[i].boneWeights[q] = weightPairs[i][q].weight;
+			vertices[i].boneIndices[q] = weightPairs[i][q].jointIndex;
+		}
+	}
+
+	return vertices;
+}
+
+vector<vector<Vertex>> SplitFbxMeshByMaterial(FbxMesh* mesh, Skeleton* skeleton = nullptr)
 {
 	auto positions = GetPositionsFromFbxMesh(mesh);
 	auto normals = GetNormalsFromFbxMesh(mesh);
 	auto uvs = GetUVsFromFbxMesh(mesh);
+
+	vector<vector<BlendingIndexWeightPair>> weightPairs;
+
+	if (skeleton)
+	{
+		weightPairs = ReadAnimationBlendingIndexWeightPairs(mesh, *skeleton);
+	}
 
 	auto polygonCount = mesh->GetPolygonCount();
 	auto materialCount = mesh->GetNode()->GetMaterialCount();
@@ -142,13 +173,22 @@ vector<vector<Vertex>> SplitFbxMeshByMaterial(FbxMesh* mesh)
 			vertex.position = positions[vertexCount];
 			vertex.normal = normals[vertexCount];
 			vertex.uv = uvs[vertexCount];
+
+			if (skeleton)
+			{
+				for (auto k = 0u; k < 4; k++)
+				{
+					vertex.boneWeights[k] = weightPairs[controlPointIndex][k].weight;
+					vertex.boneIndices[k] = weightPairs[controlPointIndex][k].jointIndex;
+				}
+			}
+
 			submeshes[materialIndex].push_back(move(vertex));
 			vertexCount++;
 		}
 	}
 
 	cout << "Done!" << endl;
-
 	return submeshes;
 }
 
@@ -229,6 +269,7 @@ vector<ConvertedSubmesh> SplitConvertedSubmesh(size_t maxVerticesPerBucket, Conv
 		mesh.indices = finalIndices;
 		mesh.vertices = finalVertices;
 		mesh.materialIndex = submesh.materialIndex;
+		mesh.hasAnimation = submesh.hasAnimation;
 
 		if (mesh.indices.size() > 0 && mesh.vertices.size() > 0)
 		{
@@ -291,11 +332,11 @@ vector<ConvertedSubmesh> SplitConvertedSubmesh(size_t maxVerticesPerBucket, Conv
 	return submeshes;
 }
 
-ConvertedMesh ConvertMesh(FbxMesh* mesh)
+ConvertedMesh ConvertMesh(FbxMesh* mesh, Skeleton* skeleton)
 {
 	cout << endl << "Starting mesh conversion.." << endl;
 
-	auto verticesByMaterial = SplitFbxMeshByMaterial(mesh);
+	auto verticesByMaterial = SplitFbxMeshByMaterial(mesh, skeleton);
 
 	ConvertedMesh result;
 
@@ -303,6 +344,11 @@ ConvertedMesh ConvertMesh(FbxMesh* mesh)
 	for (auto& materialVertices : verticesByMaterial)
 	{
 		ConvertedSubmesh submesh;
+
+		if (skeleton != nullptr)
+		{
+			submesh.hasAnimation = true;
+		}
 
 		auto deduplicated = DeduplicateVertices(materialVertices);
 		submesh.vertices = deduplicated.first;

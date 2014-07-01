@@ -24,6 +24,8 @@ using namespace glm;
 #include "fbxutil.h"
 #include "fbxelement.h"
 #include "fbxmesh.h"
+#include "fbxinfo.h"
+#include "fbxanim.h"
 
 #include "obj.h"
 
@@ -39,7 +41,7 @@ void calculateSubmeshesAABBs(vector<SubMesh>& submeshes)
 	cout << "Finished! Calculated a total of " << calculatedAABBs << endl;
 }
 
-auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName) -> void
+auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, Skeleton* skeleton) -> void
 {
 	fstream f(fileName, ios::out);
 
@@ -56,7 +58,24 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName) ->
 		{
 			ss << "vnt " << vertex.position.x << " " << vertex.position.y << " " << vertex.position.z << " "
 				<< vertex.normal.x << " " << vertex.normal.y << " " << vertex.normal.z << " "
-				<< vertex.uv.x << " " << vertex.uv.y << endl;
+				<< vertex.uv.x << " " << vertex.uv.y;
+
+			if (subMesh.hasAnimation)
+			{
+				ss << " ";
+
+				for (auto i = 0u; i < 4; i++)
+				{
+					ss << vertex.boneIndices[i] << " ";
+				}
+
+				for (auto i = 0u; i < 4; i++)
+				{
+					ss << vertex.boneWeights[i] << " ";
+				}
+			}
+
+			ss << endl;
 		}
 
 		ss << "i ";
@@ -75,6 +94,32 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName) ->
 		count++;
 	}
 
+	if (skeleton)
+	{
+		auto frameCount = skeleton->joints[0].animation.size();
+		ss << "a " << frameCount << " " << skeleton->joints.size() << endl;
+
+		for (auto i = 0u; i < frameCount; i++)
+		{
+			ss << "f " << i << endl;
+
+			for (auto q = 0u; q < skeleton->joints.size(); q++)
+			{
+				auto& m = skeleton->joints[q].animation[i].globalTransform;
+				ss << "mat4 ";
+
+				for (auto x = 0u; x < 4; x++)
+				{
+					for (auto y = 0u; y < 4; y++)
+					{
+						ss << m.Get(x, y) << " ";
+					}
+				}
+				ss << endl;
+			}
+		}
+	}
+
 	string result = ss.str();
 	f.write(result.c_str(), result.size());
 
@@ -90,20 +135,13 @@ void ProcessFbx(const string& fileName)
 		return;
 	}
 
-	auto convertedMeshes = TraverseFbxScene(scene);
-	if (convertedMeshes.size() == 0)
-	{
-		cout << "No meshes present in the FBX file, exiting.." << endl;
-		return;
-	}
-	
-	if (convertedMeshes.size() > 1)
-	{
-		cout << "Convertor doesn't support more than one object per .fbx, only the first object will be converted" << endl;
-	}
+	PrintScene(scene);
+	int x = 5;
 
-	auto& mesh = convertedMeshes[0];
-	
+	auto meshSkeletonPair = TraverseFbxScene(scene);
+
+	auto& mesh = meshSkeletonPair.first;
+
 	vector<string> materialNames;
 	for (auto& material : mesh.materials)
 	{
@@ -114,6 +152,7 @@ void ProcessFbx(const string& fileName)
 	for (auto& convertedSubmesh : mesh.submeshes)
 	{
 		SubMesh submesh;
+		submesh.hasAnimation = convertedSubmesh.hasAnimation;
 		submesh.indices = convertedSubmesh.indices;
 		submesh.vertices = convertedSubmesh.vertices;
 		submesh.material = materialNames[convertedSubmesh.materialIndex];
@@ -122,7 +161,7 @@ void ProcessFbx(const string& fileName)
 
 	string outFilename = fileName.substr(0, fileName.find_last_of(".")) + "_fbx.obj2";
 	calculateSubmeshesAABBs(submeshes);
-	writeOutToFile(submeshes, outFilename);
+	writeOutToFile(submeshes, outFilename, &meshSkeletonPair.second);
 }
 
 void ProcessObj(const string& fileName)
@@ -139,7 +178,7 @@ void ProcessObj(const string& fileName)
 	calculateSubmeshesAABBs(submeshes);
 
 	string outFilename = fileName.substr(0, fileName.find_last_of(".")) + "_obj.obj2";
-	writeOutToFile(submeshes, outFilename);
+	writeOutToFile(submeshes, outFilename, nullptr);
 }
 
 auto main(int argc, char** argv) -> int

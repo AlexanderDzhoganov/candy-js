@@ -18,6 +18,8 @@ struct Vertex
 	vec3 position;
 	vec3 normal;
 	vec2 uv;
+	float boneWeights[4];
+	int boneIndices[4];
 };
 
 struct AABB
@@ -56,10 +58,7 @@ struct SubMesh
 	vector<size_t> indices;
 	string material;
 	AABB aabb;
-
-	bool disjoint = false;
-
-	SubMesh() { vertices.reserve(65536); }
+	bool hasAnimation = false;
 };
 
 static int GetVertexHash(const Vertex& vertex)

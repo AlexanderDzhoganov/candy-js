@@ -1,6 +1,6 @@
 #include <fbxsdk.h>
 #include <fbxsdk/fileio/fbxiosettings.h>
-
+	
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -24,6 +24,7 @@ using namespace glm;
 #include "fbxutil.h"
 #include "fbxinfo.h"
 #include "fbxmesh.h"
+#include "fbxanim.h"
 
 FbxScene* ImportFbxScene(const string& fileName, FbxManager* manager)
 {
@@ -51,7 +52,7 @@ FbxScene* ImportFbxScene(const string& fileName, FbxManager* manager)
 	return scene;
 }
 
-void TraverseFbxNode(FbxNode* node, vector<FbxMesh*>& meshes)
+void TraverseFbxNode(FbxNode* node, vector<FbxMesh*>& meshes, FbxNode*& skeleton)
 {
 	auto attribute = node->GetNodeAttribute();
 
@@ -64,6 +65,14 @@ void TraverseFbxNode(FbxNode* node, vector<FbxMesh*>& meshes)
 		}
 		
 		auto type = attribute->GetAttributeType();
+
+		if (type == FbxNodeAttribute::EType::eSkeleton)
+		{
+			if (skeleton == nullptr)
+			{
+				skeleton = node;
+			}
+		}
 
 		if (type == FbxNodeAttribute::EType::eMesh)
 		{
@@ -89,26 +98,26 @@ void TraverseFbxNode(FbxNode* node, vector<FbxMesh*>& meshes)
 	for (auto i = 0u; i < childCount; i++)
 	{
 		auto child = node->GetChild(i);
-		TraverseFbxNode(child, meshes);
+		TraverseFbxNode(child, meshes, skeleton);
 	}
 };
 
-vector<ConvertedMesh> TraverseFbxScene(FbxScene* scene)
+pair<ConvertedMesh, Skeleton> TraverseFbxScene(FbxScene* scene)
 {
 	cout << endl << "Starting scene traversal.." << endl;
 
 	vector<FbxMesh*> meshes;
-	TraverseFbxNode(scene->GetRootNode(), meshes);
+	FbxNode* skeleton = nullptr;
+	TraverseFbxNode(scene->GetRootNode(), meshes, skeleton);
 
-	vector<ConvertedMesh> convertedMeshes;
-	for (FbxMesh* mesh : meshes)
-	{
-		convertedMeshes.push_back(ConvertMesh(mesh));
-	}
+	auto sk = ReadSkeletonHierarchy(skeleton->GetParent());
+	auto blendingIndexWeightPairs = ReadAnimationBlendingIndexWeightPairs(meshes[0], sk);
+
+	ReadAnimations(scene, meshes[0], sk);
+	auto convertedMesh = ConvertMesh(meshes[0], &sk);
 
 	cout << endl << "Scene traversal complete" << endl;
-
-	return convertedMeshes;
+	return make_pair(convertedMesh, sk);
 }
 
 string EnumToString(FbxLayerElement::EMappingMode mappingMode)
@@ -142,6 +151,57 @@ string EnumToString(FbxLayerElement::EReferenceMode referenceMode)
 		return "eIndex";
 	case FbxLayerElement::eIndexToDirect:
 		return "eIndexToDirect";
+	}
+
+	return "undefined";
+}
+
+string EnumToString(FbxNodeAttribute::EType type)
+{
+	switch (type)
+	{
+		case FbxNodeAttribute::eUnknown:
+			return "eUnknown";
+		case FbxNodeAttribute::eNull:
+			return "eNull";
+		case FbxNodeAttribute::eMarker:
+			return "eMarker";
+		case FbxNodeAttribute::eSkeleton:
+			return "eSkeleton";
+		case FbxNodeAttribute::eMesh:
+			return "eMesh";
+		case FbxNodeAttribute::eNurbs:
+			return "eNurbs";
+		case FbxNodeAttribute::ePatch:
+			return "ePatch";
+		case FbxNodeAttribute::eCamera:
+			return "eCamera";
+		case FbxNodeAttribute::eCameraStereo:
+			return "eCameraStereo";
+		case FbxNodeAttribute::eLight:
+			return "eLight";
+		case FbxNodeAttribute::eOpticalReference:
+			return "eOpticalReference";
+		case FbxNodeAttribute::eOpticalMarker:
+			return "eOpticalMarker";
+		case FbxNodeAttribute::eNurbsCurve:
+			return "eNurbsCurve";
+		case FbxNodeAttribute::eTrimNurbsSurface:
+			return "eTrimNurbsSurface";
+		case FbxNodeAttribute::eBoundary:
+			return "eBoundary";
+		case FbxNodeAttribute::eNurbsSurface:
+			return "eNurbsSurface";
+		case FbxNodeAttribute::eShape:
+			return "eShape";
+		case FbxNodeAttribute::eLODGroup:
+			return "eLODGroup";
+		case FbxNodeAttribute::eSubDiv:
+			return "eSubDiv";
+		case FbxNodeAttribute::eCachedEffect:
+			return "eCachedEffect";
+		case FbxNodeAttribute::eLine:
+			return "eLine";
 	}
 
 	return "undefined";

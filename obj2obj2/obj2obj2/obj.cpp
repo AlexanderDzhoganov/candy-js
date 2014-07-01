@@ -441,7 +441,6 @@ auto splitMesh(size_t maxVerticesPerBucket, const vector<Vertex>& verticesForSub
 	disjointMesh.indices = disjointIndices;
 	disjointMesh.material = materialName;
 	disjointMesh.vertices = disjointVertices;
-	disjointMesh.disjoint = true;
 
 	if (disjointMesh.vertices.size() > maxVerticesPerBucket)
 	{

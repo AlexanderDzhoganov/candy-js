@@ -125,6 +125,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="fbxanim.cpp" />
     <ClCompile Include="fbxelement.cpp" />
     <ClCompile Include="fbxinfo.cpp" />
     <ClCompile Include="fbxmesh.cpp" />
@@ -133,8 +134,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="obj.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="fbxanim.h" />
     <ClInclude Include="fbxelement.h" />
     <ClInclude Include="fbxinfo.h" />
     <ClInclude Include="fbxmesh.h" />
