@@ -19,6 +19,7 @@
 using namespace std;
 using namespace glm;
 
+#include "logging.h"
 #include "fbxutil.h"
 #include "fbxinfo.h"
 #include "fbxanim.h"
@@ -107,6 +108,23 @@ string EnumToString(FbxNodeAttribute::EType type)
 			return "eCachedEffect";
 		case FbxNodeAttribute::eLine:
 			return "eLine";
+	}
+
+	return "undefined";
+}
+
+string EnumToString(FbxSkeleton::EType type)
+{
+	switch (type)
+	{
+		case FbxSkeleton::eRoot:
+			return "eRoot";
+		case FbxSkeleton::eLimb:
+			return "eLimb";
+		case FbxSkeleton::eLimbNode:
+			return "eLimbNode";
+		case FbxSkeleton::eEffector:
+			return "eEffector";
 	}
 
 	return "undefined";

@@ -109,7 +109,7 @@ class Log
 	private:
 	string FormatMessage(const string& sender, const string& message)
 	{
-		return xs("[%] %", split(sender, ':')[0], message);
+		return xs("%:: %", split(sender, ':')[0], message);
 	}
 
 	void DispatchThread()

@@ -17,6 +17,8 @@ using namespace std;
 using namespace glm;
 
 #include "logging.h"
+#include "config.h"
+
 #include "fbxutil.h"
 #include "fbxelement.h"
 #include "fbxanim.h"
@@ -34,11 +36,12 @@ void FbxSkeletonReader::ReadSkeletonHierarchy(FbxNode* node, int index, int pare
 		Joint joint;
 		joint.parentIndex = parentIndex;
 		joint.name = node->GetName();
+
+		LOG_VERBOSE("Found joint node - \"%\"", joint.name);
 		result.joints.push_back(joint);
 	}
 
 	auto childCount = node->GetChildCount();
-
 	for (auto i = 0; i < childCount; i++)
 	{
 		ReadSkeletonHierarchy(node->GetChild(i), (int)result.joints.size(), index, result);
@@ -82,6 +85,7 @@ vector<vector<BlendingIndexWeightPair>> FbxSkeletonReader::ReadAnimationBlending
 		if (currentSkin == nullptr) continue;
 
 		auto clusterCount = currentSkin->GetClusterCount();
+		LOG_VERBOSE("Mesh contains % clusters", clusterCount);
 
 		for (auto clusterIdx = 0; clusterIdx < clusterCount; clusterIdx++)
 		{
@@ -114,6 +118,7 @@ vector<vector<BlendingIndexWeightPair>> FbxSkeletonReader::ReadAnimationBlending
 		}
 	}
 
+	LOG_VERBOSE("Read % index-weight pairs", indexWeightPairs.size());
 	return indexWeightPairs;
 }
 
@@ -122,7 +127,6 @@ FbxAMatrix FbxSkeletonReader::GetGeometryTransformation(FbxNode* node)
 	const FbxVector4 lT = node->GetGeometricTranslation(FbxNode::eSourcePivot);
 	const FbxVector4 lR = node->GetGeometricRotation(FbxNode::eSourcePivot);
 	const FbxVector4 lS = node->GetGeometricScaling(FbxNode::eSourcePivot);
-
 	return FbxAMatrix(lT, lR, lS);
 }
 
@@ -137,6 +141,8 @@ void FbxSkeletonReader::ReadAnimations(FbxScene* scene, FbxMesh* mesh)
 	auto animationStack = scene->GetCurrentAnimationStack();
 
 	auto animationStackName = animationStack->GetName();
+	LOG_VERBOSE("Using animation stack \"%\"", animationStackName);
+
 	auto animationTake = scene->GetTakeInfo(animationStackName);
 
 	auto startTime = animationTake->mLocalTimeSpan.GetStart();
@@ -145,7 +151,12 @@ void FbxSkeletonReader::ReadAnimations(FbxScene* scene, FbxMesh* mesh)
 	auto startTimeFrames = startTime.GetFrameCount(FbxTime::eFrames24);
 	auto endTimeFrames = endTime.GetFrameCount(FbxTime::eFrames24);
 
+	LOG_VERBOSE("Start frame: %", startTimeFrames);
+	LOG_VERBOSE("End frame: %", endTimeFrames);
+
 	auto animationLength = endTimeFrames - startTimeFrames + 1;
+
+	LOG_VERBOSE("Evaluating % frames of animation", animationLength);
 
 	for (auto deformerIdx = 0; deformerIdx < deformerCount; deformerIdx++)
 	{

@@ -20,6 +20,7 @@ using namespace std;
 using namespace glm;
 
 #include "logging.h"
+#include "config.h"
 
 #include "fbxutil.h"
 #include "fbxinfo.h"
@@ -83,9 +84,9 @@ void TraverseFbxNode(FbxNode* node, vector<FbxMesh*>& meshes, FbxNode*& skeleton
 			auto rotation = node->LclRotation.Get();
 			auto scale = node->LclScaling.Get();
 
-			LOG("Translation: %, %, %", translation[0], translation[1], translation[2]);
-			LOG("Rotation: %, %, %", rotation[0], rotation[1], rotation[2]);
-			LOG("Scale: %, %, %", scale[0], scale[1], scale[2]);
+			LOG_VERBOSE("Translation: %, %, %", translation[0], translation[1], translation[2]);
+			LOG_VERBOSE("Rotation: %, %, %", rotation[0], rotation[1], rotation[2]);
+			LOG_VERBOSE("Scale: %, %, %", scale[0], scale[1], scale[2]);
 
 			LOG("Type: FbxMesh");
 			FbxMesh* mesh = (FbxMesh*)attribute;
@@ -117,6 +118,13 @@ unique_ptr<FbxMeshReader> TraverseFbxScene(FbxScene* scene)
 	}
 
 	auto mesh = make_unique<FbxMeshReader>(meshes[0]);
+	
+	if (skeletonRoot != nullptr && CONFIG_KEY("no-export-animation", "true"))
+	{
+		LOG("Mesh contains valid skeleton data, but it won't be exported due to \"no-export-animation\" command line flag");
+		skeletonRoot = nullptr;
+	}
+	
 	mesh->ReadMeshData(scene, skeletonRoot);
 
 	LOG("Scene traversal complete");

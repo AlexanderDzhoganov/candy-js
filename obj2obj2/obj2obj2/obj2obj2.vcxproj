@@ -138,6 +138,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="config.h" />
     <ClInclude Include="fbxanim.h" />
     <ClInclude Include="fbxelement.h" />
     <ClInclude Include="fbxinfo.h" />

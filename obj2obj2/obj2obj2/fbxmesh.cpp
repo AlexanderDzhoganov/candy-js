@@ -20,6 +20,8 @@ using namespace std;
 using namespace glm;
 
 #include "logging.h"
+#include "config.h"
+
 #include "fbxutil.h"
 #include "fbxanim.h"
 #include "fbxmesh.h"
@@ -34,7 +36,7 @@ bool FbxMeshReader::ReadMeshData(FbxScene* scene, FbxNode* skeletonRoot)
 		LOG("Mesh contains non-triangle primitives. Triangulating");
 		FbxGeometryConverter converter(m_Mesh->GetFbxManager());
 		m_Mesh = (FbxMesh*)converter.Triangulate(m_Mesh, true);
-		LOG("Triangulation complete.");
+		LOG("Triangulation complete, % resulting triangles", m_Mesh->GetPolygonCount());
 	}
 
 	if (skeletonRoot != nullptr)
@@ -66,14 +68,23 @@ bool FbxMeshReader::ReadMeshData(FbxScene* scene, FbxNode* skeletonRoot)
 		}
 
 		auto deduplicated = DeduplicateVertices(materialVertices);
+
 		submesh.vertices = deduplicated.first;
 		submesh.indices = deduplicated.second;
 		submesh.material = materialNames[materialIndex];
 
-		auto splitSubmeshes = SplitToVertexLimit(65535, submesh);
-		for (auto& splitSubmesh : splitSubmeshes)
+		if (submesh.vertices.size() >= 65535)
 		{
-			m_SubMeshes.push_back(splitSubmesh);
+			LOG_VERBOSE("Mesh vertices over limit, splitting..");
+			auto splitSubmeshes = SplitToVertexLimit(65535, submesh);
+			for (auto& splitSubmesh : splitSubmeshes)
+			{
+				m_SubMeshes.push_back(splitSubmesh);
+			}
+		}
+		else
+		{
+			m_SubMeshes.push_back(submesh);
 		}
 
 		materialIndex++;
@@ -92,6 +103,7 @@ bool FbxMeshReader::ReadMeshData(FbxScene* scene, FbxNode* skeletonRoot)
 		trianglesCount += submesh.indices.size() / 3;
 	}
 
+	LOG("Result: % submeshes, % vertices, % triangles", submeshesCount, vertexCount, trianglesCount);
 	return true;
 }
 

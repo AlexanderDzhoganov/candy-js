@@ -22,6 +22,8 @@ using namespace std;
 using namespace glm;
 
 #include "logging.h"
+#include "config.h"
+
 #include "fbxutil.h"
 #include "fbxelement.h"
 #include "fbxanim.h"
@@ -29,97 +31,44 @@ using namespace glm;
 #include "fbxinfo.h"
 #include "fbxscene.h"
 
-auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, const Skeleton* skeleton) -> void
+#include "obj2.h"
+
+/*
+Command-line options:
+--no-file-write - disables writing of the exported mesh (all previous steps will still be performed)
+--no-export-animation - disables reading and exporting of animation data
+--log=verbose - enables verbose logging
+--print-fbx-info - prints information about the FBX file and exits
+
+*/
+
+void ProcessFbx(const string& fileName);
+
+auto main(int argc, char** argv) -> int
 {
-	fstream f(fileName, ios::out);
-
-	stringstream ss;
-
-	LOG("Writing out to \"%\"", fileName);
-
-	ss << "flags: ";
-
-	if (skeleton)
+	if (!Config::Instance().ParseCommandLine(argc, argv))
 	{
-		ss << "animated ";
+		return -1;
 	}
 
-	ss << endl;
+	const auto& fileName = Config::Instance().GetInputFilename();
+	string extension = fileName.substr(fileName.find_last_of(".") + 1);
 
-	auto count = 0u;
-	for (auto& subMesh : submeshes)
+	if (extension == "fbx")
 	{
-		ss << "m " << subMesh.material << " " << subMesh.vertices.size() << " " << subMesh.indices.size() << endl;
-
-		for (auto& vertex : subMesh.vertices)
-		{
-			ss << "vnt " << vertex.position.x << " " << vertex.position.y << " " << vertex.position.z << " "
-				<< vertex.normal.x << " " << vertex.normal.y << " " << vertex.normal.z << " "
-				<< vertex.uv.x << " " << vertex.uv.y;
-
-			if (subMesh.hasAnimation)
-			{
-				ss << " ";
-
-				for (auto i = 0u; i < 4; i++)
-				{
-					ss << vertex.boneIndices[i] << " ";
-				}
-
-				for (auto i = 0u; i < 4; i++)
-				{
-					ss << vertex.boneWeights[i] << " ";
-				}
-			}
-
-			ss << endl;
-		}
-
-		ss << "i ";
-
-		for (auto& i : subMesh.indices)
-		{
-			ss << i << " ";
-		}
-		ss << endl;
-
-		ss << "aabb " << subMesh.aabb.center.x << " " << subMesh.aabb.center.y << " " << subMesh.aabb.center.z << " "
-			<< subMesh.aabb.extents.x << " " << subMesh.aabb.extents.y << " " << subMesh.aabb.extents.z << endl;
-
-		ss << endl;
-
-		count++;
+		LOG("Extension is .fbx, assuming FBX format");
+		ProcessFbx(fileName);
+	}
+	else
+	{
+		LOG("Unrecognized format: %", extension);
 	}
 
-	if (skeleton)
-	{
-		auto frameCount = skeleton->joints[0].animation.size();
-		ss << "a " << frameCount << " " << skeleton->joints.size() << endl;
+	cout << "Press Enter to exit" << endl;
+	cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-		for (auto i = 0u; i < frameCount; i++)
-		{
-			ss << "f " << i << endl;
-
-			for (auto q = 0u; q < skeleton->joints.size(); q++)
-			{
-				auto& m = skeleton->joints[q].animation[i].globalTransform;
-				ss << "mat4 ";
-
-				for (auto y = 0u; y < 4; y++)
-				for (auto x = 0u; x < 4; x++)
-				{
-					ss << m.Get(x, y) << " ";
-				}
-
-				ss << endl;
-			}
-		}
-	}
-
-	string result = ss.str();
-	f.write(result.c_str(), result.size());
-
-	LOG("Conversion finished. Wrote % kbytes.", result.size() / 1024);
+	Log::Instance().Deinitialize();
+	return 0;
 }
 
 void ProcessFbx(const string& fileName)
@@ -134,42 +83,19 @@ void ProcessFbx(const string& fileName)
 		return;
 	}
 
-	//PrintScene(scene);
+	if (CONFIG_KEY("print-fbx-info", "true"))
+	{
+		PrintScene(scene);
+		return;
+	}
 
 	auto meshReader = TraverseFbxScene(scene);
 
+	if (CONFIG_KEY("no-file-write", "true"))
+	{
+		return;
+	}
+	
 	string outFilename = fileName.substr(0, fileName.find_last_of(".")) + "_fbx.obj2";
 	writeOutToFile(meshReader->GetSubMeshes(), outFilename, &meshReader->GetSkeleton());
-}
-
-auto main(int argc, char** argv) -> int
-{
-	if (argc == 1)
-	{
-		cout << "Usage:" << endl;
-		cout << argv[0] << " <.obj>" << endl;
-		return -1;
-	}
-
-	for (auto i = 1; i < argc; i++)
-	{
-		string fileName(argv[i]);
-		string extension = fileName.substr(fileName.find_last_of(".") + 1);
-
-		if (extension == "fbx")
-		{
-			LOG("Extension is .fbx, assuming FBX format");
-			ProcessFbx(fileName);
-		}
-		else
-		{
-			LOG("Unrecognized format: %", extension);
-		}
-	}
-
-	cout << "Press Enter to exit" << endl;
-	cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
-	Log::Instance().Deinitialize();
-	return 0;
 }

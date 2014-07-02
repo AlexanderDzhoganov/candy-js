@@ -7,4 +7,6 @@ string EnumToString(FbxLayerElement::EReferenceMode referenceMode);
 
 string EnumToString(FbxNodeAttribute::EType type);
 
+string EnumToString(FbxSkeleton::EType type);
+
 #endif
