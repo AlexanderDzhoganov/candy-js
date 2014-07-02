@@ -239,7 +239,7 @@ vector<vector<Vertex>> FbxMeshReader::ProcessMesh()
 			auto materialIndex = ReadMaterialFromFbxMesh(m_Mesh, controlPointIndex, i, 0);
 
 			auto vertex = Vertex();
-			vertex.position = positions[vertexCount];
+			vertex.position = vec3((m_Skeleton.transform * vec4(positions[vertexCount], 1.0)));
 			vertex.normal = normals[vertexCount];
 			vertex.uv = uvs[vertexCount];
 

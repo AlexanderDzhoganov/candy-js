@@ -52,15 +52,30 @@ void FbxSkeletonReader::ReadSkeletonHierarchy(FbxNode* node, int index, int pare
 	auto childCount = node->GetChildCount();
 	for (auto i = 0; i < childCount; i++)
 	{
-		ReadSkeletonHierarchy(node->GetChild(i), (int)result.joints.size(), index, result);
+		ReadSkeletonHierarchy(node->GetChild(i), (int) result.joints.size(), index, result);
 	}
+}
+
+mat4 convertFbxMatrix(const FbxAMatrix& rhs)
+{
+	mat4 result;
+	for (auto x = 0; x < 4; x++)
+	{
+		for (auto y = 0; y < 4; y++)
+		{
+			result[x][y] = rhs.Get(x, y);
+		}
+	}
+	return result;
 }
 
 bool FbxSkeletonReader::ReadSkeletonHierarchy()
 {
 	LOG("Reading skeleton hierarchy");
-	
+
 	m_Skeleton.joints.clear();
+	auto transform = m_RootNode->EvaluateGlobalTransform();
+	m_Skeleton.transform = convertFbxMatrix(transform);
 
 	auto childCount = m_RootNode->GetChildCount();
 	for (auto i = 0; i < childCount; i++)
@@ -109,7 +124,7 @@ vector<vector<BlendingIndexWeightPair>> FbxSkeletonReader::ReadAnimationBlending
 			{
 				BlendingIndexWeightPair pair;
 				pair.jointIndex = currentJointIndex;
-				pair.weight = (float)weights[i];
+				pair.weight = (float) weights[i];
 				indexWeightPairs[indices[i]].push_back(pair);
 			}
 		}
@@ -183,10 +198,10 @@ void FbxSkeletonReader::ReadAnimations(FbxScene* scene, FbxMesh* mesh)
 			FbxAMatrix transformMatrix;
 			currentCluster->GetTransformMatrix(transformMatrix);
 
-			FbxAMatrix transformLinkMatrix;
-			currentCluster->GetTransformLinkMatrix(transformLinkMatrix);
+			FbxAMatrix boneBindPoseMatrix;
+			currentCluster->GetTransformLinkMatrix(boneBindPoseMatrix);
 
-			auto globalBindPoseInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
+			auto globalBindPoseInverseMatrix = boneBindPoseMatrix.Inverse() * transformMatrix * geometryTransform;
 
 			m_Skeleton.joints[currentJointIndex].globalBindPoseInverse = globalBindPoseInverseMatrix;
 			m_Skeleton.joints[currentJointIndex].node = currentCluster->GetLink();
@@ -198,16 +213,21 @@ void FbxSkeletonReader::ReadAnimations(FbxScene* scene, FbxMesh* mesh)
 
 				KeyFrame currentFrame;
 				currentFrame.frameNum = frame;
-
+				/*
 				auto currentTransformOffset = mesh->GetNode()->EvaluateGlobalTransform(currentTime) * geometryTransform;
 
 				currentFrame.globalTransform = currentTransformOffset.Inverse() *
 					currentCluster->GetLink()->EvaluateGlobalTransform(currentTime);
-
-				currentFrame.globalTransform = currentFrame.globalTransform;
+					**/
+				currentFrame.globalTransform = currentCluster->GetLink()->EvaluateGlobalTransform(currentTime) * globalBindPoseInverseMatrix;
 
 				m_Skeleton.joints[currentJointIndex].animation.push_back(currentFrame);
 			}
 		}
 	}
+}
+
+void FbxSkeletonReader::BakeAnimations()
+{
+
 }

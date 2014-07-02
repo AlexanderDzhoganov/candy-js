@@ -25,6 +25,7 @@ struct Joint
 struct Skeleton
 {
 	vector<Joint> joints;
+	mat4 transform;
 
 	int GetJointIndexByName(const string& jointName) const
 	{
@@ -50,6 +51,8 @@ class FbxSkeletonReader
 
 	vector<vector<BlendingIndexWeightPair>> ReadAnimationBlendingIndexWeightPairs(FbxMesh* mesh);
 	void ReadAnimations(FbxScene* scene, FbxMesh* mesh);
+
+	void BakeAnimations();
 
 	private:
 	void ReadSkeletonHierarchy(FbxNode* node, int index, int parentIndex, Skeleton& result);
