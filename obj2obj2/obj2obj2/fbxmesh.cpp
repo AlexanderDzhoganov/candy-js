@@ -29,17 +29,18 @@ bool FbxMeshReader::ReadMeshData(FbxScene* scene, FbxNode* skeletonRoot)
 {
 	LOG("Preparing to read mesh data");
 
-	if (skeletonRoot != nullptr)
-	{
-		ReadMeshSkeletonAndAnimations(scene, skeletonRoot);
-	}
-
 	if (!m_Mesh->IsTriangleMesh())
 	{
 		LOG("Mesh contains non-triangle primitives. Triangulating");
 		FbxGeometryConverter converter(m_Mesh->GetFbxManager());
 		m_Mesh = (FbxMesh*)converter.Triangulate(m_Mesh, true);
 		LOG("Triangulation complete.");
+	}
+
+	if (skeletonRoot != nullptr)
+	{
+		LOG("Valid skeleton encountered, will parse animation data");
+		ReadMeshSkeletonAndAnimations(scene, skeletonRoot);
 	}
 
 	LOG("Parsing data");
