@@ -29,14 +29,14 @@ using namespace glm;
 
 bool FbxMeshReader::ReadMeshData(FbxScene* scene, FbxNode* skeletonRoot)
 {
-	LOG("Preparing to read mesh data");
+	LOG_VERBOSE("Preparing to read mesh data");
 
 	if (!m_Mesh->IsTriangleMesh())
 	{
 		LOG("Mesh contains non-triangle primitives. Triangulating");
 		FbxGeometryConverter converter(m_Mesh->GetFbxManager());
 		m_Mesh = (FbxMesh*)converter.Triangulate(m_Mesh, true);
-		LOG("Triangulation complete, % resulting triangles", m_Mesh->GetPolygonCount());
+		LOG_VERBOSE("Triangulation complete, % resulting triangles", m_Mesh->GetPolygonCount());
 	}
 
 	if (skeletonRoot != nullptr)
@@ -45,10 +45,10 @@ bool FbxMeshReader::ReadMeshData(FbxScene* scene, FbxNode* skeletonRoot)
 		ReadMeshSkeletonAndAnimations(scene, skeletonRoot);
 	}
 
-	LOG("Parsing data");
+	LOG_VERBOSE("Parsing data");
 
 	m_SubMeshes.clear();
-	auto verticesByMaterial = SplitByMaterial();
+	auto verticesByMaterial = ProcessMesh();
 
 	vector<string> materialNames;
 	auto materialsCount = verticesByMaterial.size();
@@ -109,7 +109,7 @@ bool FbxMeshReader::ReadMeshData(FbxScene* scene, FbxNode* skeletonRoot)
 
 bool FbxMeshReader::ReadMeshSkeletonAndAnimations(FbxScene* scene, FbxNode* skeletonRoot)
 {
-	LOG("Preparing to read animation data");
+	LOG_VERBOSE("Preparing to read animation data");
 
 	if (!skeletonRoot)
 	{
@@ -124,13 +124,13 @@ bool FbxMeshReader::ReadMeshSkeletonAndAnimations(FbxScene* scene, FbxNode* skel
 	m_Skeleton = skeletonReader.GetSkeleton();
 	m_BlendingIndexWeightPairs = skeletonReader.ReadAnimationBlendingIndexWeightPairs(m_Mesh);
 
-	LOG("Finished reading animation data");
+	LOG_VERBOSE("Finished reading animation data");
 	return true;
 }
 
 void FbxMeshReader::CalculateAABBs()
 {
-	LOG("Calculating AABBs");
+	LOG_VERBOSE("Calculating AABBs");
 
 	for (auto& submesh : m_SubMeshes)
 	{
@@ -138,47 +138,9 @@ void FbxMeshReader::CalculateAABBs()
 	}
 }
 
-pair<vector<Vertex>, vector<size_t>> FbxMeshReader::DeduplicateVertices(const vector<Vertex>& vertices)
-{
-	LOG("Deduplicating % vertices.. ", vertices.size());
-
-	vector<int> vertexHashes;
-	for (auto i = 0u; i < vertices.size(); i++)
-	{
-		vertexHashes.push_back(GetVertexHash(vertices[i]));
-	}
-
-	vector<Vertex> dedupedVertices;
-	unordered_map<int, size_t> dedupeIndexMap;
-
-	for (auto i = 0u; i < vertices.size(); i++)
-	{
-		const auto& hash = vertexHashes[i];
-		if (dedupeIndexMap.find(hash) == dedupeIndexMap.end())
-		{
-			dedupedVertices.push_back(vertices[i]);
-			dedupeIndexMap[hash] = dedupedVertices.size() - 1;
-		}
-	}
-
-	auto duplicatesCount = vertices.size() - dedupedVertices.size();
-
-	vector<size_t> indices;
-	indices.reserve(vertices.size());
-
-	for (auto i = 0u; i < vertices.size(); i++)
-	{
-		const auto& hash = vertexHashes[i];
-		indices.push_back(dedupeIndexMap[hash]);
-	}
-
-	LOG("Removed % duplicate vertices.", duplicatesCount);
-	return make_pair(dedupedVertices, indices);
-}
-
 vector<vec3> FbxMeshReader::ReadPositionsByPolyVertex()
 {
-	LOG("Reading positions");
+	LOG_VERBOSE("Reading positions");
 
 	FbxVector4* controlPoints = m_Mesh->GetControlPoints();
 	size_t polygonCount = m_Mesh->GetPolygonCount();
@@ -199,7 +161,7 @@ vector<vec3> FbxMeshReader::ReadPositionsByPolyVertex()
 
 vector<vec3> FbxMeshReader::ReadNormalsByPolyVertex(int normalElementIndex)
 {
-	LOG("Reading normals");
+	LOG_VERBOSE("Reading normals");
 	auto polygonCount = m_Mesh->GetPolygonCount();
 
 	int vertexCounter = 0;
@@ -224,7 +186,7 @@ vector<vec3> FbxMeshReader::ReadNormalsByPolyVertex(int normalElementIndex)
 
 vector<vec2> FbxMeshReader::ReadUVsByPolyVertex(int uvElementIndex)
 {
-	LOG("Reading UVs");
+	LOG_VERBOSE("Reading UVs");
 
 	auto polygonCount = m_Mesh->GetPolygonCount();
 	int vertexCounter = 0;
@@ -246,7 +208,7 @@ vector<vec2> FbxMeshReader::ReadUVsByPolyVertex(int uvElementIndex)
 	return uvs;
 }
 
-vector<vector<Vertex>> FbxMeshReader::SplitByMaterial()
+vector<vector<Vertex>> FbxMeshReader::ProcessMesh()
 {
 	auto positions = ReadPositionsByPolyVertex();
 	auto normals = ReadNormalsByPolyVertex();
@@ -255,7 +217,7 @@ vector<vector<Vertex>> FbxMeshReader::SplitByMaterial()
 	auto polygonCount = m_Mesh->GetPolygonCount();
 	auto materialCount = m_Mesh->GetNode()->GetMaterialCount();
 
-	LOG("Splitting mesh by material type (% materials, % polygons)", materialCount, polygonCount);
+	LOG_VERBOSE("Splitting mesh by material type (% materials, % polygons)", materialCount, polygonCount);
 
 	vector<vector<Vertex>> submeshes;
 	submeshes.resize(materialCount);
@@ -302,7 +264,7 @@ vector<SubMesh> FbxMeshReader::SplitToVertexLimit(size_t maxVerticesPerBucket, S
 {
 	if (depth == 0)
 	{
-		LOG("Splitting submesh (maxVerticesPerBucket = %)", maxVerticesPerBucket);
+		LOG_VERBOSE("Splitting submesh (maxVerticesPerBucket = %)", maxVerticesPerBucket);
 	}
 
 	auto bucketCount = (size_t)(ceil(submesh.vertices.size() / (float)maxVerticesPerBucket));
@@ -419,4 +381,42 @@ vector<SubMesh> FbxMeshReader::SplitToVertexLimit(size_t maxVerticesPerBucket, S
 	}
 
 	return submeshes;
+}
+
+pair<vector<Vertex>, vector<size_t>> FbxMeshReader::DeduplicateVertices(const vector<Vertex>& vertices)
+{
+	LOG_VERBOSE("Deduplicating % vertices.. ", vertices.size());
+
+	vector<int> vertexHashes;
+	for (auto i = 0u; i < vertices.size(); i++)
+	{
+		vertexHashes.push_back(GetVertexHash(vertices[i]));
+	}
+
+	vector<Vertex> dedupedVertices;
+	unordered_map<int, size_t> dedupeIndexMap;
+
+	for (auto i = 0u; i < vertices.size(); i++)
+	{
+		const auto& hash = vertexHashes[i];
+		if (dedupeIndexMap.find(hash) == dedupeIndexMap.end())
+		{
+			dedupedVertices.push_back(vertices[i]);
+			dedupeIndexMap[hash] = dedupedVertices.size() - 1;
+		}
+	}
+
+	auto duplicatesCount = vertices.size() - dedupedVertices.size();
+
+	vector<size_t> indices;
+	indices.reserve(vertices.size());
+
+	for (auto i = 0u; i < vertices.size(); i++)
+	{
+		const auto& hash = vertexHashes[i];
+		indices.push_back(dedupeIndexMap[hash]);
+	}
+
+	LOG_VERBOSE("Removed % duplicate vertices.", duplicatesCount);
+	return make_pair(dedupedVertices, indices);
 }

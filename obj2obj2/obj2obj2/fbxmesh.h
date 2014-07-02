@@ -85,27 +85,22 @@ class FbxMeshReader
 
 	~FbxMeshReader() {}
 
-	bool ReadMeshData(FbxScene* scene, FbxNode* skeletonRoot);
-
 	const vector<SubMesh>& GetSubMeshes() { return m_SubMeshes; }
 
 	const Skeleton& GetSkeleton() { return m_Skeleton; }
 
+	bool ReadMeshData(FbxScene* scene, FbxNode* skeletonRoot);
+
 	private:
 	bool ReadMeshSkeletonAndAnimations(FbxScene* scene, FbxNode* skeletonRoot);
-
 	void CalculateAABBs();
-	
-	static pair<vector<Vertex>, vector<size_t>> DeduplicateVertices(const vector<Vertex>& vertices);
-
 	vector<vec3> ReadPositionsByPolyVertex();
 	vector<vec3> ReadNormalsByPolyVertex(int normalElementIndex = 0);
 	vector<vec2> ReadUVsByPolyVertex(int uvElementIndex = 0);
+	vector<vector<Vertex>> ProcessMesh();
 
-	vector<SubMesh> SplitToVertexLimit(size_t maxVerticesPerBucket, SubMesh submesh, size_t depth = 0);
-
-	vector<vector<Vertex>> SplitByMaterial();
-	void Convert();
+	static vector<SubMesh> SplitToVertexLimit(size_t maxVerticesPerBucket, SubMesh submesh, size_t depth = 0);
+	static pair<vector<Vertex>, vector<size_t>> DeduplicateVertices(const vector<Vertex>& vertices);
 
 	FbxMesh* m_Mesh = nullptr;
 	Skeleton m_Skeleton;

@@ -63,6 +63,11 @@ class Config
 			m_CommandLine[key] = value;
 		}
 
+		for (auto& pair : m_CommandLine)
+		{
+			LOG("% = %", pair.first, pair.second);
+		}
+
 		return true;
 	}
 

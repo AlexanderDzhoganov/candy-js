@@ -78,7 +78,7 @@ void TraverseFbxNode(FbxNode* node, vector<FbxMesh*>& meshes, FbxNode*& skeleton
 
 		if (type == FbxNodeAttribute::EType::eMesh)
 		{
-			LOG("Encountered mesh node: \"%\"", name);
+			LOG_VERBOSE("Encountered mesh node: \"%\"", name);
 
 			auto translation = node->LclTranslation.Get();
 			auto rotation = node->LclRotation.Get();
@@ -88,9 +88,13 @@ void TraverseFbxNode(FbxNode* node, vector<FbxMesh*>& meshes, FbxNode*& skeleton
 			LOG_VERBOSE("Rotation: %, %, %", rotation[0], rotation[1], rotation[2]);
 			LOG_VERBOSE("Scale: %, %, %", scale[0], scale[1], scale[2]);
 
-			LOG("Type: FbxMesh");
+			LOG_VERBOSE("Type: FbxMesh");
 			FbxMesh* mesh = (FbxMesh*)attribute;
-			PrintFbxMeshInfo(mesh);
+
+			if (CONFIG_KEY("log", "verbose"))
+			{
+				PrintFbxMeshInfo(mesh);
+			}
 
 			meshes.push_back(mesh);
 		}
@@ -106,7 +110,7 @@ void TraverseFbxNode(FbxNode* node, vector<FbxMesh*>& meshes, FbxNode*& skeleton
 
 unique_ptr<FbxMeshReader> TraverseFbxScene(FbxScene* scene)
 {
-	LOG("Starting scene traversal");
+	LOG_VERBOSE("Starting scene traversal");
 
 	vector<FbxMesh*> meshes;
 	FbxNode* skeletonRoot = nullptr;
@@ -127,6 +131,6 @@ unique_ptr<FbxMeshReader> TraverseFbxScene(FbxScene* scene)
 	
 	mesh->ReadMeshData(scene, skeletonRoot);
 
-	LOG("Scene traversal complete");
+	LOG_VERBOSE("Scene traversal complete");
 	return mesh;
 }
