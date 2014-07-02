@@ -23,9 +23,9 @@ using namespace glm;
 
 #include "fbxutil.h"
 #include "fbxelement.h"
+#include "fbxanim.h"
 #include "fbxmesh.h"
 #include "fbxinfo.h"
-#include "fbxanim.h"
 
 #include "obj.h"
 
@@ -41,7 +41,7 @@ void calculateSubmeshesAABBs(vector<SubMesh>& submeshes)
 	cout << "Finished! Calculated a total of " << calculatedAABBs << endl;
 }
 
-auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, Skeleton* skeleton) -> void
+auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, const Skeleton* skeleton) -> void
 {
 	fstream f(fileName, ios::out);
 
@@ -143,32 +143,13 @@ void ProcessFbx(const string& fileName)
 	}
 
 	PrintScene(scene);
-	int x = 5;
 
-	auto meshSkeletonPair = TraverseFbxScene(scene);
-
-	auto& mesh = meshSkeletonPair.first;
-
-	vector<string> materialNames;
-	for (auto& material : mesh.materials)
-	{
-		materialNames.push_back(material->GetName());
-	}
-
-	vector<SubMesh> submeshes;
-	for (auto& convertedSubmesh : mesh.submeshes)
-	{
-		SubMesh submesh;
-		submesh.hasAnimation = convertedSubmesh.hasAnimation;
-		submesh.indices = convertedSubmesh.indices;
-		submesh.vertices = convertedSubmesh.vertices;
-		submesh.material = materialNames[convertedSubmesh.materialIndex];
-		submeshes.push_back(submesh);
-	}
+	auto meshReader = TraverseFbxScene(scene);
+	auto submeshes = meshReader->GetSubMeshes();
 
 	string outFilename = fileName.substr(0, fileName.find_last_of(".")) + "_fbx.obj2";
 	calculateSubmeshesAABBs(submeshes);
-	writeOutToFile(submeshes, outFilename, &meshSkeletonPair.second);
+	writeOutToFile(submeshes, outFilename, &meshReader->GetSkeleton());
 }
 
 void ProcessObj(const string& fileName)

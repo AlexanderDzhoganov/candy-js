@@ -1,38 +1,48 @@
 #ifndef __FBXMESH_H
 #define __FBXMESH_H
 
-struct ConvertedSubmesh
-{
-	size_t materialIndex;
-	vector<Vertex> vertices;
-	vector<size_t> indices;
-	bool hasAnimation = false;
-};
-
-struct ConvertedMesh
-{
-	vector<FbxSurfaceMaterial*> materials;
-	vector<ConvertedSubmesh> submeshes;
-};
-
 struct BlendingIndexWeightPair;
 struct Skeleton;
 
-vector<vec3> GetPositionsFromFbxMesh(FbxMesh* mesh);
+class FbxMeshReader
+{
 
-vector<vec3> GetNormalsFromFbxMesh(FbxMesh* mesh, int normalElementIndex = 0);
+	public:
+	FbxMeshReader(FbxMesh* mesh) : m_Mesh(mesh) {};
+	~FbxMeshReader() {}
 
-vector<vec2> GetUVsFromFbxMesh(FbxMesh* mesh, int uvElementIndex = 0);
+	bool ReadMeshStaticData();
+	bool ReadMeshSkeletonAndAnimations(FbxScene* scene, FbxNode* skeletonRoot);
 
-vector<Vertex> CombineFbxVertices(const vector<vec3>& positions, const vector<vec3>& normals, const vector<vec2>& uvs);
+	const vector<SubMesh>& GetSubMeshes() { return m_SubMeshes; }
 
-vector<Vertex> CombineFbxVerticesWithAnimation(const vector<vec3>& positions, const vector<vec3>& normals, const vector<vec2>& uvs,
-														const vector<vector<BlendingIndexWeightPair>>& weightPairs);
+	const Skeleton& GetSkeleton() { return m_Skeleton; }
 
-pair<vector<Vertex>, vector<size_t>> DeduplicateVertices(const vector<Vertex>& vertices);
+	private:
+	vector<vec3> ReadPositionsByPolyVertex();
+	vector<vec3> ReadNormalsByPolyVertex(int normalElementIndex = 0);
+	vector<vec2> ReadUVsByPolyVertex(int uvElementIndex = 0);
+	vector<SubMesh> SplitToVertexLimit(size_t maxVerticesPerBucket, SubMesh submesh, size_t depth = 0);
 
-vector<vector<Vertex>> SplitFbxMeshByMaterial(FbxMesh* mesh);
+	vector<vector<Vertex>> SplitByMaterial();
+	void Convert();
 
-ConvertedMesh ConvertMesh(FbxMesh* mesh, Skeleton* skeleton = nullptr);
+	FbxMesh* m_Mesh = nullptr;
+	Skeleton m_Skeleton;
+
+	vector<Vertex> m_Vertices;
+	vector<size_t> m_Indices;
+
+	vector<SubMesh> m_SubMeshes;
+
+	vector<vec3> m_ControlPoints;
+
+	vector<vector<BlendingIndexWeightPair>> m_BlendingIndexWeightPairs;
+
+};
+
+
+
+
 
 #endif

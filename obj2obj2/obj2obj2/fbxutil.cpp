@@ -23,8 +23,8 @@ using namespace glm;
 
 #include "fbxutil.h"
 #include "fbxinfo.h"
-#include "fbxmesh.h"
 #include "fbxanim.h"
+#include "fbxmesh.h"
 
 FbxScene* ImportFbxScene(const string& fileName, FbxManager* manager)
 {
@@ -102,22 +102,25 @@ void TraverseFbxNode(FbxNode* node, vector<FbxMesh*>& meshes, FbxNode*& skeleton
 	}
 };
 
-pair<ConvertedMesh, Skeleton> TraverseFbxScene(FbxScene* scene)
+unique_ptr<FbxMeshReader> TraverseFbxScene(FbxScene* scene)
 {
 	cout << endl << "Starting scene traversal.." << endl;
 
 	vector<FbxMesh*> meshes;
-	FbxNode* skeleton = nullptr;
-	TraverseFbxNode(scene->GetRootNode(), meshes, skeleton);
+	FbxNode* skeletonRoot = nullptr;
+	TraverseFbxNode(scene->GetRootNode(), meshes, skeletonRoot);
 
-	auto sk = ReadSkeletonHierarchy(skeleton->GetParent());
-	auto blendingIndexWeightPairs = ReadAnimationBlendingIndexWeightPairs(meshes[0], sk);
+	if (skeletonRoot)
+	{
+		skeletonRoot = skeletonRoot->GetParent();
+	}
 
-	ReadAnimations(scene, meshes[0], sk);
-	auto convertedMesh = ConvertMesh(meshes[0], &sk);
+	auto mesh = make_unique<FbxMeshReader>(meshes[0]);
+	mesh->ReadMeshStaticData();
+	mesh->ReadMeshSkeletonAndAnimations(scene, skeletonRoot);
 
 	cout << endl << "Scene traversal complete" << endl;
-	return make_pair(convertedMesh, sk);
+	return mesh;
 }
 
 string EnumToString(FbxLayerElement::EMappingMode mappingMode)

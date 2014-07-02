@@ -22,23 +22,112 @@ using namespace glm;
 #include "util.h"
 
 #include "fbxutil.h"
+#include "fbxanim.h"
 #include "fbxmesh.h"
 #include "fbxelement.h"
-#include "fbxanim.h"
 
-vector<vec3> GetPositionsFromFbxMesh(FbxMesh* mesh)
+bool FbxMeshReader::ReadMeshStaticData()
+{
+	cout << "Preparing to read mesh data.." << endl;
+
+	if (!m_Mesh->IsTriangleMesh())
+	{
+		cout << "Mesh contains non-triangle primitives. Triangulating.. ";
+		FbxGeometryConverter converter(m_Mesh->GetFbxManager());
+		m_Mesh = (FbxMesh*)converter.Triangulate(m_Mesh, true);
+		cout << "Done!" << endl;
+	}
+
+	cout << endl << "Parsing data.." << endl;
+
+	m_SubMeshes.clear();
+	auto verticesByMaterial = SplitByMaterial();
+
+	vector<string> materialNames;
+	auto materialsCount = verticesByMaterial.size();
+	for (auto i = 0u; i < materialsCount; i++)
+	{
+		materialNames.push_back(m_Mesh->GetNode()->GetMaterial(i)->GetName());
+	}
+
+	auto materialIndex = 0u;
+	for (auto& materialVertices : verticesByMaterial)
+	{
+		SubMesh submesh;
+
+		if (m_Skeleton.joints.size() > 0)
+		{
+			submesh.hasAnimation = true;
+		}
+
+		auto deduplicated = DeduplicateVertices(materialVertices);
+		submesh.vertices = deduplicated.first;
+		submesh.indices = deduplicated.second;
+		submesh.material = materialNames[materialIndex];
+
+		auto splitSubmeshes = SplitToVertexLimit(65535, submesh);
+		for (auto& splitSubmesh : splitSubmeshes)
+		{
+			m_SubMeshes.push_back(splitSubmesh);
+		}
+
+		materialIndex++;
+	}
+
+	auto submeshesCount = m_SubMeshes.size();
+
+	size_t vertexCount = 0;
+	size_t trianglesCount = 0;
+
+	for (auto& submesh : m_SubMeshes)
+	{
+		vertexCount += submesh.vertices.size();
+		trianglesCount += submesh.indices.size() / 3;
+	}
+
+	cout << "Success! " <<
+		materialsCount << " materials, " <<
+		submeshesCount << " submeshes, " <<
+		vertexCount << " vertices, " <<
+		trianglesCount << " triangles" <<
+		endl;
+
+	return true;
+}
+
+bool FbxMeshReader::ReadMeshSkeletonAndAnimations(FbxScene* scene, FbxNode* skeletonRoot)
+{
+	cout << "Preparing to read animation data" << endl;
+
+	if (!skeletonRoot)
+	{
+		cout << "Invalid skeletonRoot, bailing out.." << endl;
+		return false;
+	}
+
+	m_Skeleton = ReadSkeletonHierarchy(skeletonRoot);
+
+	m_BlendingIndexWeightPairs = ReadAnimationBlendingIndexWeightPairs(m_Mesh, m_Skeleton);
+
+	ReadAnimations(scene, m_Mesh, m_Skeleton);
+
+	cout << "Finished reading animation data" << endl;
+	return true;
+}
+
+vector<vec3> FbxMeshReader::ReadPositionsByPolyVertex()
 {
 	cout << "Reading positions.. ";
 
-	FbxVector4* controlPoints = mesh->GetControlPoints();
-	size_t polygonCount = mesh->GetPolygonCount();
+	FbxVector4* controlPoints = m_Mesh->GetControlPoints();
+	size_t polygonCount = m_Mesh->GetPolygonCount();
 
 	vector<vec3> positions;
 	for (auto i = 0u; i < polygonCount; i++)
 	{
 		for (auto j = 0u; j < 3; j++)
 		{
-			auto index = mesh->GetPolygonVertex(i, j);
+			auto index = m_Mesh->GetPolygonVertex(i, j);
 			FbxVector4 vertex = controlPoints[index];
 			positions.emplace_back(vertex[0], vertex[1], vertex[2]);
 		}
@@ -48,10 +137,10 @@ vector<vec3> GetPositionsFromFbxMesh(FbxMesh* mesh)
 	return positions;
 }
 
-vector<vec3> GetNormalsFromFbxMesh(FbxMesh* mesh, int normalElementIndex)
+vector<vec3> FbxMeshReader::ReadNormalsByPolyVertex(int normalElementIndex)
 {
 	cout << "Reading normals.. ";
-	auto polygonCount = mesh->GetPolygonCount();
+	auto polygonCount = m_Mesh->GetPolygonCount();
 
 	int vertexCounter = 0;
 
@@ -59,12 +148,12 @@ vector<vec3> GetNormalsFromFbxMesh(FbxMesh* mesh, int normalElementIndex)
 
 	for (auto i = 0; i < polygonCount; i++)
 	{
-		auto vertices = mesh->GetPolygonSize(i);
+		auto vertices = m_Mesh->GetPolygonSize(i);
 
 		for (auto q = 0; q < vertices; q++)
 		{
-			auto controlPointIndex = mesh->GetPolygonVertex(i, q);
-			auto normal = ReadNormalFromFbxMesh(mesh, controlPointIndex, vertexCounter, i, normalElementIndex);
+			auto controlPointIndex = m_Mesh->GetPolygonVertex(i, q);
+			auto normal = ReadNormalFromFbxMesh(m_Mesh, controlPointIndex, vertexCounter, i, normalElementIndex);
 			normals.push_back(normal);
 			vertexCounter++;
 		}
@@ -74,22 +163,22 @@ vector<vec3> GetNormalsFromFbxMesh(FbxMesh* mesh, int normalElementIndex)
 	return normals;
 }
 
-vector<vec2> GetUVsFromFbxMesh(FbxMesh* mesh, int uvElementIndex)
+vector<vec2> FbxMeshReader::ReadUVsByPolyVertex(int uvElementIndex)
 {
 	cout << "Reading UVs.. ";
 
-	auto polygonCount = mesh->GetPolygonCount();
+	auto polygonCount = m_Mesh->GetPolygonCount();
 	int vertexCounter = 0;
 	vector<vec2> uvs;
 
 	for (auto i = 0; i < polygonCount; i++)
 	{
-		auto vertices = mesh->GetPolygonSize(i);
+		auto vertices = m_Mesh->GetPolygonSize(i);
 
 		for (auto q = 0; q < vertices; q++)
 		{
-			auto controlPointIndex = mesh->GetPolygonVertex(i, q);
-			auto uv = ReadUVFromFbxMesh(mesh, controlPointIndex, vertexCounter, i, uvElementIndex);
+			auto controlPointIndex = m_Mesh->GetPolygonVertex(i, q);
+			auto uv = ReadUVFromFbxMesh(m_Mesh, controlPointIndex, vertexCounter, i, uvElementIndex);
 			uvs.push_back(uv);
 			vertexCounter++;
 		}
@@ -99,60 +188,21 @@ vector<vec2> GetUVsFromFbxMesh(FbxMesh* mesh, int uvElementIndex)
 	return uvs;
 }
 
-vector<Vertex> CombineFbxVertices(const vector<vec3>& positions, const vector<vec3>& normals, const vector<vec2>& uvs)
+vector<vector<Vertex>> FbxMeshReader::SplitByMaterial()
 {
-	assert(positions.size() == normals.size() == uvs.size());
-	vector<Vertex> vertices;
-
-	for (auto i = 0; i < positions.size(); i++)
-	{
-		vertices.emplace_back();
-		vertices[i].position = positions[i];
-		vertices[i].normal = normals[i];
-		vertices[i].uv = uvs[i];
-	}
-
-	return vertices;
-}
-
-vector<Vertex> CombineFbxVerticesWithAnimation(const vector<vec3>& positions, const vector<vec3>& normals, const vector<vec2>& uvs, 
-														const vector<vector<BlendingIndexWeightPair>>& weightPairs)
-{
-	assert(positions.size() == normals.size() == uvs.size());
-	vector<Vertex> vertices;
-
-	for (auto i = 0; i < positions.size(); i++)
-	{
-		vertices.emplace_back();
-		vertices[i].position = positions[i];
-		vertices[i].normal = normals[i];
-		vertices[i].uv = uvs[i];
-
-		for (auto q = 0u; q < 4; q++)
-		{
-			vertices[i].boneWeights[q] = weightPairs[i][q].weight;
-			vertices[i].boneIndices[q] = weightPairs[i][q].jointIndex;
-		}
-	}
-
-	return vertices;
-}
-
-vector<vector<Vertex>> SplitFbxMeshByMaterial(FbxMesh* mesh, Skeleton* skeleton = nullptr)
-{
-	auto positions = GetPositionsFromFbxMesh(mesh);
-	auto normals = GetNormalsFromFbxMesh(mesh);
-	auto uvs = GetUVsFromFbxMesh(mesh);
+	auto positions = ReadPositionsByPolyVertex();
+	auto normals = ReadNormalsByPolyVertex();
+	auto uvs = ReadUVsByPolyVertex();
 
 	vector<vector<BlendingIndexWeightPair>> weightPairs;
 
-	if (skeleton)
+	if (m_Skeleton.joints.size() > 0)
 	{
-		weightPairs = ReadAnimationBlendingIndexWeightPairs(mesh, *skeleton);
+		weightPairs = ReadAnimationBlendingIndexWeightPairs(m_Mesh, m_Skeleton);
 	}
 
-	auto polygonCount = mesh->GetPolygonCount();
-	auto materialCount = mesh->GetNode()->GetMaterialCount();
+	auto polygonCount = m_Mesh->GetPolygonCount();
+	auto materialCount = m_Mesh->GetNode()->GetMaterialCount();
 
 	cout << "Splitting mesh by material type (" << materialCount << " materials).. ";
 
@@ -162,19 +212,25 @@ vector<vector<Vertex>> SplitFbxMeshByMaterial(FbxMesh* mesh, Skeleton* skeleton 
 	auto vertexCount = 0;
 	for (auto i = 0; i < polygonCount; i++)
 	{
-		auto polygonSize = mesh->GetPolygonSize(i);
+		auto polygonSize = m_Mesh->GetPolygonSize(i);
+			
+		if (polygonSize > 3)
+		{
+			cout << endl << endl << "Critical Error! Non-triangle primitive encountered, bailing out.." << endl << endl;
+			return vector<vector<Vertex>>();
+		}
 
 		for (auto q = 0; q < polygonSize; q++)
 		{
-			auto controlPointIndex = mesh->GetPolygonVertex(i, q);
-			auto materialIndex = ReadMaterialFromFbxMesh(mesh, controlPointIndex, i, 0);
+			auto controlPointIndex = m_Mesh->GetPolygonVertex(i, q);
+			auto materialIndex = ReadMaterialFromFbxMesh(m_Mesh, controlPointIndex, i, 0);
 
 			auto vertex = Vertex();
 			vertex.position = positions[vertexCount];
 			vertex.normal = normals[vertexCount];
 			vertex.uv = uvs[vertexCount];
 
-			if (skeleton)
+			if (m_Skeleton.joints.size() > 0)
 			{
 				for (auto k = 0u; k < 4; k++)
 				{
@@ -192,7 +248,7 @@ vector<vector<Vertex>> SplitFbxMeshByMaterial(FbxMesh* mesh, Skeleton* skeleton 
 	return submeshes;
 }
 
-vector<ConvertedSubmesh> SplitConvertedSubmesh(size_t maxVerticesPerBucket, ConvertedSubmesh submesh, size_t depth = 0)
+vector<SubMesh> FbxMeshReader::SplitToVertexLimit(size_t maxVerticesPerBucket, SubMesh submesh, size_t depth)
 {
 	if (depth == 0)
 	{
@@ -213,7 +269,7 @@ vector<ConvertedSubmesh> SplitConvertedSubmesh(size_t maxVerticesPerBucket, Conv
 		}
 	}
 
-	vector<ConvertedSubmesh> submeshes;
+	vector<SubMesh> submeshes;
 	unordered_map<size_t, bool> disjointTrianglesMap;
 	vector<size_t> disjointTriangles;
 
@@ -265,10 +321,10 @@ vector<ConvertedSubmesh> SplitConvertedSubmesh(size_t maxVerticesPerBucket, Conv
 			}
 		}
 
-		ConvertedSubmesh mesh;
+		SubMesh mesh;
 		mesh.indices = finalIndices;
 		mesh.vertices = finalVertices;
-		mesh.materialIndex = submesh.materialIndex;
+		mesh.material = submesh.material;
 		mesh.hasAnimation = submesh.hasAnimation;
 
 		if (mesh.indices.size() > 0 && mesh.vertices.size() > 0)
@@ -306,14 +362,14 @@ vector<ConvertedSubmesh> SplitConvertedSubmesh(size_t maxVerticesPerBucket, Conv
 		disjointIndices.push_back(localIndex2);
 	}
 
-	ConvertedSubmesh disjointMesh;
+	SubMesh disjointMesh;
 	disjointMesh.indices = disjointIndices;
 	disjointMesh.vertices = disjointVertices;
-	disjointMesh.materialIndex = submesh.materialIndex;
+	disjointMesh.material = submesh.material;
 
 	if (disjointMesh.vertices.size() > maxVerticesPerBucket)
 	{
-		auto disjointSubmeshes = SplitConvertedSubmesh(maxVerticesPerBucket, disjointMesh, depth + 1);
+		auto disjointSubmeshes = SplitToVertexLimit(maxVerticesPerBucket, disjointMesh, depth + 1);
 		for (auto& submesh : disjointSubmeshes)
 		{
 			submeshes.push_back(submesh);
@@ -330,64 +386,4 @@ vector<ConvertedSubmesh> SplitConvertedSubmesh(size_t maxVerticesPerBucket, Conv
 	}
 
 	return submeshes;
-}
-
-ConvertedMesh ConvertMesh(FbxMesh* mesh, Skeleton* skeleton)
-{
-	cout << endl << "Starting mesh conversion.." << endl;
-
-	auto verticesByMaterial = SplitFbxMeshByMaterial(mesh, skeleton);
-
-	ConvertedMesh result;
-
-	auto materialIndex = 0u;
-	for (auto& materialVertices : verticesByMaterial)
-	{
-		ConvertedSubmesh submesh;
-
-		if (skeleton != nullptr)
-		{
-			submesh.hasAnimation = true;
-		}
-
-		auto deduplicated = DeduplicateVertices(materialVertices);
-		submesh.vertices = deduplicated.first;
-		submesh.indices = deduplicated.second;
-		submesh.materialIndex = materialIndex;
-
-		auto splitSubmeshes = SplitConvertedSubmesh(65535, submesh);
-		for (auto& splitSubmesh : splitSubmeshes)
-		{
-			result.submeshes.push_back(splitSubmesh);
-		}
-
-		materialIndex++;
-	}
-
-	auto materialsCount = materialIndex;
-
-	for (auto i = 0u; i < materialsCount; i++)
-	{
-		result.materials.push_back(mesh->GetNode()->GetMaterial(i));
-	}
-
-	auto submeshesCount = result.submeshes.size();
-
-	size_t vertexCount = 0;
-	size_t trianglesCount = 0;
-
-	for (auto& submesh : result.submeshes)
-	{
-		vertexCount += submesh.vertices.size();
-		trianglesCount += submesh.indices.size() / 3;
-	}
-
-	cout << "Mesh conversion successful! " <<
-		materialsCount << " materials, " <<
-		submeshesCount << " submeshes, " <<
-		vertexCount << " vertices, " <<
-		trianglesCount << " triangles" <<
-		endl;
-
-	return result;
 }

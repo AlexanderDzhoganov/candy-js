@@ -23,15 +23,15 @@ using namespace glm;
 
 #include "fbxutil.h"
 #include "fbxelement.h"
+#include "fbxanim.h"
 #include "fbxmesh.h"
 #include "fbxinfo.h"
-#include "fbxanim.h"
 
-void ReadSkeletonHierarchy(FbxNode* node, int depth, int index, int parentIndex, Skeleton& result)
+void ReadSkeletonHierarchy(FbxNode* node, int index, int parentIndex, Skeleton& result)
 {
 	if (node->GetNodeAttribute() == nullptr || node->GetNodeAttribute()->GetAttributeType() != FbxNodeAttribute::eSkeleton)
 	{
-		cout << "ReadSkeletonHierarchy>> Error! Node type is not eSkeleton." << endl;
+		return;
 	}
 	else
 	{
@@ -45,26 +45,30 @@ void ReadSkeletonHierarchy(FbxNode* node, int depth, int index, int parentIndex,
 
 	for (auto i = 0; i < childCount; i++)
 	{
-		ReadSkeletonHierarchy(node->GetChild(i), depth + 1, result.joints.size(), index, result);
+		ReadSkeletonHierarchy(node->GetChild(i), result.joints.size(), index, result);
 	}
 }
 
 Skeleton ReadSkeletonHierarchy(FbxNode* skeletonRoot)
 {
-	Skeleton result;
+	cout << "Reading skeleton hierarchy.. ";
 
+	Skeleton result;
 	auto childCount = skeletonRoot->GetChildCount();
 
 	for (auto i = 0; i < childCount; i++)
 	{
-		ReadSkeletonHierarchy(skeletonRoot->GetChild(i), 0, 0, -1, result);
+		ReadSkeletonHierarchy(skeletonRoot->GetChild(i), 0, -1, result);
 	}
 
+	cout << "Done! " << result.joints.size() << " joints." << endl;
 	return result;
 }
 
 vector<vector<BlendingIndexWeightPair>> ReadAnimationBlendingIndexWeightPairs(FbxMesh* mesh, Skeleton& skeleton)
 {
+	cout << "Reading index-weight pairs.. ";
+
 	auto deformerCount = mesh->GetDeformerCount();
 	vector<vector<BlendingIndexWeightPair>> indexWeightPairs;
 	indexWeightPairs.resize(mesh->GetControlPointsCount());
@@ -108,6 +112,8 @@ vector<vector<BlendingIndexWeightPair>> ReadAnimationBlendingIndexWeightPairs(Fb
 		}
 	}
 
+	cout << "Done!" << endl;
+
 	return indexWeightPairs;
 }
 
@@ -122,6 +128,8 @@ FbxAMatrix GetGeometryTransformation(FbxNode* node)
 
 void ReadAnimations(FbxScene* scene, FbxMesh* mesh, Skeleton& skeleton)
 {
+	cout << "Reading animation frame data.. ";
+
 	auto deformerCount = mesh->GetDeformerCount();
 
 	auto geometryTransform = GetGeometryTransformation(mesh->GetNode());
@@ -183,4 +191,6 @@ void ReadAnimations(FbxScene* scene, FbxMesh* mesh, Skeleton& skeleton)
 			}
 		}
 	}
+
+	cout << "Done!" << endl;
 }
