@@ -204,7 +204,7 @@ void FbxSkeletonReader::ReadAnimations(FbxScene* scene, FbxMesh* mesh)
 				currentFrame.globalTransform = currentTransformOffset.Inverse() *
 					currentCluster->GetLink()->EvaluateGlobalTransform(currentTime);
 
-				currentFrame.globalTransform = currentFrame.globalTransform * globalBindPoseInverseMatrix;
+				currentFrame.globalTransform = currentFrame.globalTransform;
 
 				m_Skeleton.joints[currentJointIndex].animation.push_back(currentFrame);
 			}

@@ -1,6 +1,6 @@
 resources/meshes
-fbx2obj2/bin
-fbx2obj2/tmp
+fbx2obj2/bin/*
+fbx2obj2/tmp/*
 *.pdb
 *.sdf
 *.user
@@ -9,3 +9,4 @@ fbx2obj2/tmp
 *.fbx
 *.obj
 *.obj2
+*.ilk
