@@ -111,9 +111,20 @@ vector<vector<BlendingIndexWeightPair>> ReadAnimationBlendingIndexWeightPairs(Fb
 	return indexWeightPairs;
 }
 
+FbxAMatrix GetGeometryTransformation(FbxNode* node)
+{
+	const FbxVector4 lT = node->GetGeometricTranslation(FbxNode::eSourcePivot);
+	const FbxVector4 lR = node->GetGeometricRotation(FbxNode::eSourcePivot);
+	const FbxVector4 lS = node->GetGeometricScaling(FbxNode::eSourcePivot);
+
+	return FbxAMatrix(lT, lR, lS);
+}
+
 void ReadAnimations(FbxScene* scene, FbxMesh* mesh, Skeleton& skeleton)
 {
 	auto deformerCount = mesh->GetDeformerCount();
+
+	auto geometryTransform = GetGeometryTransformation(mesh->GetNode());
 
 	auto animationStack = scene->GetCurrentAnimationStack();
 
@@ -143,12 +154,12 @@ void ReadAnimations(FbxScene* scene, FbxMesh* mesh, Skeleton& skeleton)
 			auto currentJointIndex = skeleton.GetJointIndexByName(currentJointName);
 
 			FbxAMatrix transformMatrix;
-			FbxAMatrix transformLinkMatrix;
-			FbxAMatrix globalBindPoseInverseMatrix;
-
 			currentCluster->GetTransformMatrix(transformMatrix);
+
+			FbxAMatrix transformLinkMatrix;
 			currentCluster->GetTransformLinkMatrix(transformLinkMatrix);
-			globalBindPoseInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix;
+
+			auto globalBindPoseInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
 
 			skeleton.joints[currentJointIndex].globalBindPoseInverse = globalBindPoseInverseMatrix;
 			skeleton.joints[currentJointIndex].node = currentCluster->GetLink();
@@ -161,7 +172,7 @@ void ReadAnimations(FbxScene* scene, FbxMesh* mesh, Skeleton& skeleton)
 				KeyFrame currentFrame;
 				currentFrame.frameNum = frame;
 
-				auto currentTransformOffset = mesh->GetNode()->EvaluateGlobalTransform(currentTime);
+				auto currentTransformOffset = mesh->GetNode()->EvaluateGlobalTransform(currentTime) * geometryTransform;
 
 				currentFrame.globalTransform = currentTransformOffset.Inverse() *
 					currentCluster->GetLink()->EvaluateGlobalTransform(currentTime);

@@ -170,8 +170,12 @@ include([], function ()
 
 			if (currentSubmesh)
 			{
-				currentSubmesh.animationFrames = animationFrames;
 				submeshes.push(currentSubmesh);
+			}
+
+			for (var i = 0; i < submeshes.length; i++)
+			{
+				submeshes[i].animationFrames = animationFrames;
 			}
 
 			return submeshes;

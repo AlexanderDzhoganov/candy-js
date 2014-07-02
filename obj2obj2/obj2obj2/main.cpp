@@ -117,12 +117,10 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, Sk
 				auto& m = skeleton->joints[q].animation[i].globalTransform;
 				ss << "mat4 ";
 
+				for (auto y = 0u; y < 4; y++)
 				for (auto x = 0u; x < 4; x++)
 				{
-					for (auto y = 0u; y < 4; y++)
-					{
-						ss << m.Get(x, y) << " ";
-					}
+					ss << m.Get(x, y) << " ";
 				}
 				ss << endl;
 			}

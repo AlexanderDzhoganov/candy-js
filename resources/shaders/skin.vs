@@ -23,10 +23,7 @@ void main()
 	mat4 transform = boneMatrices[int(boneIndices[0])] * boneWeights[0];
 	transform += boneMatrices[int(boneIndices[1])] * boneWeights[1];
 	transform += boneMatrices[int(boneIndices[2])] * boneWeights[2];
-
-	float finalWeight = 1.0 - (boneWeights[0] + boneWeights[1] + boneWeights[2]);
-
-	transform += boneMatrices[int(boneIndices[3])] * finalWeight;
+	transform += boneMatrices[int(boneIndices[3])] * boneWeights[3];
 
 	final = transform * vec4(position, 1.0);
 

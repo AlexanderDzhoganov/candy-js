@@ -128,7 +128,17 @@ include([], function ()
 
 					if (submesh.animationFrames != undefined)
 					{
-						Shader.setUniformMat4("boneMatrices", submesh.animationFrames[0]);
+						if(this.testAnimFrame == undefined)
+						{
+							this.testAnimFrame = 0;
+						}
+
+						this.testAnimFrame++;
+						if(this.testAnimFrame >= submesh.animationFrames.length)
+						{
+							this.testAnimFrame = 0;
+						}
+						Shader.setUniformMat4("boneMatrices[0]", submesh.animationFrames[this.testAnimFrame]);
 					}
 
 					this._drawSubmesh(submesh, indicesCount);

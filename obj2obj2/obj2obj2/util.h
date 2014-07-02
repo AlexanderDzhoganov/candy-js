@@ -63,7 +63,7 @@ struct SubMesh
 
 static int GetVertexHash(const Vertex& vertex)
 {
-	return GetHashCodeForBytes((const char*)(&vertex), 32);
+	return GetHashCodeForBytes((const char*)(&vertex), sizeof(Vertex));
 }
 
 static pair<vector<Vertex>, vector<size_t>> DeduplicateVertices(const vector<Vertex>& vertices)
