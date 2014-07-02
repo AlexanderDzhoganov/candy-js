@@ -85,6 +85,14 @@ class Log
 		m_DispatchThread = make_unique<thread>(bind(&Log::DispatchThread, this));
 	}
 
+	void Deinitialize()
+	{
+		m_Deinitialize = true;
+		while (m_Deinitialize) {}
+		m_DispatchThread->join();
+		m_DispatchThread = nullptr;
+	}
+
 	void LogMessage(const string& sender, const string& message)
 	{
 		unique_lock<mutex> _(m_QueueMutex);
@@ -109,7 +117,13 @@ class Log
 		for (;;)
 		{
 			std::unique_lock<std::mutex> _(m_QueueMutex);
-			m_QueueInsert.wait(_, [this](){ return !m_Queue.empty(); });
+
+			if (m_Deinitialize)
+			{
+				m_Deinitialize = false;
+				return;
+			}
+			//m_QueueInsert.wait(_, [this](){ return !m_Queue.empty(); });
 
 			for (auto& item : m_Queue)
 			{
@@ -120,6 +134,7 @@ class Log
 		}
 	}
 
+	bool m_Deinitialize = false;
 	mutex m_QueueMutex;
 	condition_variable m_QueueInsert;
 	vector<string> m_Queue;

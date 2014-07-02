@@ -85,14 +85,15 @@ class FbxMeshReader
 
 	~FbxMeshReader() {}
 
-	bool ReadMeshStaticData();
-	bool ReadMeshSkeletonAndAnimations(FbxScene* scene, FbxNode* skeletonRoot);
+	bool ReadMeshData(FbxScene* scene, FbxNode* skeletonRoot);
 
 	const vector<SubMesh>& GetSubMeshes() { return m_SubMeshes; }
 
 	const Skeleton& GetSkeleton() { return m_Skeleton; }
 
 	private:
+	bool ReadMeshSkeletonAndAnimations(FbxScene* scene, FbxNode* skeletonRoot);
+
 	void CalculateAABBs();
 	
 	static pair<vector<Vertex>, vector<size_t>> DeduplicateVertices(const vector<Vertex>& vertices);

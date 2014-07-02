@@ -25,6 +25,8 @@ using namespace glm;
 
 void PrintFbxMeshInfo(FbxMesh* mesh)
 {
+	LOG("--- Mesh info for \"%\" ---", mesh->GetNode()->GetName());
+
 	FbxVector4* controlPoints = mesh->GetControlPoints();
 	size_t controlPointsCount = mesh->GetControlPointsCount();
 
@@ -63,6 +65,8 @@ void PrintFbxMeshInfo(FbxMesh* mesh)
 		LOG("Reference mode: %", EnumToString(materialReferenceMode));
 		LOG("Mapping mode: %", EnumToString(materialMappingMode));
 	}
+
+	LOG("---  ---");
 }
 
 void PrintNode(FbxNode* node, int depth = 0)

@@ -47,7 +47,7 @@ void FbxSkeletonReader::ReadSkeletonHierarchy(FbxNode* node, int index, int pare
 
 bool FbxSkeletonReader::ReadSkeletonHierarchy()
 {
-	LOG("Reading skeleton hierarchy..");
+	LOG("Reading skeleton hierarchy");
 	
 	m_Skeleton.joints.clear();
 
@@ -69,7 +69,7 @@ bool FbxSkeletonReader::ReadSkeletonHierarchy()
 
 vector<vector<BlendingIndexWeightPair>> FbxSkeletonReader::ReadAnimationBlendingIndexWeightPairs(FbxMesh* mesh)
 {
-	LOG("Reading index-weight pairs..");
+	LOG("Reading index-weight pairs");
 
 	auto deformerCount = mesh->GetDeformerCount();
 	vector<vector<BlendingIndexWeightPair>> indexWeightPairs;
@@ -114,7 +114,6 @@ vector<vector<BlendingIndexWeightPair>> FbxSkeletonReader::ReadAnimationBlending
 		}
 	}
 
-	LOG("Done!");
 	return indexWeightPairs;
 }
 
@@ -129,7 +128,7 @@ FbxAMatrix FbxSkeletonReader::GetGeometryTransformation(FbxNode* node)
 
 void FbxSkeletonReader::ReadAnimations(FbxScene* scene, FbxMesh* mesh)
 {
-	LOG("Reading animation frame data..");
+	LOG("Reading animation frame data");
 
 	auto deformerCount = mesh->GetDeformerCount();
 
@@ -192,6 +191,4 @@ void FbxSkeletonReader::ReadAnimations(FbxScene* scene, FbxMesh* mesh)
 			}
 		}
 	}
-
-	LOG("Done!");
 }

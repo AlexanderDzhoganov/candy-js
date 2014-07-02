@@ -119,7 +119,7 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, co
 	string result = ss.str();
 	f.write(result.c_str(), result.size());
 
-	LOG("Conversion finished.");
+	LOG("Conversion finished. Wrote % kbytes.", result.size() / 1024);
 }
 
 void ProcessFbx(const string& fileName)
@@ -158,7 +158,7 @@ auto main(int argc, char** argv) -> int
 
 		if (extension == "fbx")
 		{
-			LOG("Extension is .fbx, assuming FBX format..");
+			LOG("Extension is .fbx, assuming FBX format");
 			ProcessFbx(fileName);
 		}
 		else
@@ -170,5 +170,6 @@ auto main(int argc, char** argv) -> int
 	cout << "Press Enter to exit" << endl;
 	cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
+	Log::Instance().Deinitialize();
 	return 0;
 }

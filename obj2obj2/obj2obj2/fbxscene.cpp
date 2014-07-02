@@ -117,8 +117,7 @@ unique_ptr<FbxMeshReader> TraverseFbxScene(FbxScene* scene)
 	}
 
 	auto mesh = make_unique<FbxMeshReader>(meshes[0]);
-	mesh->ReadMeshStaticData();
-	mesh->ReadMeshSkeletonAndAnimations(scene, skeletonRoot);
+	mesh->ReadMeshData(scene, skeletonRoot);
 
 	LOG("Scene traversal complete");
 	return mesh;

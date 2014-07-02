@@ -25,19 +25,24 @@ using namespace glm;
 #include "fbxmesh.h"
 #include "fbxelement.h"
 
-bool FbxMeshReader::ReadMeshStaticData()
+bool FbxMeshReader::ReadMeshData(FbxScene* scene, FbxNode* skeletonRoot)
 {
-	LOG("Preparing to read mesh data..");
+	LOG("Preparing to read mesh data");
+
+	if (skeletonRoot != nullptr)
+	{
+		ReadMeshSkeletonAndAnimations(scene, skeletonRoot);
+	}
 
 	if (!m_Mesh->IsTriangleMesh())
 	{
-		LOG("Mesh contains non-triangle primitives. Triangulating..");
+		LOG("Mesh contains non-triangle primitives. Triangulating");
 		FbxGeometryConverter converter(m_Mesh->GetFbxManager());
 		m_Mesh = (FbxMesh*)converter.Triangulate(m_Mesh, true);
 		LOG("Triangulation complete.");
 	}
 
-	LOG("Parsing data..");
+	LOG("Parsing data");
 
 	m_SubMeshes.clear();
 	auto verticesByMaterial = SplitByMaterial();
@@ -86,7 +91,6 @@ bool FbxMeshReader::ReadMeshStaticData()
 		trianglesCount += submesh.indices.size() / 3;
 	}
 
-	LOG("Success! % materials, % submeshes, % vertices, % triangles", materialsCount, submeshesCount, vertexCount, trianglesCount);
 	return true;
 }
 
@@ -96,7 +100,7 @@ bool FbxMeshReader::ReadMeshSkeletonAndAnimations(FbxScene* scene, FbxNode* skel
 
 	if (!skeletonRoot)
 	{
-		LOG("Invalid skeletonRoot, bailing out..");
+		LOG("Invalid skeletonRoot, bailing out");
 		return false;
 	}
 
@@ -113,14 +117,12 @@ bool FbxMeshReader::ReadMeshSkeletonAndAnimations(FbxScene* scene, FbxNode* skel
 
 void FbxMeshReader::CalculateAABBs()
 {
-	LOG("Calculating AABBs..");
+	LOG("Calculating AABBs");
 
 	for (auto& submesh : m_SubMeshes)
 	{
 		submesh.aabb = AABB::fromVertices(submesh.vertices);
 	}
-
-	LOG("Done!");
 }
 
 pair<vector<Vertex>, vector<size_t>> FbxMeshReader::DeduplicateVertices(const vector<Vertex>& vertices)
@@ -157,13 +159,13 @@ pair<vector<Vertex>, vector<size_t>> FbxMeshReader::DeduplicateVertices(const ve
 		indices.push_back(dedupeIndexMap[hash]);
 	}
 
-	LOG("Done! Removed % duplicate vertices.", duplicatesCount);
+	LOG("Removed % duplicate vertices.", duplicatesCount);
 	return make_pair(dedupedVertices, indices);
 }
 
 vector<vec3> FbxMeshReader::ReadPositionsByPolyVertex()
 {
-	LOG("Reading positions..");
+	LOG("Reading positions");
 
 	FbxVector4* controlPoints = m_Mesh->GetControlPoints();
 	size_t polygonCount = m_Mesh->GetPolygonCount();
@@ -179,13 +181,12 @@ vector<vec3> FbxMeshReader::ReadPositionsByPolyVertex()
 		}
 	}
 
-	LOG("Done!");
 	return positions;
 }
 
 vector<vec3> FbxMeshReader::ReadNormalsByPolyVertex(int normalElementIndex)
 {
-	LOG("Reading normals..");
+	LOG("Reading normals");
 	auto polygonCount = m_Mesh->GetPolygonCount();
 
 	int vertexCounter = 0;
@@ -205,13 +206,12 @@ vector<vec3> FbxMeshReader::ReadNormalsByPolyVertex(int normalElementIndex)
 		}
 	}
 
-	LOG("Done!");
 	return normals;
 }
 
 vector<vec2> FbxMeshReader::ReadUVsByPolyVertex(int uvElementIndex)
 {
-	LOG("Reading UVs..");
+	LOG("Reading UVs");
 
 	auto polygonCount = m_Mesh->GetPolygonCount();
 	int vertexCounter = 0;
@@ -230,7 +230,6 @@ vector<vec2> FbxMeshReader::ReadUVsByPolyVertex(int uvElementIndex)
 		}
 	}
 
-	LOG("Done!");
 	return uvs;
 }
 
@@ -243,7 +242,7 @@ vector<vector<Vertex>> FbxMeshReader::SplitByMaterial()
 	auto polygonCount = m_Mesh->GetPolygonCount();
 	auto materialCount = m_Mesh->GetNode()->GetMaterialCount();
 
-	LOG("Splitting mesh by material type (% materials, % polygons)..", materialCount, polygonCount);
+	LOG("Splitting mesh by material type (% materials, % polygons)", materialCount, polygonCount);
 
 	vector<vector<Vertex>> submeshes;
 	submeshes.resize(materialCount);
@@ -255,7 +254,7 @@ vector<vector<Vertex>> FbxMeshReader::SplitByMaterial()
 			
 		if (polygonSize > 3)
 		{
-			LOG("Critical Error! Non-triangle primitive encountered, bailing out..");
+			LOG("Critical Error! Non-triangle primitive encountered, bailing out");
 			return vector<vector<Vertex>>();
 		}
 
@@ -283,7 +282,6 @@ vector<vector<Vertex>> FbxMeshReader::SplitByMaterial()
 		}
 	}
 
-	LOG("Done!");
 	return submeshes;
 }
 
@@ -405,11 +403,6 @@ vector<SubMesh> FbxMeshReader::SplitToVertexLimit(size_t maxVerticesPerBucket, S
 	else if (disjointMesh.indices.size() > 0 && disjointMesh.vertices.size() > 0)
 	{
 		submeshes.push_back(disjointMesh);
-	}
-
-	if (depth == 0)
-	{
-		LOG("Done!");
 	}
 
 	return submeshes;
