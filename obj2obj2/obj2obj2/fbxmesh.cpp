@@ -28,7 +28,7 @@ using namespace glm;
 
 bool FbxMeshReader::ReadMeshStaticData()
 {
-	cout << "Preparing to read mesh data.." << endl;
+	cout << endl << ">> Preparing to read mesh data.. <<" << endl;
 
 	if (!m_Mesh->IsTriangleMesh())
 	{
@@ -38,7 +38,7 @@ bool FbxMeshReader::ReadMeshStaticData()
 		cout << "Done!" << endl;
 	}
 
-	cout << endl << "Parsing data.." << endl;
+	cout << endl << ">> Parsing data.. <<" << endl;
 
 	m_SubMeshes.clear();
 	auto verticesByMaterial = SplitByMaterial();
@@ -74,6 +74,8 @@ bool FbxMeshReader::ReadMeshStaticData()
 		materialIndex++;
 	}
 
+	CalculateAABBs();
+
 	auto submeshesCount = m_SubMeshes.size();
 
 	size_t vertexCount = 0;
@@ -85,11 +87,11 @@ bool FbxMeshReader::ReadMeshStaticData()
 		trianglesCount += submesh.indices.size() / 3;
 	}
 
-	cout << "Success! " <<
+	cout << ">> Success! " <<
 		materialsCount << " materials, " <<
 		submeshesCount << " submeshes, " <<
 		vertexCount << " vertices, " <<
-		trianglesCount << " triangles" <<
+		trianglesCount << " triangles <<" <<
 		endl;
 
 	return true;
@@ -97,7 +99,7 @@ bool FbxMeshReader::ReadMeshStaticData()
 
 bool FbxMeshReader::ReadMeshSkeletonAndAnimations(FbxScene* scene, FbxNode* skeletonRoot)
 {
-	cout << "Preparing to read animation data" << endl;
+	cout << endl << ">> Preparing to read animation data <<" << endl;
 
 	if (!skeletonRoot)
 	{
@@ -105,14 +107,65 @@ bool FbxMeshReader::ReadMeshSkeletonAndAnimations(FbxScene* scene, FbxNode* skel
 		return false;
 	}
 
-	m_Skeleton = ReadSkeletonHierarchy(skeletonRoot);
+	FbxSkeletonReader skeletonReader(skeletonRoot);
+	skeletonReader.ReadSkeletonHierarchy();
+	skeletonReader.ReadAnimations(scene, m_Mesh);
 
-	m_BlendingIndexWeightPairs = ReadAnimationBlendingIndexWeightPairs(m_Mesh, m_Skeleton);
+	m_Skeleton = skeletonReader.GetSkeleton();
+	m_BlendingIndexWeightPairs = skeletonReader.ReadAnimationBlendingIndexWeightPairs(m_Mesh);
 
-	ReadAnimations(scene, m_Mesh, m_Skeleton);
-
-	cout << "Finished reading animation data" << endl;
+	cout << ">> Finished reading animation data <<" << endl;
 	return true;
+}
+
+void FbxMeshReader::CalculateAABBs()
+{
+	cout << "Calculating AABBs.. ";
+
+	for (auto& submesh : m_SubMeshes)
+	{
+		submesh.aabb = AABB::fromVertices(submesh.vertices);
+	}
+
+	cout << "Done!" << endl;
+}
+
+pair<vector<Vertex>, vector<size_t>> FbxMeshReader::DeduplicateVertices(const vector<Vertex>& vertices)
+{
+	cout << "Deduplicating " << vertices.size() << " vertices.. ";
+
+	vector<int> vertexHashes;
+	for (auto i = 0u; i < vertices.size(); i++)
+	{
+		vertexHashes.push_back(GetVertexHash(vertices[i]));
+	}
+
+	vector<Vertex> dedupedVertices;
+	unordered_map<int, size_t> dedupeIndexMap;
+
+	for (auto i = 0u; i < vertices.size(); i++)
+	{
+		const auto& hash = vertexHashes[i];
+		if (dedupeIndexMap.find(hash) == dedupeIndexMap.end())
+		{
+			dedupedVertices.push_back(vertices[i]);
+			dedupeIndexMap[hash] = dedupedVertices.size() - 1;
+		}
+	}
+
+	auto duplicatesCount = vertices.size() - dedupedVertices.size();
+
+	vector<size_t> indices;
+	indices.reserve(vertices.size());
+
+	for (auto i = 0u; i < vertices.size(); i++)
+	{
+		const auto& hash = vertexHashes[i];
+		indices.push_back(dedupeIndexMap[hash]);
+	}
+
+	cout << "Done! Removed " << duplicatesCount << " duplicate vertices." << endl;
+	return make_pair(dedupedVertices, indices);
 }
 
 vector<vec3> FbxMeshReader::ReadPositionsByPolyVertex()
@@ -194,13 +247,6 @@ vector<vector<Vertex>> FbxMeshReader::SplitByMaterial()
 	auto normals = ReadNormalsByPolyVertex();
 	auto uvs = ReadUVsByPolyVertex();
 
-	vector<vector<BlendingIndexWeightPair>> weightPairs;
-
-	if (m_Skeleton.joints.size() > 0)
-	{
-		weightPairs = ReadAnimationBlendingIndexWeightPairs(m_Mesh, m_Skeleton);
-	}
-
 	auto polygonCount = m_Mesh->GetPolygonCount();
 	auto materialCount = m_Mesh->GetNode()->GetMaterialCount();
 
@@ -234,8 +280,8 @@ vector<vector<Vertex>> FbxMeshReader::SplitByMaterial()
 			{
 				for (auto k = 0u; k < 4; k++)
 				{
-					vertex.boneWeights[k] = weightPairs[controlPointIndex][k].weight;
-					vertex.boneIndices[k] = weightPairs[controlPointIndex][k].jointIndex;
+					vertex.boneWeights[k] = m_BlendingIndexWeightPairs[controlPointIndex][k].weight;
+					vertex.boneIndices[k] = m_BlendingIndexWeightPairs[controlPointIndex][k].jointIndex;
 				}
 			}
 

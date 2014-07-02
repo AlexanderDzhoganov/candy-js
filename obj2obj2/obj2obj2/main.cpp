@@ -26,20 +26,7 @@ using namespace glm;
 #include "fbxanim.h"
 #include "fbxmesh.h"
 #include "fbxinfo.h"
-
-#include "obj.h"
-
-void calculateSubmeshesAABBs(vector<SubMesh>& submeshes)
-{
-	size_t calculatedAABBs = 0;
-	cout << "Calculating AABBs" << endl;
-	for (auto& submesh : submeshes)
-	{
-		submesh.aabb = AABB::fromVertices(submesh.vertices);
-		calculatedAABBs++;
-	}
-	cout << "Finished! Calculated a total of " << calculatedAABBs << endl;
-}
+#include "fbxscene.h"
 
 auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, const Skeleton* skeleton) -> void
 {
@@ -122,6 +109,7 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, co
 				{
 					ss << m.Get(x, y) << " ";
 				}
+
 				ss << endl;
 			}
 		}
@@ -130,43 +118,27 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, co
 	string result = ss.str();
 	f.write(result.c_str(), result.size());
 
-	cout << "Done!" << endl;
+	cout << endl << "Conversion finished." << endl << endl;
 }
 
 void ProcessFbx(const string& fileName)
 {
 	FbxManager* manager = FbxManager::Create();
+	cout << ">> FBX SDK " << manager->GetVersion() << " <<" << endl;
+
 	FbxScene* scene = ImportFbxScene(fileName, manager);
+
 	if (scene == nullptr)
 	{
 		return;
 	}
 
-	PrintScene(scene);
+	//PrintScene(scene);
 
 	auto meshReader = TraverseFbxScene(scene);
-	auto submeshes = meshReader->GetSubMeshes();
 
 	string outFilename = fileName.substr(0, fileName.find_last_of(".")) + "_fbx.obj2";
-	calculateSubmeshesAABBs(submeshes);
-	writeOutToFile(submeshes, outFilename, &meshReader->GetSkeleton());
-}
-
-void ProcessObj(const string& fileName)
-{
-	cout << "Starting conversion for mesh \"" << fileName << "\"" << endl;
-
-	lines = readFile(fileName);
-	auto vertices = extractVerticesConcurrent();
-
-	vector<Vertex> outVertices;
-	auto materials = extractFaces(vertices, outVertices);
-
-	auto submeshes = splitToSubMeshesConcurrent(materials, outVertices);
-	calculateSubmeshesAABBs(submeshes);
-
-	string outFilename = fileName.substr(0, fileName.find_last_of(".")) + "_obj.obj2";
-	writeOutToFile(submeshes, outFilename, nullptr);
+	writeOutToFile(meshReader->GetSubMeshes(), outFilename, &meshReader->GetSkeleton());
 }
 
 auto main(int argc, char** argv) -> int
@@ -187,11 +159,6 @@ auto main(int argc, char** argv) -> int
 		{
 			cout << "Extension is .fbx, assuming FBX format.." << endl;
 			ProcessFbx(fileName);
-		}
-		else if (extension == "obj")
-		{
-			cout << "Extension is .obj, assuming OBJ format.." << endl;
-			ProcessObj(fileName);
 		}
 		else
 		{

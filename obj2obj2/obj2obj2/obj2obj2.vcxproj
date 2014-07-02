@@ -129,22 +129,20 @@
     <ClCompile Include="fbxelement.cpp" />
     <ClCompile Include="fbxinfo.cpp" />
     <ClCompile Include="fbxmesh.cpp" />
+    <ClCompile Include="fbxscene.cpp" />
     <ClCompile Include="fbxutil.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="obj.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fbxanim.h" />
     <ClInclude Include="fbxelement.h" />
     <ClInclude Include="fbxinfo.h" />
     <ClInclude Include="fbxmesh.h" />
+    <ClInclude Include="fbxscene.h" />
     <ClInclude Include="fbxutil.h" />
-    <ClInclude Include="obj2scene.h" />
-    <ClInclude Include="util.h" />
-    <ClInclude Include="vec3.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

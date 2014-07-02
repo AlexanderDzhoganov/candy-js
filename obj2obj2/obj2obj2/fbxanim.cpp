@@ -27,7 +27,7 @@ using namespace glm;
 #include "fbxmesh.h"
 #include "fbxinfo.h"
 
-void ReadSkeletonHierarchy(FbxNode* node, int index, int parentIndex, Skeleton& result)
+void FbxSkeletonReader::ReadSkeletonHierarchy(FbxNode* node, int index, int parentIndex, Skeleton& result)
 {
 	if (node->GetNodeAttribute() == nullptr || node->GetNodeAttribute()->GetAttributeType() != FbxNodeAttribute::eSkeleton)
 	{
@@ -45,27 +45,33 @@ void ReadSkeletonHierarchy(FbxNode* node, int index, int parentIndex, Skeleton& 
 
 	for (auto i = 0; i < childCount; i++)
 	{
-		ReadSkeletonHierarchy(node->GetChild(i), result.joints.size(), index, result);
+		ReadSkeletonHierarchy(node->GetChild(i), (int)result.joints.size(), index, result);
 	}
 }
 
-Skeleton ReadSkeletonHierarchy(FbxNode* skeletonRoot)
+bool FbxSkeletonReader::ReadSkeletonHierarchy()
 {
 	cout << "Reading skeleton hierarchy.. ";
+	
+	m_Skeleton.joints.clear();
 
-	Skeleton result;
-	auto childCount = skeletonRoot->GetChildCount();
-
+	auto childCount = m_RootNode->GetChildCount();
 	for (auto i = 0; i < childCount; i++)
 	{
-		ReadSkeletonHierarchy(skeletonRoot->GetChild(i), 0, -1, result);
+		ReadSkeletonHierarchy(m_RootNode->GetChild(i), 0, -1, m_Skeleton);
 	}
 
-	cout << "Done! " << result.joints.size() << " joints." << endl;
-	return result;
+	if (m_Skeleton.joints.size() == 0)
+	{
+		cout << "Error! No joints were found in the tree." << endl;
+		return false;
+	}
+
+	cout << "Done! " << m_Skeleton.joints.size() << " joints." << endl;
+	return true;
 }
 
-vector<vector<BlendingIndexWeightPair>> ReadAnimationBlendingIndexWeightPairs(FbxMesh* mesh, Skeleton& skeleton)
+vector<vector<BlendingIndexWeightPair>> FbxSkeletonReader::ReadAnimationBlendingIndexWeightPairs(FbxMesh* mesh)
 {
 	cout << "Reading index-weight pairs.. ";
 
@@ -85,7 +91,7 @@ vector<vector<BlendingIndexWeightPair>> ReadAnimationBlendingIndexWeightPairs(Fb
 		{
 			auto currentCluster = currentSkin->GetCluster(clusterIdx);
 			auto currentJointName = currentCluster->GetLink()->GetName();
-			auto currentJointIndex = skeleton.GetJointIndexByName(currentJointName);
+			auto currentJointIndex = m_Skeleton.GetJointIndexByName(currentJointName);
 
 			auto indicesCount = currentCluster->GetControlPointIndicesCount();
 			auto indices = currentCluster->GetControlPointIndices();
@@ -95,7 +101,7 @@ vector<vector<BlendingIndexWeightPair>> ReadAnimationBlendingIndexWeightPairs(Fb
 			{
 				BlendingIndexWeightPair pair;
 				pair.jointIndex = currentJointIndex;
-				pair.weight = weights[i];
+				pair.weight = (float)weights[i];
 				indexWeightPairs[indices[i]].push_back(pair);
 			}
 		}
@@ -117,7 +123,7 @@ vector<vector<BlendingIndexWeightPair>> ReadAnimationBlendingIndexWeightPairs(Fb
 	return indexWeightPairs;
 }
 
-FbxAMatrix GetGeometryTransformation(FbxNode* node)
+FbxAMatrix FbxSkeletonReader::GetGeometryTransformation(FbxNode* node)
 {
 	const FbxVector4 lT = node->GetGeometricTranslation(FbxNode::eSourcePivot);
 	const FbxVector4 lR = node->GetGeometricRotation(FbxNode::eSourcePivot);
@@ -126,7 +132,7 @@ FbxAMatrix GetGeometryTransformation(FbxNode* node)
 	return FbxAMatrix(lT, lR, lS);
 }
 
-void ReadAnimations(FbxScene* scene, FbxMesh* mesh, Skeleton& skeleton)
+void FbxSkeletonReader::ReadAnimations(FbxScene* scene, FbxMesh* mesh)
 {
 	cout << "Reading animation frame data.. ";
 
@@ -159,7 +165,7 @@ void ReadAnimations(FbxScene* scene, FbxMesh* mesh, Skeleton& skeleton)
 		{
 			auto currentCluster = currentSkin->GetCluster(clusterIdx);
 			auto currentJointName = currentCluster->GetLink()->GetName();
-			auto currentJointIndex = skeleton.GetJointIndexByName(currentJointName);
+			auto currentJointIndex = m_Skeleton.GetJointIndexByName(currentJointName);
 
 			FbxAMatrix transformMatrix;
 			currentCluster->GetTransformMatrix(transformMatrix);
@@ -169,8 +175,8 @@ void ReadAnimations(FbxScene* scene, FbxMesh* mesh, Skeleton& skeleton)
 
 			auto globalBindPoseInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
 
-			skeleton.joints[currentJointIndex].globalBindPoseInverse = globalBindPoseInverseMatrix;
-			skeleton.joints[currentJointIndex].node = currentCluster->GetLink();
+			m_Skeleton.joints[currentJointIndex].globalBindPoseInverse = globalBindPoseInverseMatrix;
+			m_Skeleton.joints[currentJointIndex].node = currentCluster->GetLink();
 
 			for (auto frame = startTimeFrames; frame < endTimeFrames; frame++)
 			{
@@ -187,7 +193,7 @@ void ReadAnimations(FbxScene* scene, FbxMesh* mesh, Skeleton& skeleton)
 
 				currentFrame.globalTransform = currentFrame.globalTransform * globalBindPoseInverseMatrix;
 
-				skeleton.joints[currentJointIndex].animation.push_back(currentFrame);
+				m_Skeleton.joints[currentJointIndex].animation.push_back(currentFrame);
 			}
 		}
 	}

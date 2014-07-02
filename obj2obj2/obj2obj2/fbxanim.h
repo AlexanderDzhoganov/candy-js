@@ -1,11 +1,6 @@
 #ifndef __FBXANIM_H
 #define __FBXANIM_H
 
-struct SkeletonNode
-{
-
-};
-
 struct BlendingIndexWeightPair
 {
 	int jointIndex;
@@ -15,7 +10,7 @@ struct BlendingIndexWeightPair
 struct KeyFrame
 {
 	FbxAMatrix globalTransform;
-	int frameNum;
+	unsigned long long frameNum;
 };
 
 struct Joint
@@ -42,13 +37,29 @@ struct Skeleton
 	}
 };
 
-void ReadSkeletonHierarchy(FbxNode* node, int depth, int index, int parentIndex, Skeleton& result);
+class FbxSkeletonReader
+{
 
-Skeleton ReadSkeletonHierarchy(FbxNode* skeletonRoot);
+	public:
+	FbxSkeletonReader(FbxNode* skeletonRoot) : m_RootNode(skeletonRoot) {};
+	~FbxSkeletonReader() {}
 
-vector<vector<BlendingIndexWeightPair>> ReadAnimationBlendingIndexWeightPairs(FbxMesh* mesh, Skeleton& skeleton);
+	bool ReadSkeletonHierarchy();
 
-void ReadAnimations(FbxScene* scene, FbxMesh* mesh, Skeleton& skeleton);
+	const Skeleton& GetSkeleton() { return m_Skeleton; }
 
+	vector<vector<BlendingIndexWeightPair>> ReadAnimationBlendingIndexWeightPairs(FbxMesh* mesh);
+	void ReadAnimations(FbxScene* scene, FbxMesh* mesh);
+
+	private:
+	void ReadSkeletonHierarchy(FbxNode* node, int index, int parentIndex, Skeleton& result);
+	static FbxAMatrix GetGeometryTransformation(FbxNode* node);
+
+	Skeleton m_Skeleton;
+	vector<vector<BlendingIndexWeightPair>> m_IndexWeightPairs;
+
+	FbxNode* m_RootNode = nullptr;
+
+};
 
 #endif
