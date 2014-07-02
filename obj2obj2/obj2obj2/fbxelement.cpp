@@ -19,8 +19,6 @@
 using namespace std;
 using namespace glm;
 
-#include "util.h"
-
 #include "fbxelement.h"
 #include "fbxutil.h"
 
