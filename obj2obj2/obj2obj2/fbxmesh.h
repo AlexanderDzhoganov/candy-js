@@ -73,7 +73,16 @@ class FbxMeshReader
 {
 
 	public:
-	FbxMeshReader(FbxMesh* mesh) : m_Mesh(mesh) {};
+	FbxMeshReader(FbxMesh* mesh) : m_Mesh(mesh)
+	{
+		LOG("Initialized.");
+		LOG("Node: \"%\"", mesh->GetNode()->GetName());
+		LOG("Polygons: %", mesh->GetPolygonCount());
+		LOG("Primitive type: %", mesh->IsTriangleMesh() ? "triangles" : "mixed");
+		LOG("Deformers: %", mesh->GetDeformerCount());
+		LOG("Layers: %", mesh->GetLayerCount());
+	};
+
 	~FbxMeshReader() {}
 
 	bool ReadMeshStaticData();

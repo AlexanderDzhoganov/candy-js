@@ -12,6 +12,8 @@
 #include <tuple>
 #include <set>
 #include <thread>
+#include <mutex>
+#include <condition_variable>
 #include <future>
 
 #include "glm\glm.hpp"
@@ -19,8 +21,7 @@
 using namespace std;
 using namespace glm;
 
-#include "util.h"
-
+#include "logging.h"
 #include "fbxutil.h"
 #include "fbxelement.h"
 #include "fbxanim.h"
@@ -34,7 +35,7 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, co
 
 	stringstream ss;
 
-	cout << "Writing out to \"" << fileName << "\"" << endl;
+	LOG("Writing out to \"%\"", fileName);
 
 	ss << "flags: ";
 
@@ -118,13 +119,13 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, co
 	string result = ss.str();
 	f.write(result.c_str(), result.size());
 
-	cout << endl << "Conversion finished." << endl << endl;
+	LOG("Conversion finished.");
 }
 
 void ProcessFbx(const string& fileName)
 {
 	FbxManager* manager = FbxManager::Create();
-	cout << ">> FBX SDK " << manager->GetVersion() << " <<" << endl;
+	LOG("FBX SDK %", manager->GetVersion());
 
 	FbxScene* scene = ImportFbxScene(fileName, manager);
 
@@ -157,12 +158,12 @@ auto main(int argc, char** argv) -> int
 
 		if (extension == "fbx")
 		{
-			cout << "Extension is .fbx, assuming FBX format.." << endl;
+			LOG("Extension is .fbx, assuming FBX format..");
 			ProcessFbx(fileName);
 		}
 		else
 		{
-			cout << "Unrecognized format: " << extension << endl;
+			LOG("Unrecognized format: %", extension);
 		}
 	}
 

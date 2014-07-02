@@ -19,6 +19,7 @@
 using namespace std;
 using namespace glm;
 
+#include "logging.h"
 #include "fbxelement.h"
 #include "fbxutil.h"
 
@@ -76,13 +77,13 @@ vec3 ReadNormalFromFbxMesh(FbxMesh* mesh, int controlPointIndex, int vertexIndex
 	}
 	else
 	{
-		cout << "Unsupported mapping mode: " << EnumToString(mappingMode) << endl;
+		LOG("Unsupported mapping mode: %", EnumToString(mappingMode));
 		return vec3(0.0);
 	}
 
 	if (normalDirectIndex == -1)
 	{
-		cout << "Invalid normal direct index" << endl;
+		LOG("Invalid normal direct index");
 		return vec3(0.0);
 	}
 
@@ -144,13 +145,13 @@ vec2 ReadUVFromFbxMesh(FbxMesh* mesh, int controlPointIndex, int vertexIndex, in
 	}
 	else
 	{
-		cout << "Unsupported mapping mode: " << EnumToString(mappingMode) << endl;
+		LOG("Unsupported mapping mode: %", EnumToString(mappingMode));
 		return vec2(0.0);
 	}
 
 	if (uvDirectIndex == -1)
 	{
-		cout << "Invalid uv direct index" << endl;
+		LOG("Invalid uv direct index");
 		return vec2(0.0);
 	}
 
@@ -176,6 +177,6 @@ size_t ReadMaterialFromFbxMesh(FbxMesh* mesh, int controlPointIndex, int polygon
 		return 0;
 	}
 
-	cout << "Unsupported mapping mode: " << EnumToString(mappingMode) << endl;
+	LOG("Unsupported mapping mode: ", EnumToString(mappingMode));
 	return 0;
 }

@@ -19,6 +19,7 @@
 using namespace std;
 using namespace glm;
 
+#include "logging.h"
 #include "fbxutil.h"
 #include "fbxanim.h"
 #include "fbxmesh.h"
@@ -26,17 +27,17 @@ using namespace glm;
 
 bool FbxMeshReader::ReadMeshStaticData()
 {
-	cout << endl << ">> Preparing to read mesh data.. <<" << endl;
+	LOG("Preparing to read mesh data..");
 
 	if (!m_Mesh->IsTriangleMesh())
 	{
-		cout << "Mesh contains non-triangle primitives. Triangulating.. ";
+		LOG("Mesh contains non-triangle primitives. Triangulating..");
 		FbxGeometryConverter converter(m_Mesh->GetFbxManager());
 		m_Mesh = (FbxMesh*)converter.Triangulate(m_Mesh, true);
-		cout << "Done!" << endl;
+		LOG("Triangulation complete.");
 	}
 
-	cout << endl << ">> Parsing data.. <<" << endl;
+	LOG("Parsing data..");
 
 	m_SubMeshes.clear();
 	auto verticesByMaterial = SplitByMaterial();
@@ -85,23 +86,17 @@ bool FbxMeshReader::ReadMeshStaticData()
 		trianglesCount += submesh.indices.size() / 3;
 	}
 
-	cout << ">> Success! " <<
-		materialsCount << " materials, " <<
-		submeshesCount << " submeshes, " <<
-		vertexCount << " vertices, " <<
-		trianglesCount << " triangles <<" <<
-		endl;
-
+	LOG("Success! % materials, % submeshes, % vertices, % triangles", materialsCount, submeshesCount, vertexCount, trianglesCount);
 	return true;
 }
 
 bool FbxMeshReader::ReadMeshSkeletonAndAnimations(FbxScene* scene, FbxNode* skeletonRoot)
 {
-	cout << endl << ">> Preparing to read animation data <<" << endl;
+	LOG("Preparing to read animation data");
 
 	if (!skeletonRoot)
 	{
-		cout << "Invalid skeletonRoot, bailing out.." << endl;
+		LOG("Invalid skeletonRoot, bailing out..");
 		return false;
 	}
 
@@ -112,25 +107,25 @@ bool FbxMeshReader::ReadMeshSkeletonAndAnimations(FbxScene* scene, FbxNode* skel
 	m_Skeleton = skeletonReader.GetSkeleton();
 	m_BlendingIndexWeightPairs = skeletonReader.ReadAnimationBlendingIndexWeightPairs(m_Mesh);
 
-	cout << ">> Finished reading animation data <<" << endl;
+	LOG("Finished reading animation data");
 	return true;
 }
 
 void FbxMeshReader::CalculateAABBs()
 {
-	cout << "Calculating AABBs.. ";
+	LOG("Calculating AABBs..");
 
 	for (auto& submesh : m_SubMeshes)
 	{
 		submesh.aabb = AABB::fromVertices(submesh.vertices);
 	}
 
-	cout << "Done!" << endl;
+	LOG("Done!");
 }
 
 pair<vector<Vertex>, vector<size_t>> FbxMeshReader::DeduplicateVertices(const vector<Vertex>& vertices)
 {
-	cout << "Deduplicating " << vertices.size() << " vertices.. ";
+	LOG("Deduplicating % vertices.. ", vertices.size());
 
 	vector<int> vertexHashes;
 	for (auto i = 0u; i < vertices.size(); i++)
@@ -162,13 +157,13 @@ pair<vector<Vertex>, vector<size_t>> FbxMeshReader::DeduplicateVertices(const ve
 		indices.push_back(dedupeIndexMap[hash]);
 	}
 
-	cout << "Done! Removed " << duplicatesCount << " duplicate vertices." << endl;
+	LOG("Done! Removed % duplicate vertices.", duplicatesCount);
 	return make_pair(dedupedVertices, indices);
 }
 
 vector<vec3> FbxMeshReader::ReadPositionsByPolyVertex()
 {
-	cout << "Reading positions.. ";
+	LOG("Reading positions..");
 
 	FbxVector4* controlPoints = m_Mesh->GetControlPoints();
 	size_t polygonCount = m_Mesh->GetPolygonCount();
@@ -184,13 +179,13 @@ vector<vec3> FbxMeshReader::ReadPositionsByPolyVertex()
 		}
 	}
 
-	cout << "Done!" << endl;
+	LOG("Done!");
 	return positions;
 }
 
 vector<vec3> FbxMeshReader::ReadNormalsByPolyVertex(int normalElementIndex)
 {
-	cout << "Reading normals.. ";
+	LOG("Reading normals..");
 	auto polygonCount = m_Mesh->GetPolygonCount();
 
 	int vertexCounter = 0;
@@ -210,13 +205,13 @@ vector<vec3> FbxMeshReader::ReadNormalsByPolyVertex(int normalElementIndex)
 		}
 	}
 
-	cout << "Done!" << endl;
+	LOG("Done!");
 	return normals;
 }
 
 vector<vec2> FbxMeshReader::ReadUVsByPolyVertex(int uvElementIndex)
 {
-	cout << "Reading UVs.. ";
+	LOG("Reading UVs..");
 
 	auto polygonCount = m_Mesh->GetPolygonCount();
 	int vertexCounter = 0;
@@ -235,7 +230,7 @@ vector<vec2> FbxMeshReader::ReadUVsByPolyVertex(int uvElementIndex)
 		}
 	}
 
-	cout << "Done!" << endl;
+	LOG("Done!");
 	return uvs;
 }
 
@@ -248,7 +243,7 @@ vector<vector<Vertex>> FbxMeshReader::SplitByMaterial()
 	auto polygonCount = m_Mesh->GetPolygonCount();
 	auto materialCount = m_Mesh->GetNode()->GetMaterialCount();
 
-	cout << "Splitting mesh by material type (" << materialCount << " materials).. ";
+	LOG("Splitting mesh by material type (% materials, % polygons)..", materialCount, polygonCount);
 
 	vector<vector<Vertex>> submeshes;
 	submeshes.resize(materialCount);
@@ -260,7 +255,7 @@ vector<vector<Vertex>> FbxMeshReader::SplitByMaterial()
 			
 		if (polygonSize > 3)
 		{
-			cout << endl << endl << "Critical Error! Non-triangle primitive encountered, bailing out.." << endl << endl;
+			LOG("Critical Error! Non-triangle primitive encountered, bailing out..");
 			return vector<vector<Vertex>>();
 		}
 
@@ -288,7 +283,7 @@ vector<vector<Vertex>> FbxMeshReader::SplitByMaterial()
 		}
 	}
 
-	cout << "Done!" << endl;
+	LOG("Done!");
 	return submeshes;
 }
 
@@ -296,22 +291,10 @@ vector<SubMesh> FbxMeshReader::SplitToVertexLimit(size_t maxVerticesPerBucket, S
 {
 	if (depth == 0)
 	{
-		cout << "Splitting submesh at a maximum of " << maxVerticesPerBucket << " vertices.. [";
+		LOG("Splitting submesh (maxVerticesPerBucket = %)", maxVerticesPerBucket);
 	}
 
 	auto bucketCount = (size_t)(ceil(submesh.vertices.size() / (float)maxVerticesPerBucket));
-
-	for (auto i = 0u; i < bucketCount; i++)
-	{
-		if (depth == 0)
-		{
-			cout << ".";
-		}
-		else
-		{
-			cout << "x";
-		}
-	}
 
 	vector<SubMesh> submeshes;
 	unordered_map<size_t, bool> disjointTrianglesMap;
@@ -426,7 +409,7 @@ vector<SubMesh> FbxMeshReader::SplitToVertexLimit(size_t maxVerticesPerBucket, S
 
 	if (depth == 0)
 	{
-		cout << "] Done!" << endl;
+		LOG("Done!");
 	}
 
 	return submeshes;

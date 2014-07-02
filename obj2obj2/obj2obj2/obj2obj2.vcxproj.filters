@@ -36,6 +36,9 @@
     <ClCompile Include="fbxscene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="logging.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fbxutil.h">
@@ -54,6 +57,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="fbxscene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="logging.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

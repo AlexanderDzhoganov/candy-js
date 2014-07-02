@@ -19,6 +19,8 @@
 using namespace std;
 using namespace glm;
 
+#include "logging.h"
+
 #include "fbxutil.h"
 #include "fbxinfo.h"
 #include "fbxanim.h"
@@ -27,7 +29,7 @@ using namespace glm;
 
 FbxScene* ImportFbxScene(const string& fileName, FbxManager* manager)
 {
-	cout << "Importing \"" << fileName << "\"" << endl;
+	LOG("Importing \"%\"", fileName);
 
 	FbxImporter* importer = FbxImporter::Create(manager, "");
 	FbxIOSettings* iosettings = FbxIOSettings::Create(manager, IOSROOT);
@@ -37,7 +39,7 @@ FbxScene* ImportFbxScene(const string& fileName, FbxManager* manager)
 
 	if (!importStatus)
 	{
-		cout << "Error initializing fbx importer: " << importer->GetStatus().GetErrorString() << endl;
+		LOG("Error initializing fbx importer: %", importer->GetStatus().GetErrorString());
 		return nullptr;
 	}
 
@@ -47,7 +49,7 @@ FbxScene* ImportFbxScene(const string& fileName, FbxManager* manager)
 	int major, minor, revision;
 	importer->GetFileVersion(major, minor, revision);
 
-	cout << "Success! File version is " << major << "." << minor << "." << revision << endl;
+	LOG("Success! File version is %.%.%", major, minor, revision);
 	return scene;
 }
 
@@ -75,21 +77,19 @@ void TraverseFbxNode(FbxNode* node, vector<FbxMesh*>& meshes, FbxNode*& skeleton
 
 		if (type == FbxNodeAttribute::EType::eMesh)
 		{
-			cout << ">> Encountered mesh node : " << name << " <<" << endl;
+			LOG("Encountered mesh node: \"%\"", name);
 
 			auto translation = node->LclTranslation.Get();
 			auto rotation = node->LclRotation.Get();
 			auto scale = node->LclScaling.Get();
 
-			cout << "Translation: " << translation[0] << ", " << translation[1] << ", " << translation[2] << endl;
-			cout << "Rotation: " << rotation[0] << ", " << rotation[1] << ", " << rotation[2] << endl;
-			cout << "Scale: " << scale[0] << ", " << scale[1] << ", " << scale[2] << endl;
+			LOG("Translation: %, %, %", translation[0], translation[1], translation[2]);
+			LOG("Rotation: %, %, %", rotation[0], rotation[1], rotation[2]);
+			LOG("Scale: %, %, %", scale[0], scale[1], scale[2]);
 
-			cout << "Type: FbxMesh" << endl;
+			LOG("Type: FbxMesh");
 			FbxMesh* mesh = (FbxMesh*)attribute;
 			PrintFbxMeshInfo(mesh);
-
-			cout << ">> <<" << endl;
 
 			meshes.push_back(mesh);
 		}
@@ -105,7 +105,7 @@ void TraverseFbxNode(FbxNode* node, vector<FbxMesh*>& meshes, FbxNode*& skeleton
 
 unique_ptr<FbxMeshReader> TraverseFbxScene(FbxScene* scene)
 {
-	cout << endl << ">> Starting scene traversal <<" << endl;
+	LOG("Starting scene traversal");
 
 	vector<FbxMesh*> meshes;
 	FbxNode* skeletonRoot = nullptr;
@@ -120,6 +120,6 @@ unique_ptr<FbxMeshReader> TraverseFbxScene(FbxScene* scene)
 	mesh->ReadMeshStaticData();
 	mesh->ReadMeshSkeletonAndAnimations(scene, skeletonRoot);
 
-	cout << endl << ">> Scene traversal complete <<" << endl;
+	LOG("Scene traversal complete");
 	return mesh;
 }

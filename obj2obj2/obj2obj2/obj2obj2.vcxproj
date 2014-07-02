@@ -131,6 +131,7 @@
     <ClCompile Include="fbxmesh.cpp" />
     <ClCompile Include="fbxscene.cpp" />
     <ClCompile Include="fbxutil.cpp" />
+    <ClCompile Include="logging.cpp" />
     <ClCompile Include="main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
@@ -143,6 +144,7 @@
     <ClInclude Include="fbxmesh.h" />
     <ClInclude Include="fbxscene.h" />
     <ClInclude Include="fbxutil.h" />
+    <ClInclude Include="logging.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

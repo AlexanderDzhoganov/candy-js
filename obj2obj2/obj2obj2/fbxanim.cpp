@@ -1,24 +1,22 @@
 #include <fbxsdk.h> 
 #include <fbxsdk/fileio/fbxiosettings.h>
 
-#include <fstream>
 #include <iostream>
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include <iterator>
-#include <sstream>
-#include <limits>
-#include <tuple>
-#include <set>
+#include <mutex>
+#include <condition_variable>
+#include <memory>
 #include <thread>
-#include <future>
+#include <sstream>
 
 #include "glm\glm.hpp"
 
 using namespace std;
 using namespace glm;
 
+#include "logging.h"
 #include "fbxutil.h"
 #include "fbxelement.h"
 #include "fbxanim.h"
@@ -49,7 +47,7 @@ void FbxSkeletonReader::ReadSkeletonHierarchy(FbxNode* node, int index, int pare
 
 bool FbxSkeletonReader::ReadSkeletonHierarchy()
 {
-	cout << "Reading skeleton hierarchy.. ";
+	LOG("Reading skeleton hierarchy..");
 	
 	m_Skeleton.joints.clear();
 
@@ -61,17 +59,17 @@ bool FbxSkeletonReader::ReadSkeletonHierarchy()
 
 	if (m_Skeleton.joints.size() == 0)
 	{
-		cout << "Error! No joints were found in the tree." << endl;
+		LOG("Error! No joints were found in the tree.");
 		return false;
 	}
 
-	cout << "Done! " << m_Skeleton.joints.size() << " joints." << endl;
+	LOG("Finished! % joints.", m_Skeleton.joints.size());
 	return true;
 }
 
 vector<vector<BlendingIndexWeightPair>> FbxSkeletonReader::ReadAnimationBlendingIndexWeightPairs(FbxMesh* mesh)
 {
-	cout << "Reading index-weight pairs.. ";
+	LOG("Reading index-weight pairs..");
 
 	auto deformerCount = mesh->GetDeformerCount();
 	vector<vector<BlendingIndexWeightPair>> indexWeightPairs;
@@ -116,8 +114,7 @@ vector<vector<BlendingIndexWeightPair>> FbxSkeletonReader::ReadAnimationBlending
 		}
 	}
 
-	cout << "Done!" << endl;
-
+	LOG("Done!");
 	return indexWeightPairs;
 }
 
@@ -132,7 +129,7 @@ FbxAMatrix FbxSkeletonReader::GetGeometryTransformation(FbxNode* node)
 
 void FbxSkeletonReader::ReadAnimations(FbxScene* scene, FbxMesh* mesh)
 {
-	cout << "Reading animation frame data.. ";
+	LOG("Reading animation frame data..");
 
 	auto deformerCount = mesh->GetDeformerCount();
 
@@ -196,5 +193,5 @@ void FbxSkeletonReader::ReadAnimations(FbxScene* scene, FbxMesh* mesh)
 		}
 	}
 
-	cout << "Done!" << endl;
+	LOG("Done!");
 }
