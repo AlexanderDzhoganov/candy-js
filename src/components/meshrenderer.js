@@ -12,6 +12,22 @@ include([], function ()
 		this.wireframe = false;
 
 		this.disableCulling = false;
+
+		this.currentFrame = 0;
+
+		InputController.add(InputController.keys.I, InputController.modes.DOWN, function (key)
+		{
+		 	this.currentFrame++;
+		}.bind(this));
+
+		InputController.add(InputController.keys.U, InputController.modes.DOWN, function (key)
+		{
+			this.currentFrame--;
+			if(this.currentFrame < 0)
+			{
+				this.currentFrame = 0;
+			}
+		}.bind(this));
 	};
 
 	MeshRenderer.prototype = new Component();
@@ -128,17 +144,11 @@ include([], function ()
 
 					if (submesh.animationFrames != undefined)
 					{
-						if(this.testAnimFrame == undefined)
+						if(this.currentFrame >= submesh.animationFrames.length)
 						{
-							this.testAnimFrame = 0;
+							this.currentFrame = submesh.animationFrames.length - 1;	
 						}
-
-						this.testAnimFrame++;
-						if(this.testAnimFrame >= submesh.animationFrames.length)
-						{
-							this.testAnimFrame = 0;
-						}
-						Shader.setUniformMat4("boneMatrices[0]", submesh.animationFrames[this.testAnimFrame]);
+						Shader.setUniformMat4("boneMatrices[0]", submesh.animationFrames[this.currentFrame]);
 					}
 
 					this._drawSubmesh(submesh, indicesCount);

@@ -96,7 +96,9 @@ class Log
 	void LogMessage(const string& sender, const string& message)
 	{
 		unique_lock<mutex> _(m_QueueMutex);
-		m_Queue.push_back(FormatMessage(sender, message));
+		auto formatted = FormatMessage(sender, message);
+		m_Queue.push_back(formatted);
+		m_History.push_back(formatted);
 		m_QueueInsert.notify_all();
 	}
 
@@ -123,7 +125,8 @@ class Log
 				m_Deinitialize = false;
 				return;
 			}
-			//m_QueueInsert.wait(_, [this](){ return !m_Queue.empty(); });
+
+			m_QueueInsert.wait(_, [this] () { return !m_Queue.empty(); });
 
 			for (auto& item : m_Queue)
 			{
@@ -138,6 +141,7 @@ class Log
 	mutex m_QueueMutex;
 	condition_variable m_QueueInsert;
 	vector<string> m_Queue;
+	vector<string> m_History;
 	unique_ptr<thread> m_DispatchThread;
 
 };

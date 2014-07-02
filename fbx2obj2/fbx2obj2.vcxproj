@@ -20,7 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C8F5D66B-42CA-484D-B4ED-6D339C4B5D53}</ProjectGuid>
-    <RootNamespace>obj2obj2</RootNamespace>
+    <RootNamespace>fbx2obj2</RootNamespace>
+    <ProjectName>fbx2obj2</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -65,7 +66,14 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>bin\release\</OutDir>
+    <IntDir>tmp\release\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>bin\debug\</OutDir>
+    <IntDir>tmp\debug\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -125,27 +133,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="fbxanim.cpp" />
-    <ClCompile Include="fbxelement.cpp" />
-    <ClCompile Include="fbxinfo.cpp" />
-    <ClCompile Include="fbxmesh.cpp" />
-    <ClCompile Include="fbxscene.cpp" />
-    <ClCompile Include="fbxutil.cpp" />
-    <ClCompile Include="logging.cpp" />
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\fbxanim.cpp" />
+    <ClCompile Include="src\fbxelement.cpp" />
+    <ClCompile Include="src\fbxinfo.cpp" />
+    <ClCompile Include="src\fbxmesh.cpp" />
+    <ClCompile Include="src\fbxscene.cpp" />
+    <ClCompile Include="src\fbxutil.cpp" />
+    <ClCompile Include="src\main.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="config.h" />
-    <ClInclude Include="fbxanim.h" />
-    <ClInclude Include="fbxelement.h" />
-    <ClInclude Include="fbxinfo.h" />
-    <ClInclude Include="fbxmesh.h" />
-    <ClInclude Include="fbxscene.h" />
-    <ClInclude Include="fbxutil.h" />
-    <ClInclude Include="logging.h" />
+    <ClInclude Include="include\config.h" />
+    <ClInclude Include="include\fbxanim.h" />
+    <ClInclude Include="include\fbxelement.h" />
+    <ClInclude Include="include\fbxinfo.h" />
+    <ClInclude Include="include\fbxmesh.h" />
+    <ClInclude Include="include\fbxscene.h" />
+    <ClInclude Include="include\fbxutil.h" />
+    <ClInclude Include="include\logging.h" />
+    <ClInclude Include="include\obj2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

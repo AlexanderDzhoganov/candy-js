@@ -16,22 +16,22 @@
 #include <condition_variable>
 #include <future>
 
-#include "glm\glm.hpp"
+#include "..\dep\glm\glm.hpp"
 
 using namespace std;
 using namespace glm;
 
-#include "logging.h"
-#include "config.h"
+#include "..\include\logging.h"
+#include "..\include\config.h"
 
-#include "fbxutil.h"
-#include "fbxelement.h"
-#include "fbxanim.h"
-#include "fbxmesh.h"
-#include "fbxinfo.h"
-#include "fbxscene.h"
+#include "..\include\fbxutil.h"
+#include "..\include\fbxelement.h"
+#include "..\include\fbxanim.h"
+#include "..\include\fbxmesh.h"
+#include "..\include\fbxinfo.h"
+#include "..\include\fbxscene.h"
 
-#include "obj2.h"
+#include "..\include\obj2.h"
 
 /*
 Command-line options:
@@ -39,7 +39,8 @@ Command-line options:
 --no-export-animation - disables reading and exporting of animation data
 --log=verbose - enables verbose logging
 --print-fbx-info - prints information about the FBX file and exits
-
+--no-export-log - disables exporting of conversion log
+--include-identity-frame - includes an identity (bind pose) frame at time 0
 */
 
 void ProcessFbx(const string& fileName);

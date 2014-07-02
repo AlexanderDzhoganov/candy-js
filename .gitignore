@@ -1,4 +1,11 @@
 resources/meshes
-obj2obj2/obj2obj2.sdf
-obj2obj2/x64
-obj2obj2/obj2obj2/x64
+fbx2obj2/bin
+fbx2obj2/tmp
+*.pdb
+*.sdf
+*.user
+*.suo
+*.opensdf
+*.fbx
+*.obj
+*.obj2

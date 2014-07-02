@@ -14,14 +14,14 @@
 #include <thread>
 #include <future>
 
-#include "glm\glm.hpp"
+#include "..\dep\glm\glm.hpp"
 
 using namespace std;
 using namespace glm;
 
-#include "logging.h"
-#include "fbxinfo.h"
-#include "fbxutil.h"
+#include "..\include\logging.h"
+#include "..\include\fbxinfo.h"
+#include "..\include\fbxutil.h"
 
 void PrintFbxMeshInfo(FbxMesh* mesh)
 {

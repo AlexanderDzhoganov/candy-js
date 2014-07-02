@@ -14,14 +14,14 @@
 #include <thread>
 #include <future>
 
-#include "glm\glm.hpp"
+#include "..\dep\glm\glm.hpp"
 
 using namespace std;
 using namespace glm;
 
-#include "logging.h"
-#include "fbxelement.h"
-#include "fbxutil.h"
+#include "..\include\logging.h"
+#include "..\include\fbxelement.h"
+#include "..\include\fbxutil.h"
 
 vec3 ReadNormalFromFbxMesh(FbxMesh* mesh, int controlPointIndex, int vertexIndex, int polygonIndex, int normalElementIndex)
 {

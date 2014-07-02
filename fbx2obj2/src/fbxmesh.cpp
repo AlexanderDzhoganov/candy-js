@@ -14,18 +14,18 @@
 #include <thread>
 #include <future>
 
-#include "glm\glm.hpp"
+#include "..\dep\glm\glm.hpp"
 
 using namespace std;
 using namespace glm;
 
-#include "logging.h"
-#include "config.h"
+#include "..\include\logging.h"
+#include "..\include\config.h"
 
-#include "fbxutil.h"
-#include "fbxanim.h"
-#include "fbxmesh.h"
-#include "fbxelement.h"
+#include "..\include\fbxutil.h"
+#include "..\include\fbxanim.h"
+#include "..\include\fbxmesh.h"
+#include "..\include\fbxelement.h"
 
 bool FbxMeshReader::ReadMeshData(FbxScene* scene, FbxNode* skeletonRoot)
 {

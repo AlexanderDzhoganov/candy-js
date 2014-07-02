@@ -11,19 +11,19 @@
 #include <thread>
 #include <sstream>
 
-#include "glm\glm.hpp"
+#include "..\dep\glm\glm.hpp"
 
 using namespace std;
 using namespace glm;
 
-#include "logging.h"
-#include "config.h"
+#include "..\include\logging.h"
+#include "..\include\config.h"
 
-#include "fbxutil.h"
-#include "fbxelement.h"
-#include "fbxanim.h"
-#include "fbxmesh.h"
-#include "fbxinfo.h"
+#include "..\include\fbxutil.h"
+#include "..\include\fbxelement.h"
+#include "..\include\fbxanim.h"
+#include "..\include\fbxmesh.h"
+#include "..\include\fbxinfo.h"
 
 void FbxSkeletonReader::ReadSkeletonHierarchy(FbxNode* node, int index, int parentIndex, Skeleton& result)
 {
@@ -36,6 +36,14 @@ void FbxSkeletonReader::ReadSkeletonHierarchy(FbxNode* node, int index, int pare
 		Joint joint;
 		joint.parentIndex = parentIndex;
 		joint.name = node->GetName();
+
+		if (CONFIG_KEY("include-identity-frame", "true"))
+		{
+			KeyFrame zeroKeyframe;
+			zeroKeyframe.globalTransform = FbxAMatrix();
+			zeroKeyframe.frameNum = 0;
+			joint.animation.push_back(zeroKeyframe);
+		}
 
 		LOG_VERBOSE("Found joint node - \"%\"", joint.name);
 		result.joints.push_back(joint);

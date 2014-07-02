@@ -14,19 +14,19 @@
 #include <thread>
 #include <future>
 
-#include "glm\glm.hpp"
+#include "..\dep\glm\glm.hpp"
 
 using namespace std;
 using namespace glm;
 
-#include "logging.h"
-#include "config.h"
+#include "..\include\logging.h"
+#include "..\include\config.h"
 
-#include "fbxutil.h"
-#include "fbxinfo.h"
-#include "fbxanim.h"
-#include "fbxmesh.h"
-#include "fbxscene.h"
+#include "..\include\fbxutil.h"
+#include "..\include\fbxinfo.h"
+#include "..\include\fbxanim.h"
+#include "..\include\fbxmesh.h"
+#include "..\include\fbxscene.h"
 
 FbxScene* ImportFbxScene(const string& fileName, FbxManager* manager)
 {
