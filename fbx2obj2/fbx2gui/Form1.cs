@@ -73,25 +73,45 @@ namespace fbx2gui
                 FBXPathTextbox.Text = filename;
             }
         }
-        public static string ShellExecute(this string path, string command, TextWriter writer, params string[] arguments)
-        {
-            using (var process = Process.Start(new ProcessStartInfo { WorkingDirectory = path, FileName = command, Arguments = string.Join(" ", arguments), UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true }))
-            {
-                using (process.StandardOutput)
-                {
-                    writer.WriteLine(process.StandardOutput.ReadToEnd());
-                }
-                using (process.StandardError)
-                {
-                    writer.WriteLine(process.StandardError.ReadToEnd());
-                }
-            }
 
-            return path;
+        public Process m_Process = null;
+        void RunWithRedirect(string cmdPath, string args)
+        {
+            m_Process = new Process();
+            m_Process.StartInfo.FileName = cmdPath;
+            m_Process.StartInfo.Arguments = args;
+
+            // set up output redirection
+            m_Process.StartInfo.RedirectStandardOutput = true;
+            m_Process.StartInfo.RedirectStandardError = true;
+            m_Process.EnableRaisingEvents = true;
+            m_Process.StartInfo.CreateNoWindow = true;
+            m_Process.StartInfo.UseShellExecute = false;
+
+            // see below for output handler
+            m_Process.ErrorDataReceived += proc_DataReceived;
+            m_Process.OutputDataReceived += proc_DataReceived;
+
+            m_Process.Start();
+
+            m_Process.BeginErrorReadLine();
+            m_Process.BeginOutputReadLine();
+        }
+
+        void proc_DataReceived(object sender, DataReceivedEventArgs e)
+        {
+            MethodInvoker action = delegate
+            { LogTextbox.AppendText(e.Data + "\r\n"); };
+            LogTextbox.BeginInvoke(action);
         }
 
         private void ExportButton_Click(object sender, EventArgs e)
         {
+            if(m_Process != null)
+            {
+                m_Process.Kill();
+            }
+
             if(FBXPathTextbox.Text.Length == 0)
             {
                 StatusLabel.Text = "Empty path!";
@@ -145,8 +165,10 @@ namespace fbx2gui
                 StatusLabel.Text = "fbx2obj2.exe NOT FOUND";
                 return;
             }
-            ShellExecute("fbx2obj2.exe", commandLine, Console.Out);
-            StatusLabel.Text = "Converting..";
+
+            LogTextbox.Text = "";
+
+            RunWithRedirect("fbx2obj2.exe", commandLine);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -154,6 +176,9 @@ namespace fbx2gui
             if (!File.Exists("fbx2obj2.exe"))
             {
                 StatusLabel.Text = "fbx2obj2.exe NOT FOUND";
+                ExportButton.Enabled = false;
+                FBXPathTextbox.Enabled = false;
+                BrowseFBXButton.Enabled = false;
             }
         }
     }

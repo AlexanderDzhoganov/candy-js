@@ -120,12 +120,6 @@ class Log
 		{
 			std::unique_lock<std::mutex> _(m_QueueMutex);
 
-			if (m_Deinitialize)
-			{
-				m_Deinitialize = false;
-				return;
-			}
-
 			m_QueueInsert.wait(_, [this] () { return !m_Queue.empty(); });
 
 			for (auto& item : m_Queue)
@@ -134,6 +128,12 @@ class Log
 			}
 
 			m_Queue.clear();
+
+			if (m_Deinitialize)
+			{
+				m_Deinitialize = false;
+				return;
+			}
 		}
 	}
 

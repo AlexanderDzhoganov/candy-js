@@ -65,9 +65,6 @@ auto main(int argc, char** argv) -> int
 		LOG("Unrecognized format: %", extension);
 	}
 
-	cout << "Press Enter to exit" << endl;
-	cin.ignore(numeric_limits<streamsize>::max(), '\n');
-
 	Log::Instance().Deinitialize();
 	return 0;
 }

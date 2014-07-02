@@ -61,7 +61,7 @@
             // 
             // BrowseFBXButton
             // 
-            this.BrowseFBXButton.Location = new System.Drawing.Point(276, 14);
+            this.BrowseFBXButton.Location = new System.Drawing.Point(276, 15);
             this.BrowseFBXButton.Name = "BrowseFBXButton";
             this.BrowseFBXButton.Size = new System.Drawing.Size(75, 20);
             this.BrowseFBXButton.TabIndex = 2;
@@ -147,6 +147,9 @@
             // 
             // LogTextbox
             // 
+            this.LogTextbox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.LogTextbox.Location = new System.Drawing.Point(12, 208);
             this.LogTextbox.Multiline = true;
             this.LogTextbox.Name = "LogTextbox";
@@ -182,7 +185,7 @@
             this.Controls.Add(this.FBXPathTextbox);
             this.Controls.Add(this.label1);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "FBX2OBJ2";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

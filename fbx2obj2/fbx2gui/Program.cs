@@ -16,7 +16,13 @@ namespace fbx2gui
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            var form1 = new Form1();
+            Application.Run(form1);
+
+            if(form1.m_Process != null)
+            {
+                form1.m_Process.Kill();
+            }
         }
     }
 }
