@@ -208,7 +208,7 @@ void FbxSkeletonReader::ReadAnimationStack(const string& stackName)
 				FbxAMatrix dummy;
 				auto clusterDeformation = ComputeClusterDeformation(dummy, m_Mesh, currentCluster, currentTime, m_Pose);
 
-				m_Skeleton.animations[stackName][frame].push_back(clusterDeformation);
+				m_Skeleton.animations[stackName][frame - startTimeFrames].push_back(clusterDeformation);
 			}
 		}
 	}
