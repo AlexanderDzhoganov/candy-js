@@ -18,9 +18,6 @@ struct Joint
 {
 	string name;
 	int parentIndex;
-	vector<FbxAMatrix> animation;
-	FbxAMatrix globalBindPoseInverse;
-	FbxNode* node;
 };
 
 struct Skeleton
@@ -28,6 +25,8 @@ struct Skeleton
 	JointLinkMode linkMode;
 	vector<Joint> joints;
 	mat4 transform;
+
+	unordered_map<string, vector<vector<FbxAMatrix>>> animations;
 
 	int GetJointIndexByName(const string& jointName) const
 	{
@@ -62,7 +61,10 @@ class FbxSkeletonReader
 	bool ReadSkeletonHierarchy();
 	void ReadSkeletonHierarchy(FbxNode* node, int index, int parentIndex, Skeleton& result);
 	void ReadAnimationBlendingIndexWeightPairs();
+	void ReadAnimationStack(const string& stackName);
 	void ReadAnimations();
+
+	vector<string> m_AnimationStackNames;
 
 	Skeleton m_Skeleton;
 	vector<vector<BlendingIndexWeightPair>> m_IndexWeightPairs;

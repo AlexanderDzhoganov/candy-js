@@ -76,21 +76,25 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, co
 		count++;
 	}
 
-	if (skeleton && skeleton->joints.size() > 0)
+	if (skeleton && skeleton->animations.size() > 0)
 	{
-		auto frameCount = skeleton->joints[0].animation.size();
-		ss << "a " << frameCount << " " << skeleton->joints.size() << endl;
-
-		for (auto i = 0u; i < frameCount; i++)
+		for (auto& animationTake : skeleton->animations)
 		{
-			ss << "f " << i << endl;
+			auto frameCount = animationTake.second.size();
+			ss << "a \"" << animationTake.first << "\" " << frameCount << " " << skeleton->joints.size() << endl;
 
-			for (auto q = 0u; q < skeleton->joints.size(); q++)
+			for (auto i = 0u; i < frameCount; i++)
 			{
-				auto& m = skeleton->joints[q].animation[i];
-				WriteMatrix(ss, m);
+				ss << "f " << i << endl;
+
+				for (auto q = 0u; q < animationTake.second[i].size(); q++)
+				{
+					WriteMatrix(ss, animationTake.second[i][q]);
+				}
 			}
 		}
+
+		ss << endl;
 	}
 
 	string result = ss.str();
