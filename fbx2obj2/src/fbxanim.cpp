@@ -74,10 +74,19 @@ bool FbxSkeletonReader::ReadSkeletonHierarchy()
 	LOG("Reading skeleton hierarchy");
 
 	m_Skeleton.joints.clear();
-	auto transform = m_RootNode->EvaluateGlobalTransform();
-	m_Skeleton.transform = convertFbxMatrix(transform);
-
+	
 	auto childCount = m_RootNode->GetChildCount();
+	for (auto i = 0; i < childCount; i++)
+	{
+		if (m_RootNode->GetChild(i)->GetNodeAttribute() && m_RootNode->GetChild(i)->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eSkeleton)
+		{
+			LOG_VERBOSE("Found global transform for skeleton");
+			FbxAMatrix linkMatrix = m_RootNode->GetChild(i)->EvaluateGlobalTransform();
+			m_Skeleton.transform = convertFbxMatrix(linkMatrix);
+			break;
+		}
+	}
+
 	for (auto i = 0; i < childCount; i++)
 	{
 		ReadSkeletonHierarchy(m_RootNode->GetChild(i), 0, -1, m_Skeleton);
@@ -153,10 +162,51 @@ FbxAMatrix FbxSkeletonReader::GetGeometryTransformation(FbxNode* node)
 	return FbxAMatrix(lT, lR, lS);
 }
 
+FbxAMatrix FbxSkeletonReader::ComputeClusterDeformation(FbxMesh* mesh, FbxCluster* cluster)
+{
+	FbxAMatrix lClusterGlobalInitPosition;
+	FbxAMatrix lReferenceGlobalInitPosition;
+	cluster->GetTransformMatrix(lReferenceGlobalInitPosition);
+
+	FbxAMatrix lReferenceGeometry;
+	lReferenceGeometry = GetGeometryTransformation(mesh->GetNode());
+
+	lReferenceGlobalInitPosition *= lReferenceGeometry;
+
+	cluster->GetTransformLinkMatrix(lClusterGlobalInitPosition);
+
+	return lClusterGlobalInitPosition.Inverse() * lReferenceGlobalInitPosition;
+}
+
 void FbxSkeletonReader::ReadAnimations(FbxScene* scene, FbxMesh* mesh)
 {
 	LOG("Reading animation frame data");
 
+	auto deformerCount = mesh->GetDeformerCount();
+	for (auto deformerIdx = 0; deformerIdx < deformerCount; deformerIdx++)
+	{
+		auto currentSkin = reinterpret_cast<FbxSkin*>(mesh->GetDeformer(deformerIdx, FbxDeformer::eSkin));
+
+		if (currentSkin == nullptr) continue;
+
+		auto clusterCount = currentSkin->GetClusterCount();
+
+		for (auto clusterIdx = 0; clusterIdx < clusterCount; clusterIdx++)
+		{
+			auto currentCluster = currentSkin->GetCluster(clusterIdx);
+			auto currentJointName = currentCluster->GetLink()->GetName();
+			auto currentJointIndex = m_Skeleton.GetJointIndexByName(currentJointName);
+
+			m_Skeleton.joints[currentJointIndex].globalBindPoseInverse = ComputeClusterDeformation(mesh, currentCluster);
+			m_Skeleton.joints[currentJointIndex].node = currentCluster->GetLink();
+		}
+	}
+	
+	BakeAnimations(scene, mesh);
+}
+
+void FbxSkeletonReader::BakeAnimations(FbxScene* scene, FbxMesh* mesh)
+{
 	auto deformerCount = mesh->GetDeformerCount();
 
 	auto geometryTransform = GetGeometryTransformation(mesh->GetNode());
@@ -164,7 +214,6 @@ void FbxSkeletonReader::ReadAnimations(FbxScene* scene, FbxMesh* mesh)
 	auto animationStack = scene->GetCurrentAnimationStack();
 
 	auto animationStackName = animationStack->GetName();
-	LOG_VERBOSE("Using animation stack \"%\"", animationStackName);
 
 	auto animationTake = scene->GetTakeInfo(animationStackName);
 
@@ -195,17 +244,6 @@ void FbxSkeletonReader::ReadAnimations(FbxScene* scene, FbxMesh* mesh)
 			auto currentJointName = currentCluster->GetLink()->GetName();
 			auto currentJointIndex = m_Skeleton.GetJointIndexByName(currentJointName);
 
-			FbxAMatrix transformMatrix;
-			currentCluster->GetTransformMatrix(transformMatrix);
-
-			FbxAMatrix boneBindPoseMatrix;
-			currentCluster->GetTransformLinkMatrix(boneBindPoseMatrix);
-
-			auto globalBindPoseInverseMatrix = boneBindPoseMatrix.Inverse() * transformMatrix * geometryTransform;
-
-			m_Skeleton.joints[currentJointIndex].globalBindPoseInverse = globalBindPoseInverseMatrix;
-			m_Skeleton.joints[currentJointIndex].node = currentCluster->GetLink();
-
 			for (auto frame = startTimeFrames; frame < endTimeFrames; frame++)
 			{
 				FbxTime currentTime;
@@ -213,21 +251,13 @@ void FbxSkeletonReader::ReadAnimations(FbxScene* scene, FbxMesh* mesh)
 
 				KeyFrame currentFrame;
 				currentFrame.frameNum = frame;
-				/*
+
 				auto currentTransformOffset = mesh->GetNode()->EvaluateGlobalTransform(currentTime) * geometryTransform;
 
-				currentFrame.globalTransform = currentTransformOffset.Inverse() *
-					currentCluster->GetLink()->EvaluateGlobalTransform(currentTime);
-					**/
-				currentFrame.globalTransform = currentCluster->GetLink()->EvaluateGlobalTransform(currentTime) * globalBindPoseInverseMatrix;
+				currentFrame.globalTransform = currentCluster-> * m_Skeleton.joints[currentJointIndex].globalBindPoseInverse;
 
 				m_Skeleton.joints[currentJointIndex].animation.push_back(currentFrame);
 			}
 		}
 	}
-}
-
-void FbxSkeletonReader::BakeAnimations()
-{
-
 }

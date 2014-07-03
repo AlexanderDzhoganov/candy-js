@@ -52,11 +52,12 @@ class FbxSkeletonReader
 	vector<vector<BlendingIndexWeightPair>> ReadAnimationBlendingIndexWeightPairs(FbxMesh* mesh);
 	void ReadAnimations(FbxScene* scene, FbxMesh* mesh);
 
-	void BakeAnimations();
+	void BakeAnimations(FbxScene* scene, FbxMesh* mesh);
 
 	private:
 	void ReadSkeletonHierarchy(FbxNode* node, int index, int parentIndex, Skeleton& result);
 	static FbxAMatrix GetGeometryTransformation(FbxNode* node);
+	static FbxAMatrix ComputeClusterDeformation(FbxMesh* pMesh, FbxCluster* pCluster);
 
 	Skeleton m_Skeleton;
 	vector<vector<BlendingIndexWeightPair>> m_IndexWeightPairs;

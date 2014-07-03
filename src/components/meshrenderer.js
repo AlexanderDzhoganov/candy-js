@@ -148,7 +148,12 @@ include([], function ()
 						{
 							this.currentFrame = submesh.animationFrames.length - 1;	
 						}
-						Shader.setUniformMat4("boneMatrices[0]", submesh.animationFrames[this.currentFrame]);
+
+						for (var m = 0; m < submesh.animationFrames[this.currentFrame].length; m++)
+						{
+							var loc = GL.getUniformLocation(Shader._ActiveProgram._program, "boneMatrices[" + m + "]");
+							GL.uniformMatrix4fv(loc, GL.FALSE, submesh.animationFrames[this.currentFrame][m]);
+						}
 					}
 
 					this._drawSubmesh(submesh, indicesCount);

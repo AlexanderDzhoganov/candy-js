@@ -88,7 +88,6 @@ include([], function ()
 			var animationFrames = [];
 			var numberOfJoints = 0;
 			var currentAnimationFrame = null;
-			var currentAnimationFrameIndex = 0;
 
 			for (var i = 0; i < lines.length; i++)
 			{
@@ -154,17 +153,17 @@ include([], function ()
 						animationFrames.push(currentAnimationFrame);
 					}
 
-					currentAnimationFrame = new Float32Array(numberOfJoints * 16);
-					currentAnimationFrameIndex = 0;
+					currentAnimationFrame = [];
 				}
 				else if (components[0] == 'mat4')
 				{
+					var matrix = new Float32Array(16);
 					for(var q = 0; q < 16; q++)
 					{
-						currentAnimationFrame[currentAnimationFrameIndex + q] = parseFloat(components[1 + q]);
+						matrix[q] = parseFloat(components[1 + q]);
 					}
 
-					currentAnimationFrameIndex += 16;
+					currentAnimationFrame.push(matrix);
 				}
 			}
 

@@ -72,7 +72,7 @@ inline std::vector<std::string> split(const std::string &s, char delim)
 	while (std::getline(ss, item, delim))
 	{
 		elems.push_back(item);
-	}
+	}	
 	return elems;
 }
 

@@ -20,12 +20,10 @@ void main()
 	mat4 modelViewProj = viewProjection * model;
 	vec4 final = vec4(0.0);
 
-	mat4 transform = boneMatrices[int(boneIndices[0])] * boneWeights[0];
-	transform += boneMatrices[int(boneIndices[1])] * boneWeights[1];
-	transform += boneMatrices[int(boneIndices[2])] * boneWeights[2];
-	transform += boneMatrices[int(boneIndices[3])] * boneWeights[3];
-
-	final = transform * vec4(position, 1.0);
+	for(int i = 0; i < 4; i++)
+	{
+		final += boneMatrices[int(boneIndices[i])] * vec4(position, 1.0) * boneWeights[i];
+	}
 
 	normal_out = (inverseModelView * vec4(normal, 0)).xyz;
 	uvs_out = uvs;
