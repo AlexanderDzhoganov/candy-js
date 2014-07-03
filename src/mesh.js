@@ -166,6 +166,20 @@ include([], function ()
 
 					currentAnimationFrame.push(matrix);
 				}
+				else if (components[0] == 'qt')
+				{
+					var rotation = quat.fromValues
+					(
+						parseFloat(components[1]),
+						parseFloat(components[2]),
+						parseFloat(components[3]),
+						parseFloat(components[4])
+					);
+
+					var translation = vec3.fromValues(parseFloat(components[5]), parseFloat(components[6]), parseFloat(components[7]));
+
+					currentAnimationFrame.push({ rotation: rotation, translation: translation });
+				}
 			}
 
 			if (currentSubmesh)

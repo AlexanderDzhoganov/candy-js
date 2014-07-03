@@ -134,19 +134,31 @@ include([], function ()
 
 				for (var i = 0; i < mesh.animationFrames[this._currentFrame].length; i++)
 				{
-					var a = mat4.clone(mesh.animationFrames[this._currentFrame][i]);
-					var b = mat4.clone(mesh.animationFrames[nextFrame][i]);
+					if(mesh.animationFrames[this._currentFrame][i].rotation != undefined)
+					{
+						var rotationA = quat.clone(mesh.animationFrames[this._currentFrame][i].rotation);
+						var translationA = vec3.clone(mesh.animationFrames[this._currentFrame][i].translation);
 
-					mat4.scaleFloat(a, a, 1.0 - t);
-					mat4.scaleFloat(b, b, t);
+						var rotationB = quat.clone(mesh.animationFrames[nextFrame][i].rotation);
+						var translationB = vec3.clone(mesh.animationFrames[nextFrame][i].translation);
 
-					var result = mat4.create();
+						var finalRotation = quat.create();
+						quat.slerp(finalRotation, rotationA, rotationB, t);
 
-					mat4.add(result, a, b);
+						var finalTranslation = vec3.create();
+						vec3.scale(translationA, translationA, 1.0 - t);
+						vec3.scale(translationB, translationB, t);
+						vec3.add(finalTranslation, translationA, translationB);
 
-					interpolatedMatrices.push(result);
+						var transformation = mat4.create();
+						mat4.fromRotationTranslation(transformation, rotationA, translationA);
+						interpolatedMatrices.push(transformation);
+					}
+					else
+					{
+						interpolatedMatrices.push(mesh.animationFrames[this._currentFrame][i]);
+					}
 				}
-
 
 				return interpolatedMatrices;
 			}

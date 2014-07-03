@@ -17,6 +17,7 @@
 #include <future>
 
 #include "..\dep\glm\glm.hpp"
+#include "../dep/glm/gtx/quaternion.hpp"
 
 using namespace std;
 using namespace glm;
