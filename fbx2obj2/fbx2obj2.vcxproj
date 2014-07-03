@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClInclude Include="include\config.h" />
     <ClInclude Include="include\fbxanim.h" />
+    <ClInclude Include="include\fbxanimutil.h" />
     <ClInclude Include="include\fbxelement.h" />
     <ClInclude Include="include\fbxinfo.h" />
     <ClInclude Include="include\fbxmesh.h" />

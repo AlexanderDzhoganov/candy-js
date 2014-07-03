@@ -18,6 +18,8 @@ include([], function ()
 		InputController.add(InputController.keys.I, InputController.modes.DOWN, function (key)
 		{
 		 	this.currentFrame++;
+
+		 	console.log("Frame: " + this.currentFrame);
 		}.bind(this));
 
 		InputController.add(InputController.keys.U, InputController.modes.DOWN, function (key)
@@ -27,6 +29,8 @@ include([], function ()
 			{
 				this.currentFrame = 0;
 			}
+	
+			console.log("Frame: " + this.currentFrame);
 		}.bind(this));
 	};
 
@@ -149,10 +153,22 @@ include([], function ()
 							this.currentFrame = submesh.animationFrames.length - 1;	
 						}
 
+
 						for (var m = 0; m < submesh.animationFrames[this.currentFrame].length; m++)
 						{
 							var loc = GL.getUniformLocation(Shader._ActiveProgram._program, "boneMatrices[" + m + "]");
 							GL.uniformMatrix4fv(loc, GL.FALSE, submesh.animationFrames[this.currentFrame][m]);
+
+							var bonePosition = vec4.fromValues(0.0, 0.0, 0.0, 1.0);
+							var boneTransform = mat4.create();
+
+							for(var t = 0; t < 16; t++)
+							{
+								boneTransform[t] = submesh.animationFrames[this.currentFrame][m][t];
+							}
+
+							vec4.transformMat4(bonePosition, bonePosition, boneTransform);
+							var x = 5;
 						}
 					}
 

@@ -24,6 +24,7 @@ using namespace glm;
 #include "..\include\fbxanim.h"
 #include "..\include\fbxmesh.h"
 #include "..\include\fbxinfo.h"
+#include "..\include\fbxanimutil.h"
 
 void FbxSkeletonReader::ReadSkeletonHierarchy(FbxNode* node, int index, int parentIndex, Skeleton& result)
 {
@@ -39,10 +40,7 @@ void FbxSkeletonReader::ReadSkeletonHierarchy(FbxNode* node, int index, int pare
 
 		if (CONFIG_KEY("include-identity-frame", "true"))
 		{
-			KeyFrame zeroKeyframe;
-			zeroKeyframe.globalTransform = FbxAMatrix();
-			zeroKeyframe.frameNum = 0;
-			joint.animation.push_back(zeroKeyframe);
+			joint.animation.push_back(FbxAMatrix());
 		}
 
 		LOG_VERBOSE("Found joint node - \"%\"", joint.name);
@@ -73,10 +71,18 @@ bool FbxSkeletonReader::ReadSkeletonHierarchy()
 {
 	LOG("Reading skeleton hierarchy");
 
+	const int poseCount = m_Scene->GetPoseCount();
+	
+	/*if (poseCount > 0)
+	{
+		m_Pose = m_Scene->GetPose(0);
+	}*/
+
 	m_Skeleton.joints.clear();
 	
+	
 	auto childCount = m_RootNode->GetChildCount();
-	for (auto i = 0; i < childCount; i++)
+	/*for (auto i = 0; i < childCount; i++)
 	{
 		if (m_RootNode->GetChild(i)->GetNodeAttribute() && m_RootNode->GetChild(i)->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eSkeleton)
 		{
@@ -85,7 +91,7 @@ bool FbxSkeletonReader::ReadSkeletonHierarchy()
 			m_Skeleton.transform = convertFbxMatrix(linkMatrix);
 			break;
 		}
-	}
+	}*/
 
 	for (auto i = 0; i < childCount; i++)
 	{
@@ -109,6 +115,8 @@ vector<vector<BlendingIndexWeightPair>> FbxSkeletonReader::ReadAnimationBlending
 	auto deformerCount = mesh->GetDeformerCount();
 	vector<vector<BlendingIndexWeightPair>> indexWeightPairs;
 	indexWeightPairs.resize(mesh->GetControlPointsCount());
+
+	FbxCluster::ELinkMode lClusterMode = ((FbxSkin*)mesh->GetDeformer(0, FbxDeformer::eSkin))->GetCluster(0)->GetLinkMode();
 
 	for (auto deformerIdx = 0; deformerIdx < deformerCount; deformerIdx++)
 	{
@@ -154,74 +162,23 @@ vector<vector<BlendingIndexWeightPair>> FbxSkeletonReader::ReadAnimationBlending
 	return indexWeightPairs;
 }
 
-FbxAMatrix FbxSkeletonReader::GetGeometryTransformation(FbxNode* node)
-{
-	const FbxVector4 lT = node->GetGeometricTranslation(FbxNode::eSourcePivot);
-	const FbxVector4 lR = node->GetGeometricRotation(FbxNode::eSourcePivot);
-	const FbxVector4 lS = node->GetGeometricScaling(FbxNode::eSourcePivot);
-	return FbxAMatrix(lT, lR, lS);
-}
-
-FbxAMatrix FbxSkeletonReader::ComputeClusterDeformation(FbxMesh* mesh, FbxCluster* cluster)
-{
-	FbxAMatrix lClusterGlobalInitPosition;
-	FbxAMatrix lReferenceGlobalInitPosition;
-	cluster->GetTransformMatrix(lReferenceGlobalInitPosition);
-
-	FbxAMatrix lReferenceGeometry;
-	lReferenceGeometry = GetGeometryTransformation(mesh->GetNode());
-
-	lReferenceGlobalInitPosition *= lReferenceGeometry;
-
-	cluster->GetTransformLinkMatrix(lClusterGlobalInitPosition);
-
-	return lClusterGlobalInitPosition.Inverse() * lReferenceGlobalInitPosition;
-}
-
 void FbxSkeletonReader::ReadAnimations(FbxScene* scene, FbxMesh* mesh)
 {
 	LOG("Reading animation frame data");
 
 	auto deformerCount = mesh->GetDeformerCount();
-	for (auto deformerIdx = 0; deformerIdx < deformerCount; deformerIdx++)
-	{
-		auto currentSkin = reinterpret_cast<FbxSkin*>(mesh->GetDeformer(deformerIdx, FbxDeformer::eSkin));
 
-		if (currentSkin == nullptr) continue;
-
-		auto clusterCount = currentSkin->GetClusterCount();
-
-		for (auto clusterIdx = 0; clusterIdx < clusterCount; clusterIdx++)
-		{
-			auto currentCluster = currentSkin->GetCluster(clusterIdx);
-			auto currentJointName = currentCluster->GetLink()->GetName();
-			auto currentJointIndex = m_Skeleton.GetJointIndexByName(currentJointName);
-
-			m_Skeleton.joints[currentJointIndex].globalBindPoseInverse = ComputeClusterDeformation(mesh, currentCluster);
-			m_Skeleton.joints[currentJointIndex].node = currentCluster->GetLink();
-		}
-	}
-	
-	BakeAnimations(scene, mesh);
-}
-
-void FbxSkeletonReader::BakeAnimations(FbxScene* scene, FbxMesh* mesh)
-{
-	auto deformerCount = mesh->GetDeformerCount();
-
-	auto geometryTransform = GetGeometryTransformation(mesh->GetNode());
+	auto geometryTransform = GetGeometry(mesh->GetNode());
 
 	auto animationStack = scene->GetCurrentAnimationStack();
-
 	auto animationStackName = animationStack->GetName();
-
 	auto animationTake = scene->GetTakeInfo(animationStackName);
 
 	auto startTime = animationTake->mLocalTimeSpan.GetStart();
 	auto endTime = animationTake->mLocalTimeSpan.GetStop();
 
-	auto startTimeFrames = startTime.GetFrameCount(FbxTime::eFrames24);
-	auto endTimeFrames = endTime.GetFrameCount(FbxTime::eFrames24);
+	auto startTimeFrames = startTime.GetFrameCount(FbxTime::eFrames30);
+	auto endTimeFrames = endTime.GetFrameCount(FbxTime::eFrames30);
 
 	LOG_VERBOSE("Start frame: %", startTimeFrames);
 	LOG_VERBOSE("End frame: %", endTimeFrames);
@@ -233,10 +190,12 @@ void FbxSkeletonReader::BakeAnimations(FbxScene* scene, FbxMesh* mesh)
 	for (auto deformerIdx = 0; deformerIdx < deformerCount; deformerIdx++)
 	{
 		auto currentSkin = reinterpret_cast<FbxSkin*>(mesh->GetDeformer(deformerIdx, FbxDeformer::eSkin));
+		FbxSkin::EType skinningType = currentSkin->GetSkinningType();
 
 		if (currentSkin == nullptr) continue;
 
 		auto clusterCount = currentSkin->GetClusterCount();
+		auto lVertexCount = mesh->GetControlPointsCount();
 
 		for (auto clusterIdx = 0; clusterIdx < clusterCount; clusterIdx++)
 		{
@@ -244,19 +203,18 @@ void FbxSkeletonReader::BakeAnimations(FbxScene* scene, FbxMesh* mesh)
 			auto currentJointName = currentCluster->GetLink()->GetName();
 			auto currentJointIndex = m_Skeleton.GetJointIndexByName(currentJointName);
 
+			auto indicesCount = currentCluster->GetControlPointIndicesCount();
+			auto indices = currentCluster->GetControlPointIndices();
+			auto weights = currentCluster->GetControlPointWeights();
+
 			for (auto frame = startTimeFrames; frame < endTimeFrames; frame++)
 			{
 				FbxTime currentTime;
-				currentTime.SetFrame(frame, FbxTime::eFrames24);
+				currentTime.SetFrame(frame, FbxTime::eFrames30);
 
-				KeyFrame currentFrame;
-				currentFrame.frameNum = frame;
-
-				auto currentTransformOffset = mesh->GetNode()->EvaluateGlobalTransform(currentTime) * geometryTransform;
-
-				currentFrame.globalTransform = currentCluster-> * m_Skeleton.joints[currentJointIndex].globalBindPoseInverse;
-
-				m_Skeleton.joints[currentJointIndex].animation.push_back(currentFrame);
+				FbxAMatrix dummy;
+				auto clusterDeformation = ComputeClusterDeformation(dummy, mesh, currentCluster, currentTime, m_Pose);
+				m_Skeleton.joints[currentJointIndex].animation.push_back(clusterDeformation);
 			}
 		}
 	}

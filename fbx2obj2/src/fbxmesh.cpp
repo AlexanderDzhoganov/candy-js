@@ -117,7 +117,7 @@ bool FbxMeshReader::ReadMeshSkeletonAndAnimations(FbxScene* scene, FbxNode* skel
 		return false;
 	}
 
-	FbxSkeletonReader skeletonReader(skeletonRoot);
+	FbxSkeletonReader skeletonReader(scene, skeletonRoot);
 	skeletonReader.ReadSkeletonHierarchy();
 	skeletonReader.ReadAnimations(scene, m_Mesh);
 

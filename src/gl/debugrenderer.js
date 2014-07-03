@@ -97,6 +97,11 @@ DebugRenderer.prototype.extend(
 		}
 	},
 
+	drawCube: function (center, sideSize)
+	{
+		this.drawAABB(center, vec3.fromValues(sideSize * 0.5, sideSize * 0.5, sideSize * 0.5));
+	},
+
 	clear: function ()
 	{
 		this._lineVertices = [];
