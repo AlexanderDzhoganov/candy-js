@@ -28,6 +28,14 @@ using namespace glm;
 
 FbxSkeletonReader::FbxSkeletonReader(FbxScene* scene, FbxNode* skeletonRoot, FbxMesh* mesh) : m_Scene(scene), m_RootNode(skeletonRoot), m_Mesh(mesh)
 {
+	FbxArray<FbxString*> animStackNames;
+	scene->FillAnimStackNameArray(animStackNames);
+
+	for (auto i = 0; i < animStackNames.GetCount(); i++)
+	{
+		m_AnimationStackNames.push_back(string(animStackNames.GetAt(i)->operator const char *()));
+	}
+
 	m_LinkMode = ((FbxSkin*)mesh->GetDeformer(0, FbxDeformer::eSkin))->GetCluster(0)->GetLinkMode();
 	m_Skeleton.linkMode = (JointLinkMode)m_LinkMode;
 
@@ -77,11 +85,6 @@ void FbxSkeletonReader::ReadSkeletonHierarchy(FbxNode* node, int index, int pare
 		Joint joint;
 		joint.parentIndex = parentIndex;
 		joint.name = node->GetName();
-
-		if (CONFIG_KEY("include-identity-frame", "true"))
-		{
-			joint.animation.push_back(FbxAMatrix());
-		}
 
 		LOG_VERBOSE("Found joint node - \"%\"", joint.name);
 		result.joints.push_back(joint);
@@ -148,17 +151,13 @@ void FbxSkeletonReader::ReadAnimationBlendingIndexWeightPairs()
 	LOG_VERBOSE("Read % index-weight pairs", indexWeightPairs.size());
 }
 
-void FbxSkeletonReader::ReadAnimations()
+void FbxSkeletonReader::ReadAnimationStack(const string& stackName)
 {
-	LOG("Reading animation frame data");
-
 	auto deformerCount = m_Mesh->GetDeformerCount();
 
 	auto geometryTransform = GetGeometry(m_Mesh->GetNode());
 
-	auto animationStack = m_Scene->GetCurrentAnimationStack();
-	auto animationStackName = animationStack->GetName();
-	auto animationTake = m_Scene->GetTakeInfo(animationStackName);
+	auto animationTake = m_Scene->GetTakeInfo(stackName.c_str());
 
 	auto startTime = animationTake->mLocalTimeSpan.GetStart();
 	auto endTime = animationTake->mLocalTimeSpan.GetStop();
@@ -170,6 +169,7 @@ void FbxSkeletonReader::ReadAnimations()
 	LOG_VERBOSE("End frame: %", endTimeFrames);
 
 	auto animationLength = endTimeFrames - startTimeFrames + 1;
+	m_Skeleton.animations[stackName].resize(animationLength);
 
 	LOG_VERBOSE("Evaluating % frames of animation", animationLength);
 
@@ -181,6 +181,14 @@ void FbxSkeletonReader::ReadAnimations()
 		if (currentSkin == nullptr) continue;
 
 		auto clusterCount = currentSkin->GetClusterCount();
+
+		if (CONFIG_KEY("include-identity-frame", "true"))
+		{
+			for (auto& v : m_Skeleton.animations[stackName])
+			{
+				v.push_back(FbxAMatrix());
+			}
+		}
 
 		for (auto clusterIdx = 0; clusterIdx < clusterCount; clusterIdx++)
 		{
@@ -199,8 +207,19 @@ void FbxSkeletonReader::ReadAnimations()
 
 				FbxAMatrix dummy;
 				auto clusterDeformation = ComputeClusterDeformation(dummy, m_Mesh, currentCluster, currentTime, m_Pose);
-				m_Skeleton.joints[currentJointIndex].animation.push_back(clusterDeformation);
+
+				m_Skeleton.animations[stackName][frame].push_back(clusterDeformation);
 			}
 		}
+	}
+}
+
+void FbxSkeletonReader::ReadAnimations()
+{
+	LOG("Reading animation frame data");
+
+	for (auto& animationStack : m_AnimationStackNames)
+	{
+		ReadAnimationStack(animationStack);
 	}
 }

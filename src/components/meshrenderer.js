@@ -153,7 +153,6 @@ include([], function ()
 							this.currentFrame = submesh.animationFrames.length - 1;	
 						}
 
-
 						for (var m = 0; m < submesh.animationFrames[this.currentFrame].length; m++)
 						{
 							var loc = GL.getUniformLocation(Shader._ActiveProgram._program, "boneMatrices[" + m + "]");
