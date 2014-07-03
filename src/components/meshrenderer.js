@@ -68,12 +68,23 @@ include([], function ()
 		{
 			this.mesh = mesh;
 
-			if (!this.gameObject.getComponent("meshBoundsProvider"))
+			if (this.gameObject.getComponent("meshBoundsProvider"))
 			{
-				this.gameObject.addComponent(new MeshBoundsProvider());
-				var boundsProvider = this.gameObject.getComponent("meshBoundsProvider");
-				boundsProvider.recalculateMinimumAABB();
+				this.gameObject.removeComponent("meshBoundsProvider");
 			}
+
+			this.gameObject.addComponent(new MeshBoundsProvider());
+			var boundsProvider = this.gameObject.getComponent("meshBoundsProvider");
+			boundsProvider.recalculateMinimumAABB();
+
+			if (this.gameObject.getComponent("animationController"))
+			{
+				this.gameObject.removeComponent("animationController");
+			}
+
+			this.gameObject.addComponent(new AnimationController());
+			var animationController = this.gameObject.getComponent("animationController");
+
 		},
 
 		onRender: function (worldModelMatrix)
@@ -148,27 +159,11 @@ include([], function ()
 
 					if (submesh.animationFrames != undefined)
 					{
-						if(this.currentFrame >= submesh.animationFrames.length)
-						{
-							this.currentFrame = submesh.animationFrames.length - 1;	
-						}
-
-
-						for (var m = 0; m < submesh.animationFrames[this.currentFrame].length; m++)
+						var animationMatrices = this.gameObject.animationController.getCurrentFrameAnimationMatrices();
+						for (var m = 0; m < animationMatrices.length; m++)
 						{
 							var loc = GL.getUniformLocation(Shader._ActiveProgram._program, "boneMatrices[" + m + "]");
-							GL.uniformMatrix4fv(loc, GL.FALSE, submesh.animationFrames[this.currentFrame][m]);
-
-							var bonePosition = vec4.fromValues(0.0, 0.0, 0.0, 1.0);
-							var boneTransform = mat4.create();
-
-							for(var t = 0; t < 16; t++)
-							{
-								boneTransform[t] = submesh.animationFrames[this.currentFrame][m][t];
-							}
-
-							vec4.transformMat4(bonePosition, bonePosition, boneTransform);
-							var x = 5;
+							GL.uniformMatrix4fv(loc, GL.FALSE, animationMatrices[m]);
 						}
 					}
 

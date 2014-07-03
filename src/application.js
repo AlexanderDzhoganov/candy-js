@@ -62,6 +62,7 @@ Application.prototype.extend(
 		testObject.getComponent("renderer").setMesh(testMesh);
 		//testObject.addComponent(new OctreeFrustumCullingProvider());
 		testObject.getComponent("renderer").disableCulling = true;
+		testObject.getComponent("animationController").play(0, 40);
 
 		for(var q = 0; q < testMesh.submeshes.length; q++)
 		{
@@ -132,6 +133,11 @@ Application.prototype.extend(
 		frameStatsWindow.show();
 	},
 
+	fixedUpdate: function (deltaTime)
+	{
+
+	},
+
 	update: function (deltaTime)
 	{
 		this.sceneGraph.update(deltaTime);
@@ -171,13 +177,15 @@ Application.prototype.extend(
 			timeUntilNextTick -= dt;
 			if (timeUntilNextTick <= 0.0)
 			{
-				this.update(dt);
+				this.fixedUpdate(dt);
 				timeUntilNextTick = 1.0 / tickRate + timeUntilNextTick;
 			}
 
 			this.render();
 
 			Renderer.doFrame();
+
+			this.update(dt);
 
 			if(this.renderGui)
 			{

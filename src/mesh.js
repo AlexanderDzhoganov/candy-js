@@ -157,7 +157,8 @@ include([], function ()
 				}
 				else if (components[0] == 'mat4')
 				{
-					var matrix = new Float32Array(16);
+					var matrix = mat4.create();
+					
 					for(var q = 0; q < 16; q++)
 					{
 						matrix[q] = parseFloat(components[1 + q]);
@@ -176,7 +177,7 @@ include([], function ()
 			{
 				submeshes[i].animationFrames = animationFrames;
 			}
-
+			this.animationFrames = animationFrames;
 			return submeshes;
 		},
 

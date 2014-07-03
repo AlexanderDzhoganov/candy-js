@@ -296,6 +296,22 @@ mat4.determinant = function (a) {
 };
 
 /**
+ * Adds two mat4's
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the first operand
+ * @param {mat4} b the second operand
+ * @returns {mat4} out
+ */
+mat4.add = function (out, a, b)
+{
+    for (var i = 0; i < 16; i++)
+    {
+        out[i] = a[i] + b[i];
+    }
+}
+
+/**
  * Multiplies two mat4's
  *
  * @param {mat4} out the receiving matrix
@@ -377,6 +393,22 @@ mat4.translate = function (out, a, v) {
     }
 
     return out;
+};
+
+/**
+ * Scales the mat4 by the scalar Lamba
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the matrix to scale
+ * @param {vec3} l the lamba multiplier
+ * @returns {mat4} out
+ **/
+mat4.scaleFloat = function (out, a, l) 
+{
+    for (var i = 0; i < 16; i++)
+    {
+        out[i] = l * a[i];
+    }
 };
 
 /**

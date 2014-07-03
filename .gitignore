@@ -1,6 +1,7 @@
 resources/meshes
 fbx2obj2/bin/*
 fbx2obj2/tmp/*
+fbx2obj2/fbx2gui/obj
 *.pdb
 *.sdf
 *.user
