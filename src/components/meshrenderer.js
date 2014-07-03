@@ -159,17 +159,8 @@ include([], function ()
 
 					if (submesh.animationFrames != undefined)
 					{
-<<<<<<< HEAD
 						var animationMatrices = this.gameObject.animationController.getCurrentFrameAnimationMatrices();
-						for (var m = 0; m < animationMatrices.length; m++)
-=======
-						if(this.currentFrame >= submesh.animationFrames.length)
-						{
-							this.currentFrame = submesh.animationFrames.length - 1;	
-						}
-
 						for (var m = 0; m < submesh.animationFrames[this.currentFrame].length; m++)
->>>>>>> origin/master
 						{
 							var loc = GL.getUniformLocation(Shader._ActiveProgram._program, "boneMatrices[" + m + "]");
 							GL.uniformMatrix4fv(loc, GL.FALSE, animationMatrices[m]);

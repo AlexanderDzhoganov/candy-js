@@ -144,7 +144,7 @@ include([], function ()
 				}
 				else if (components[0] == 'a')
 				{
-					numberOfJoints = parseInt(components[2]);
+					numberOfJoints = parseInt(components[3]);
 				}
 				else if (components[0] == 'f')
 				{
