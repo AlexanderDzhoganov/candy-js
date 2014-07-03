@@ -18,19 +18,14 @@ uniform mat4 boneMatrices[36];
 void main()
 {
 	mat4 modelViewProj = viewProjection * model;
-
-	mat4 transform = mat4(1.0);
-	float weight = 0.0;
+	vec4 final = vec4(0.0);
 
 	for(int i = 0; i < 4; i++)
 	{
-		transform += boneMatrices[int(floor(boneIndices[i]))] * boneWeights[i];
-		weight += boneWeights[i];
+		final += (boneMatrices[int(boneIndices[i])] * vec4(position, 1.0)) * boneWeights[i];
 	}
 
 	normal_out = (inverseModelView * vec4(normal, 0)).xyz;
 	uvs_out = uvs;
-	vec4 dstVertex = transform * vec4(position, 1.0);
-	dstVertex /= weight;
-	gl_Position = modelViewProj * dstVertex;
+	gl_Position = modelViewProj * final;
 }
