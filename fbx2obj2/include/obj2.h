@@ -1,6 +1,19 @@
 #ifndef __OBJ2_H
 #define __OBJ2_H
 
+void WriteMatrix(stringstream& ss, const FbxAMatrix& matrix)
+{
+	ss << "mat4 ";
+
+	for (auto x = 0u; x < 4; x++)
+	for (auto y = 0u; y < 4; y++)
+	{
+		ss << matrix.Get(x, y) << " ";
+	}
+
+	ss << endl;
+}
+
 auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, const Skeleton* skeleton) -> void
 {
 	fstream f(fileName, ios::out);
@@ -75,15 +88,7 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, co
 			for (auto q = 0u; q < skeleton->joints.size(); q++)
 			{
 				auto& m = skeleton->joints[q].animation[i];
-				ss << "mat4 ";
-
-				for (auto x = 0u; x < 4; x++)
-				for (auto y = 0u; y < 4; y++)
-				{
-					ss << m.Get(x, y) << " ";
-				}
-
-				ss << endl;
+				WriteMatrix(ss, m);
 			}
 		}
 	}

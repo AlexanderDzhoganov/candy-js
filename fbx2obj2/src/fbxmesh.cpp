@@ -117,12 +117,9 @@ bool FbxMeshReader::ReadMeshSkeletonAndAnimations(FbxScene* scene, FbxNode* skel
 		return false;
 	}
 
-	FbxSkeletonReader skeletonReader(scene, skeletonRoot);
-	skeletonReader.ReadSkeletonHierarchy();
-	skeletonReader.ReadAnimations(scene, m_Mesh);
-
+	FbxSkeletonReader skeletonReader(scene, skeletonRoot, m_Mesh);
 	m_Skeleton = skeletonReader.GetSkeleton();
-	m_BlendingIndexWeightPairs = skeletonReader.ReadAnimationBlendingIndexWeightPairs(m_Mesh);
+	m_BlendingIndexWeightPairs = skeletonReader.GetBlendingIndexWeightPairs();
 
 	LOG_VERBOSE("Finished reading animation data");
 	return true;

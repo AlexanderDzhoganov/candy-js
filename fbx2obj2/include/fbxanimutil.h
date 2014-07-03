@@ -7,7 +7,6 @@ FbxAMatrix GetGeometry(FbxNode* pNode)
 	const FbxVector4 lT = pNode->GetGeometricTranslation(FbxNode::eSourcePivot);
 	const FbxVector4 lR = pNode->GetGeometricRotation(FbxNode::eSourcePivot);
 	const FbxVector4 lS = pNode->GetGeometricScaling(FbxNode::eSourcePivot);
-
 	return FbxAMatrix(lT, lR, lS);
 }
 
@@ -73,40 +72,29 @@ FbxAMatrix ComputeClusterDeformation(FbxAMatrix& pGlobalPosition, FbxMesh* pMesh
 {
 	FbxCluster::ELinkMode lClusterMode = pCluster->GetLinkMode();
 
-	FbxAMatrix lReferenceGlobalInitPosition;
-	FbxAMatrix lReferenceGlobalCurrentPosition;
-	FbxAMatrix lAssociateGlobalInitPosition;
-	FbxAMatrix lAssociateGlobalCurrentPosition;
-	FbxAMatrix lClusterGlobalInitPosition;
-	FbxAMatrix lClusterGlobalCurrentPosition;
-
-	FbxAMatrix lReferenceGeometry;
-	FbxAMatrix lAssociateGeometry;
-	FbxAMatrix lClusterGeometry;
-
-	FbxAMatrix lClusterRelativeInitPosition;
-	FbxAMatrix lClusterRelativeCurrentPositionInverse;
-
 	if (lClusterMode == FbxCluster::eAdditive && pCluster->GetAssociateModel())
 	{
+		FbxAMatrix lAssociateGlobalInitPosition;
 		pCluster->GetTransformAssociateModelMatrix(lAssociateGlobalInitPosition);
-		// Geometric transform of the model
-		lAssociateGeometry = GetGeometry(pCluster->GetAssociateModel());
-		lAssociateGlobalInitPosition *= lAssociateGeometry;
-		lAssociateGlobalCurrentPosition = GetGlobalPosition(pCluster->GetAssociateModel(), pTime, pPose);
 
+		// Geometric transform of the model
+		lAssociateGlobalInitPosition *= GetGeometry(pCluster->GetAssociateModel());
+		auto lAssociateGlobalCurrentPosition = GetGlobalPosition(pCluster->GetAssociateModel(), pTime, pPose);
+
+		FbxAMatrix lReferenceGlobalInitPosition;
 		pCluster->GetTransformMatrix(lReferenceGlobalInitPosition);
+
 		// Multiply lReferenceGlobalInitPosition by Geometric Transformation
-		lReferenceGeometry = GetGeometry(pMesh->GetNode());
-		lReferenceGlobalInitPosition *= lReferenceGeometry;
-		lReferenceGlobalCurrentPosition = pGlobalPosition;
+		lReferenceGlobalInitPosition *= GetGeometry(pMesh->GetNode());
+		auto lReferenceGlobalCurrentPosition = pGlobalPosition;
 
 		// Get the link initial global position and the link current global position.
+		FbxAMatrix lClusterGlobalInitPosition;
 		pCluster->GetTransformLinkMatrix(lClusterGlobalInitPosition);
+
 		// Multiply lClusterGlobalInitPosition by Geometric Transformation
-		lClusterGeometry = GetGeometry(pCluster->GetLink());
-		lClusterGlobalInitPosition *= lClusterGeometry;
-		lClusterGlobalCurrentPosition = GetGlobalPosition(pCluster->GetLink(), pTime, pPose);
+		lClusterGlobalInitPosition *= GetGeometry(pCluster->GetLink());
+		auto lClusterGlobalCurrentPosition = GetGlobalPosition(pCluster->GetLink(), pTime, pPose);
 
 		// Compute the shift of the link relative to the reference.
 		//ModelM-1 * AssoM * AssoGX-1 * LinkGX * LinkM-1*ModelM
@@ -115,21 +103,24 @@ FbxAMatrix ComputeClusterDeformation(FbxAMatrix& pGlobalPosition, FbxMesh* pMesh
 	}
 	else
 	{
+		FbxAMatrix lReferenceGlobalInitPosition;
 		pCluster->GetTransformMatrix(lReferenceGlobalInitPosition);
-		lReferenceGlobalCurrentPosition = pGlobalPosition;
+
+		auto lReferenceGlobalCurrentPosition = pGlobalPosition;
+
 		// Multiply lReferenceGlobalInitPosition by Geometric Transformation
-		lReferenceGeometry = GetGeometry(pMesh->GetNode());
-		lReferenceGlobalInitPosition *= lReferenceGeometry;
+		lReferenceGlobalInitPosition *= GetGeometry(pMesh->GetNode());
 
 		// Get the link initial global position and the link current global position.
+		FbxAMatrix lClusterGlobalInitPosition;
 		pCluster->GetTransformLinkMatrix(lClusterGlobalInitPosition);
-		lClusterGlobalCurrentPosition = GetGlobalPosition(pCluster->GetLink(), pTime, pPose);
+		auto lClusterGlobalCurrentPosition = GetGlobalPosition(pCluster->GetLink(), pTime, pPose);
 
 		// Compute the initial position of the link relative to the reference.
-		lClusterRelativeInitPosition = lClusterGlobalInitPosition.Inverse() * lReferenceGlobalInitPosition;
+		auto lClusterRelativeInitPosition = lClusterGlobalInitPosition.Inverse() * lReferenceGlobalInitPosition;
 
 		// Compute the current position of the link relative to the reference.
-		lClusterRelativeCurrentPositionInverse = lReferenceGlobalCurrentPosition.Inverse() * lClusterGlobalCurrentPosition;
+		auto lClusterRelativeCurrentPositionInverse = lReferenceGlobalCurrentPosition.Inverse() * lClusterGlobalCurrentPosition;
 
 		// Compute the shift of the link relative to the reference.
 		return lClusterRelativeCurrentPositionInverse * lClusterRelativeInitPosition;

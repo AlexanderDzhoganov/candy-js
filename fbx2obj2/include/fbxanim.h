@@ -7,6 +7,13 @@ struct BlendingIndexWeightPair
 	float weight;
 };
 
+enum class JointLinkMode
+{
+	Additive = FbxCluster::ELinkMode::eAdditive,
+	Normalize = FbxCluster::ELinkMode::eNormalize,
+	TotalOne = FbxCluster::ELinkMode::eTotalOne,
+};
+
 struct Joint
 {
 	string name;
@@ -18,6 +25,7 @@ struct Joint
 
 struct Skeleton
 {
+	JointLinkMode linkMode;
 	vector<Joint> joints;
 	mat4 transform;
 
@@ -39,27 +47,34 @@ class FbxSkeletonReader
 {
 
 	public:
-	FbxSkeletonReader(FbxScene* scene, FbxNode* skeletonRoot) : m_Scene(scene), m_RootNode(skeletonRoot) {};
-	~FbxSkeletonReader() {}
+	FbxSkeletonReader(FbxScene* scene, FbxNode* skeletonRoot, FbxMesh* mesh);
 
-	bool ReadSkeletonHierarchy();
+	~FbxSkeletonReader() {}
 
 	const Skeleton& GetSkeleton() { return m_Skeleton; }
 
-	vector<vector<BlendingIndexWeightPair>> ReadAnimationBlendingIndexWeightPairs(FbxMesh* mesh);
-	void ReadAnimations(FbxScene* scene, FbxMesh* mesh);
+	const vector<vector<BlendingIndexWeightPair>>& GetBlendingIndexWeightPairs()
+	{
+		return m_IndexWeightPairs;
+	}
 
 	private:
+	bool ReadSkeletonHierarchy();
 	void ReadSkeletonHierarchy(FbxNode* node, int index, int parentIndex, Skeleton& result);
+	void ReadAnimationBlendingIndexWeightPairs();
+	void ReadAnimations();
 
 	Skeleton m_Skeleton;
 	vector<vector<BlendingIndexWeightPair>> m_IndexWeightPairs;
 
 	FbxNode* m_RootNode = nullptr;
 	FbxScene* m_Scene = nullptr;
+	FbxMesh* m_Mesh = nullptr;
 
 	FbxAMatrix m_GlobalPosition;
 	FbxPose* m_Pose = nullptr;
+
+	FbxCluster::ELinkMode m_LinkMode;
 
 };
 

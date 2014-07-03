@@ -129,3 +129,18 @@ string EnumToString(FbxSkeleton::EType type)
 
 	return "undefined";
 }
+
+string EnumToString(FbxCluster::ELinkMode type)
+{
+	switch (type)
+	{
+		case FbxCluster::ELinkMode::eAdditive:
+			return "eAdditive";
+		case FbxCluster::ELinkMode::eNormalize:
+			return "eNormalize";
+		case FbxCluster::ELinkMode::eTotalOne:
+			return "eTotalOne";
+	}
+
+	return "undefined";
+}

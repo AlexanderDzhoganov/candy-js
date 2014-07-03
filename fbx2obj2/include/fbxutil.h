@@ -9,4 +9,6 @@ string EnumToString(FbxNodeAttribute::EType type);
 
 string EnumToString(FbxSkeleton::EType type);
 
+string EnumToString(FbxCluster::ELinkMode type);
+
 #endif
