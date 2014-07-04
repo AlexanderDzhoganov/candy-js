@@ -8,3 +8,4 @@ uniform sampler2D diffuse;
 void main()
 {
 	gl_FragColor = vec4(texture2D(diffuse, uvs_out).xyz, 1.0);
+}

@@ -81,8 +81,8 @@ Application.prototype.extend(
 
 		this.sceneGraph.insert(lerpz);
 
-		var levelMesh = new Mesh("level");
-		var levelProgram = new Shader(ResourceLoader.getContent("diffuse_vertex"), ResourceLoader.getContent("diffuse_fragment"));
+		var levelMesh = new Mesh("sponza");
+		var levelProgram = new Shader(ResourceLoader.getContent("diffuse_vertex"), ResourceLoader.getContent("show_normals_fragment"));
 
 		var levelObject = new GameObject("Level");
 		levelObject.addComponent(new MeshRenderer());
@@ -96,13 +96,13 @@ Application.prototype.extend(
 			var material = new Material(submesh.material);
 			material.setProgram(levelProgram);
 
-			var texture = new Texture("grass");
+			var texture = new Texture(submesh.material);
 			texture.setWrap(Texture.WRAP_REPEAT);
 			material.addTexture("diffuse", texture);
 			levelObject.renderer.materials.push(material);
 		}
 
-		this.sceneGraph.insert(levelObject);
+	 	this.sceneGraph.insert(levelObject);
 
 		var gameObjectEditor = null;
 
@@ -241,7 +241,7 @@ Application.prototype.extend(
 	_createPlayer: function(position, link)
 	{
 		var newPlayer = new GameObject("Third Person Controller");
-		newPlayer.addComponent(new ThirdPersonController());
+		newPlayer.addComponent(new FirstPersonController());
 		newPlayer.getComponent("script").link = link;
 		newPlayer.addComponent(new Camera(Renderer.screenWidth, Renderer.screenHeight, 120.0, 1, 1000.0));
 		newPlayer.getComponent("camera").setActive();

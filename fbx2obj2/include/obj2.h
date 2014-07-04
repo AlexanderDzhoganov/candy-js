@@ -23,18 +23,6 @@ void WriteQuaternionTranslation(stringstream& ss, const FbxAMatrix& matrix)
 		<< translation[0] << " " << translation[1] << " " << translation[2] << endl;
 }
 
-void QuatTrans2UDQ(const FbxQuaternion& q0, const FbxVector4& t,
-	float dq[2][4])
-{
-	// non-dual part (just copy q0):
-	for (int i = 0; i<4; i++) dq[0][i] = q0[i];
-	// dual part:
-	dq[1][0] = -0.5*(t[0] * q0[1] + t[1] * q0[2] + t[2] * q0[3]);
-	dq[1][1] = 0.5*(t[0] * q0[0] + t[1] * q0[3] - t[2] * q0[2]);
-	dq[1][2] = 0.5*(-t[0] * q0[3] + t[1] * q0[0] + t[2] * q0[1]);
-	dq[1][3] = 0.5*(t[0] * q0[2] - t[1] * q0[1] + t[2] * q0[0]);
-}
-
 void WriteDualQuaternion(stringstream& ss, const FbxAMatrix& matrix)
 {
 	auto translation = matrix.GetT();

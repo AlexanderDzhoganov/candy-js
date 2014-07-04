@@ -145,7 +145,8 @@ vector<vec3> FbxMeshReader::ReadPositionsByPolyVertex()
 	vector<vec3> positions;
 	for (auto i = 0u; i < polygonCount; i++)
 	{
-		for (auto j = 0u; j < 3; j++)
+		auto polygonSize = m_Mesh->GetPolygonSize(i);
+		for (auto j = 0; j < polygonSize; j++)
 		{
 			auto index = m_Mesh->GetPolygonVertex(i, j);
 			FbxVector4 vertex = controlPoints[index];
@@ -236,18 +237,25 @@ vector<vector<Vertex>> FbxMeshReader::ProcessMesh()
 			auto materialIndex = ReadMaterialFromFbxMesh(m_Mesh, controlPointIndex, i, 0);
 
 			auto vertex = Vertex();
-			vertex.position = vec3((m_Skeleton.transform * vec4(positions[vertexCount], 1.0)));
-			vertex.normal = normals[vertexCount];
-			vertex.uv = uvs[vertexCount];
 
 			if (m_Skeleton.joints.size() > 0)
 			{
+				vertex.position = vec3((m_Skeleton.transform * vec4(positions[vertexCount], 1.0)));
+
 				for (auto k = 0u; k < 4; k++)
 				{
 					vertex.boneWeights[k] = m_BlendingIndexWeightPairs[controlPointIndex][k].weight;
 					vertex.boneIndices[k] = m_BlendingIndexWeightPairs[controlPointIndex][k].jointIndex;
 				}
 			}
+			else
+			{
+				vertex.position = positions[vertexCount];
+			}
+
+			vertex.normal = normals[vertexCount];
+
+			vertex.uv = uvs[vertexCount];
 
 			submeshes[materialIndex].push_back(move(vertex));
 			vertexCount++;
@@ -384,14 +392,21 @@ pair<vector<Vertex>, vector<size_t>> FbxMeshReader::DeduplicateVertices(const ve
 {
 	LOG_VERBOSE("Deduplicating % vertices.. ", vertices.size());
 
-	vector<int> vertexHashes;
+	vector<string> vertexHashes;
 	for (auto i = 0u; i < vertices.size(); i++)
 	{
-		vertexHashes.push_back(GetVertexHash(vertices[i]));
+		if (m_Skeleton.joints.size() > 0)
+		{
+			vertexHashes.push_back(GetAnimatedVertexHash(vertices[i]));
+		}
+		else
+		{
+			vertexHashes.push_back(GetStaticVertexHash(vertices[i]));
+		}
 	}
 
 	vector<Vertex> dedupedVertices;
-	unordered_map<int, size_t> dedupeIndexMap;
+	unordered_map<string, size_t> dedupeIndexMap;
 
 	for (auto i = 0u; i < vertices.size(); i++)
 	{
@@ -400,6 +415,15 @@ pair<vector<Vertex>, vector<size_t>> FbxMeshReader::DeduplicateVertices(const ve
 		{
 			dedupedVertices.push_back(vertices[i]);
 			dedupeIndexMap[hash] = dedupedVertices.size() - 1;
+		}
+		else
+		{
+			const auto& a = vertices[i];
+			const auto& b = dedupedVertices[dedupeIndexMap[hash]];
+			if (!VertexCompare(a, b, false))
+			{
+				LOG("HASH COLLISION!");
+			}
 		}
 	}
 
@@ -411,9 +435,9 @@ pair<vector<Vertex>, vector<size_t>> FbxMeshReader::DeduplicateVertices(const ve
 	for (auto i = 0u; i < vertices.size(); i++)
 	{
 		const auto& hash = vertexHashes[i];
-		indices.push_back(dedupeIndexMap[hash]);
+		indices.push_back(i);// dedupeIndexMap[hash]);
 	}
 
 	LOG_VERBOSE("Removed % duplicate vertices.", duplicatesCount);
-	return make_pair(dedupedVertices, indices);
+	return make_pair(vertices, indices);
 }

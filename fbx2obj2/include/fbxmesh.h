@@ -1,19 +1,15 @@
 #ifndef __FBXMESH_H
 #define __FBXMESH_H
 
+#include "../include/md5.h"
+
 struct BlendingIndexWeightPair;
 struct Skeleton;
 
-static int GetHashCodeForBytes(const char * bytes, int numBytes)
+static string GetHashCodeForBytes(const char * bytes, int numBytes)
 {
-	unsigned long h = 0, g;
-	for (int i = 0; i < numBytes; i++)
-	{
-		h = (h << 4) + bytes[i];
-		if (g = h & 0xF0000000L) { h ^= g >> 24; }
-		h &= ~g;
-	}
-	return h;
+	MD5 md5;
+	return md5(bytes, numBytes);
 }
 
 struct Vertex
@@ -24,6 +20,42 @@ struct Vertex
 	float boneWeights[4];
 	int boneIndices[4];
 };
+
+static bool VertexCompare(const Vertex& a, const Vertex& b, bool animated)
+{
+	if (a.position != b.position || a.normal != b.normal || a.uv != b.uv)
+	{
+		return false;
+	}
+
+	if (animated)
+	{
+		for (auto i = 0u; i < 4; i++)
+		{
+			if (a.boneWeights[i] != b.boneWeights[i])
+			{
+				return false;
+			}
+
+			if (a.boneIndices[i] != b.boneIndices[i])
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+static string GetStaticVertexHash(const Vertex& vertex)
+{
+	return GetHashCodeForBytes((const char*)(&vertex), sizeof(vec3)+sizeof(vec3)+sizeof(vec2));
+}
+
+static string GetAnimatedVertexHash(const Vertex& vertex)
+{
+	return GetHashCodeForBytes((const char*)(&vertex), sizeof(Vertex));
+}
 
 struct AABB
 {
@@ -64,11 +96,6 @@ struct SubMesh
 	bool hasAnimation = false;
 };
 
-static int GetVertexHash(const Vertex& vertex)
-{
-	return GetHashCodeForBytes((const char*)(&vertex), sizeof(Vertex));
-}
-
 class FbxMeshReader
 {
 
@@ -100,7 +127,7 @@ class FbxMeshReader
 	vector<vector<Vertex>> ProcessMesh();
 
 	static vector<SubMesh> SplitToVertexLimit(size_t maxVerticesPerBucket, SubMesh submesh, size_t depth = 0);
-	static pair<vector<Vertex>, vector<size_t>> DeduplicateVertices(const vector<Vertex>& vertices);
+	pair<vector<Vertex>, vector<size_t>> DeduplicateVertices(const vector<Vertex>& vertices);
 
 	FbxMesh* m_Mesh = nullptr;
 	Skeleton m_Skeleton;
