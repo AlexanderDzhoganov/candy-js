@@ -57,14 +57,13 @@ Application.prototype.extend(
 		var testProgram = new Shader(ResourceLoader.getContent("skin_dq_vertex"), ResourceLoader.getContent("diffuse_fragment"));
 		var testMesh = new Mesh("lerpz");
 
-		var testObject = new GameObject("testMesh");
-		testObject.addComponent(new MeshRenderer());
-		testObject.getComponent("renderer").setMesh(testMesh);
-		//testObject.addComponent(new OctreeFrustumCullingProvider());
-		testObject.getComponent("renderer").disableCulling = true;
-		testObject.getComponent("animationController").playbackSpeed = 1.3;
-		testObject.getComponent("animationController").play(0, 40);
-		testObject.getComponent("animationController").stop();
+		var lerpz = new GameObject("Lerpz");
+		lerpz.addComponent(new MeshRenderer());
+		lerpz.getComponent("renderer").setMesh(testMesh);
+		lerpz.getComponent("renderer").disableCulling = true;
+		lerpz.getComponent("animationController").playbackSpeed = 1.3;
+		lerpz.getComponent("animationController").play(0, 40);
+		lerpz.getComponent("animationController").stop();
 
 		for(var q = 0; q < testMesh.submeshes.length; q++)
 		{
@@ -75,13 +74,35 @@ Application.prototype.extend(
 			var texture = new Texture("lerpz_diffuse");
 			texture.setWrap(Texture.WRAP_REPEAT);
 			material.addTexture("diffuse", texture);
-			testObject.renderer.materials.push(material);
+			lerpz.renderer.materials.push(material);
 		}
 
-	//	testObject.transform.position = vec3.fromValues(5.0, 0.0, 0.0);
-		testObject.transform.setOrientationEuler(0.0, 90.0, 0.0);
+		lerpz.transform.setOrientationEuler(0.0, 90.0, 0.0);
 
-		this.sceneGraph.insert(testObject);
+		this.sceneGraph.insert(lerpz);
+
+		var levelMesh = new Mesh("level");
+		var levelProgram = new Shader(ResourceLoader.getContent("diffuse_vertex"), ResourceLoader.getContent("diffuse_fragment"));
+
+		var levelObject = new GameObject("Level");
+		levelObject.addComponent(new MeshRenderer());
+		levelObject.getComponent("renderer").setMesh(levelMesh);
+		//testObject.addComponent(new OctreeFrustumCullingProvider());
+		levelObject.getComponent("renderer").disableCulling = true;
+
+		for(var q = 0; q < levelMesh.submeshes.length; q++)
+		{
+			var submesh = levelMesh.submeshes[q];
+			var material = new Material(submesh.material);
+			material.setProgram(levelProgram);
+
+			var texture = new Texture("grass");
+			texture.setWrap(Texture.WRAP_REPEAT);
+			material.addTexture("diffuse", texture);
+			levelObject.renderer.materials.push(material);
+		}
+
+		this.sceneGraph.insert(levelObject);
 
 		var gameObjectEditor = null;
 
@@ -122,7 +143,7 @@ Application.prototype.extend(
 
 		var time = 0.0;
 
-		this.player = this._createPlayer(vec3.fromValues(0.0, 4.0, 8.0), testObject);
+		this.player = this._createPlayer(vec3.fromValues(0.0, 4.0, 8.0), lerpz);
 
 		var frameStatsWindow = this._createWindow("Frame stats", vec2.fromValues(0, 0), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
 		frameStatsWindow.autoSize = true;

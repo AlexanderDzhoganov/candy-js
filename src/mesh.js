@@ -215,6 +215,7 @@ include([], function ()
 				submeshes[i].animationFrames = animationFrames;
 			}
 			this.animationFrames = animationFrames;
+			this.animated = animated;
 			return submeshes;
 		},
 

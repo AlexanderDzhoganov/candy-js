@@ -67,18 +67,18 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, co
 
 	ss << "flags: ";
 
-	if (skeleton)
+	if (skeleton->joints.size() > 0)
 	{
 		ss << "animated ";
-	}
 
-	if (CONFIG_KEY("export-mat4", "true"))
-	{
-		ss << "anim-store-mat4 ";
-	}
-	else
-	{
-		ss << "anim-store-dq ";
+		if (CONFIG_KEY("export-mat4", "true"))
+		{
+			ss << "anim-store-mat4 ";
+		}
+		else
+		{
+			ss << "anim-store-dq ";
+		}
 	}
 
 	ss << endl;

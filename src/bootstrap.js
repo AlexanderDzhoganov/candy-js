@@ -40,6 +40,7 @@ include([ "shim", "resourceloader", "application" ], function ()
 		//"sponza": "resources/meshes/sponza_fbx.obj2",
 		//"city": "resources/meshes/city.obj2",
 		"lerpz": "resources/meshes/lerpz_trimmed_fbx.obj2",
+		"level": "resources/meshes/level_fbx.obj2",
 		//"sibenik": "resources/meshes/sibenik.obj2",
 		//"de_dust2": "resources/meshes/de_dust2/de_dust2.obj",
 		//"de_dust22": "resources/meshes/de_dust2/de_dust2.obj2",

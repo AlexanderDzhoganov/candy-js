@@ -57,14 +57,16 @@ include([], function ()
 			var boundsProvider = this.gameObject.getComponent("meshBoundsProvider");
 			boundsProvider.recalculateMinimumAABB();
 
-			if (this.gameObject.getComponent("animationController"))
+			if(this.mesh.animated)
 			{
-				this.gameObject.removeComponent("animationController");
+				if (this.gameObject.getComponent("animationController"))
+				{
+					this.gameObject.removeComponent("animationController");
+				}
+
+				this.gameObject.addComponent(new AnimationController());
+				var animationController = this.gameObject.getComponent("animationController");
 			}
-
-			this.gameObject.addComponent(new AnimationController());
-			var animationController = this.gameObject.getComponent("animationController");
-
 		},
 
 		onRender: function (worldModelMatrix)
@@ -137,7 +139,7 @@ include([], function ()
 				{
 					Shader.setUniformMat4("model", worldModelMatrix);
 
-					if (submesh.animationFrames != undefined)
+					if (this.mesh.animated)
 					{
 						if(this.mesh.animationUseDualQuaternions)
 						{
