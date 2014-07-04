@@ -20,7 +20,6 @@ include([], function ()
 		this._currentFrame = 0;
 		this._currentEndFrame = 0;
 		this._currentStartFrame = 0;
-
 	};
 
 	AnimationController.prototype = new Component();
@@ -56,7 +55,7 @@ include([], function ()
 				return;
 			}
 
-			this._timeUntilNextFrame -= deltaTime;
+			this._timeUntilNextFrame -= deltaTime * this.playbackSpeed;
 
 			if (this._timeUntilNextFrame <= 0.0)
 			{
@@ -94,6 +93,55 @@ include([], function ()
 			this.isPlaying = false;
 		},
 
+		getCurrentFrameDualQuaternions: function ()
+		{
+			var meshRenderer = this.gameObject.getComponent("renderer");
+
+			if(meshRenderer == null)
+			{
+				return;
+			}
+
+			var mesh = meshRenderer.mesh;
+
+			var interpolatedDualQuats = [];
+
+			var t = (1.0 / this._fps) - this._timeUntilNextFrame;
+
+			var nextFrame = this._currentFrame + 1;
+
+			if (this._currentFrame + 1 > this._currentEndFrame)
+			{
+				if (this.loopAnimation)
+				{
+					nextFrame = this._currentStartFrame;
+				}
+				else
+				{
+					nextFrame = this._currentFrame;
+				}
+			}
+
+			for (var i = 0; i < mesh.animationFrames[this._currentFrame].length; i++)
+			{
+				var dqA = mesh.animationFrames[this._currentFrame][i];
+				var dqB = mesh.animationFrames[nextFrame][i];
+
+				var result = [ quat.create(), quat.create() ];
+				quat.slerp(result[0], dqA[0], dqB[0], t);
+
+				var dqA1 = quat.clone(dqA[1]);
+				var dqB1 = quat.clone(dqB[1]);
+				quat.scale(dqA1, dqA1, 1.0 - t);
+				quat.scale(dqB1, dqB1, t);
+				quat.add(result[1], dqA1, dqB1);
+
+				interpolatedDualQuats.push(result);
+			}
+			
+			return interpolatedDualQuats;
+		},
+
 		getCurrentFrameAnimationMatrices: function ()
 		{
 			var meshRenderer = this.gameObject.getComponent("renderer");
@@ -103,65 +151,39 @@ include([], function ()
 			{
 				return;
 			}
-			else
+			var mesh = meshRenderer.mesh;
+
+			var t = 1.0 - this._timeUntilNextFrame;
+
+			if(t > 1.0)
 			{
-				var mesh = meshRenderer.mesh;
-
-				var t = 1.0 - this._timeUntilNextFrame;
-
-				if(t > 1.0)
-				{
-					debugger;
-				}
-				else if(t < 0.0)
-				{
-					debugger;
-				}
-
-				var nextFrame = this._currentFrame + 1;
-
-				if (this._currentFrame + 1 > this._currentEndFrame)
-				{
-					if (this.loopAnimation)
-					{
-						nextFrame = this._currentStartFrame;
-					}
-					else
-					{
-						nextFrame = this._currentFrame;
-					}
-				}
-
-				for (var i = 0; i < mesh.animationFrames[this._currentFrame].length; i++)
-				{
-					if(mesh.animationFrames[this._currentFrame][i].rotation != undefined)
-					{
-						var rotationA = quat.clone(mesh.animationFrames[this._currentFrame][i].rotation);
-						var translationA = vec3.clone(mesh.animationFrames[this._currentFrame][i].translation);
-
-						var rotationB = quat.clone(mesh.animationFrames[nextFrame][i].rotation);
-						var translationB = vec3.clone(mesh.animationFrames[nextFrame][i].translation);
-
-						var finalRotation = quat.create();
-						quat.slerp(finalRotation, rotationA, rotationB, t);
-
-						var finalTranslation = vec3.create();
-						vec3.scale(translationA, translationA, 1.0 - t);
-						vec3.scale(translationB, translationB, t);
-						vec3.add(finalTranslation, translationA, translationB);
-
-						var transformation = mat4.create();
-						mat4.fromRotationTranslation(transformation, rotationA, translationA);
-						interpolatedMatrices.push(transformation);
-					}
-					else
-					{
-						interpolatedMatrices.push(mesh.animationFrames[this._currentFrame][i]);
-					}
-				}
-
-				return interpolatedMatrices;
+				debugger;
 			}
+			else if(t < 0.0)
+			{
+				debugger;
+			}
+
+			var nextFrame = this._currentFrame + 1;
+
+			if (this._currentFrame + 1 > this._currentEndFrame)
+			{
+				if (this.loopAnimation)
+				{
+					nextFrame = this._currentStartFrame;
+				}
+				else
+				{
+					nextFrame = this._currentFrame;
+				}
+			}
+
+			for (var i = 0; i < mesh.animationFrames[this._currentFrame].length; i++)
+			{
+				interpolatedMatrices.push(mesh.animationFrames[this._currentFrame][i]);
+			}
+
+			return interpolatedMatrices;
 		},
 
 		

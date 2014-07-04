@@ -39,19 +39,19 @@ void WriteDualQuaternion(stringstream& ss, const FbxAMatrix& matrix)
 {
 	auto translation = matrix.GetT();
 	auto rotation = matrix.GetQ();
-	rotation.Normalize();
 
-	float dq[2][4];
-	QuatTrans2UDQ(rotation, translation, dq);
+	FbxDualQuaternion dQ(rotation, translation);
 
 	ss << "dq ";
 
-	for (auto x = 0; x < 2; x++)
+	for (auto i = 0; i < 4; i++)
 	{
-		for (auto y = 0; y < 4; y++)
-		{
-			ss << dq[x][y] << " ";
-		}
+		ss << dQ.GetFirstQuaternion().GetAt(i) << " ";
+	}
+	
+	for (auto i = 0; i < 4; i++)
+	{
+		ss << dQ.GetSecondQuaternion().GetAt(i) << " ";
 	}
 
 	ss << endl;
@@ -70,6 +70,15 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, co
 	if (skeleton)
 	{
 		ss << "animated ";
+	}
+
+	if (CONFIG_KEY("export-mat4", "true"))
+	{
+		ss << "anim-store-mat4 ";
+	}
+	else
+	{
+		ss << "anim-store-dq ";
 	}
 
 	ss << endl;

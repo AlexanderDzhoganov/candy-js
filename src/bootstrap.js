@@ -38,7 +38,7 @@ include([ "shim", "resourceloader", "application" ], function ()
 		//"mesh": "resources/meshes/teapot_lowres.obj",
 		//"sponza": "resources/meshes/sponza_fbx.obj2",
 		//"city": "resources/meshes/city.obj2",
-		"lerpz": "resources/meshes/lerpz_baked_fbx.obj2",
+		"lerpz": "resources/meshes/lerpz_trimmed_fbx.obj2",
 		//"sibenik": "resources/meshes/sibenik.obj2",
 		//"de_dust2": "resources/meshes/de_dust2/de_dust2.obj",
 		//"de_dust22": "resources/meshes/de_dust2/de_dust2.obj2",
@@ -62,7 +62,8 @@ include([ "shim", "resourceloader", "application" ], function ()
 		"wireframe_vertex": "resources/shaders/wireframe.vs",
 		"wireframe_fragment": "resources/shaders/wireframe.fs",
 
-		"skin_vertex": "resources/shaders/dualquaternion_skin.vs",
+		"skin_vertex": "resources/shaders/skin.vs",
+		"skin_dq_vertex": "resources/shaders/dualquaternion_skin.vs"
 		
 	},
 	function (resName, progress, final)

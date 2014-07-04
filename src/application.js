@@ -52,9 +52,9 @@ Application.prototype.extend(
 
 		var grid = new GameObject("Grid");
 		grid.addComponent(new GridRenderer(-100.0, -100.0, 100.0, 100.0));
-		//this.sceneGraph.insert(grid);
+		this.sceneGraph.insert(grid);
 
-		var testProgram = new Shader(ResourceLoader.getContent("skin_vertex"), ResourceLoader.getContent("show_normals_fragment"));
+		var testProgram = new Shader(ResourceLoader.getContent("skin_dq_vertex"), ResourceLoader.getContent("show_normals_fragment"));
 		var testMesh = new Mesh("lerpz");
 
 		var testObject = new GameObject("testMesh");
@@ -62,6 +62,7 @@ Application.prototype.extend(
 		testObject.getComponent("renderer").setMesh(testMesh);
 		//testObject.addComponent(new OctreeFrustumCullingProvider());
 		testObject.getComponent("renderer").disableCulling = true;
+		testObject.getComponent("animationController").playbackSpeed = 1.3;
 		testObject.getComponent("animationController").play(0, 40);
 
 		for(var q = 0; q < testMesh.submeshes.length; q++)
@@ -75,7 +76,9 @@ Application.prototype.extend(
 			testObject.renderer.materials.push(material);
 		}
 
-		testObject.transform.position = vec3.fromValues(0.0, 0, 0);
+	//	testObject.transform.position = vec3.fromValues(5.0, 0.0, 0.0);
+		testObject.transform.setOrientationEuler(0.0, 90.0, 0.0);
+
 		this.sceneGraph.insert(testObject);
 
 		var gameObjectEditor = null;

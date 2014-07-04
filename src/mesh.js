@@ -3,6 +3,7 @@ include([], function ()
 
 	Mesh = function (name)
 	{
+		this.animationUseDualQuaternions = false;
 		this.submeshes = this._extractDataFromOBJ2(ResourceLoader.getContent(name));
 		this._uploadVertexData();
 	};
@@ -44,6 +45,8 @@ include([], function ()
 			var lines = obj.split('\n');
 
 			var animated = false;
+			var animationDualQuats = false;
+
 			var flags = lines[0].split(':')[1].split(' ');
 			for(var i = 0; i < flags.length; i++)
 			{
@@ -52,6 +55,16 @@ include([], function ()
 				{
 					animated = true;
 				}
+
+				if(flag == "anim-store-dq")
+				{
+					animationDualQuats = true;
+				}
+			}
+
+			if(animationDualQuats)
+			{
+				this.animationUseDualQuaternions = true;
 			}
 
 			var submeshes = [];
@@ -184,8 +197,8 @@ include([], function ()
 				{
 					var dq =
 					[
-						vec4.fromValues(components[1], components[2], components[3], components[4]),
-						vec4.fromValues(components[5], components[6], components[7], components[8])
+						quat.fromValues(parseFloat(components[1]), parseFloat(components[2]), parseFloat(components[3]), parseFloat(components[4])),
+						quat.fromValues(parseFloat(components[5]), parseFloat(components[6]), parseFloat(components[7]), parseFloat(components[8]))
 					];
 
 					currentAnimationFrame.push(dq);

@@ -159,11 +159,26 @@ include([], function ()
 
 					if (submesh.animationFrames != undefined)
 					{
-						var animationMatrices = this.gameObject.animationController.getCurrentFrameAnimationMatrices();
-						for (var m = 0; m < submesh.animationFrames[this.currentFrame].length; m++)
+						if(this.mesh.animationUseDualQuaternions)
 						{
-							var loc = GL.getUniformLocation(Shader._ActiveProgram._program, "boneMatrices[" + m + "]");
-							GL.uniformMatrix4fv(loc, GL.FALSE, animationMatrices[m]);
+							var dualQuats = this.gameObject.animationController.getCurrentFrameDualQuaternions();
+							for (var q = 0; q < dualQuats.length; q++)
+							{
+								var loc = GL.getUniformLocation(Shader._ActiveProgram._program, "DQn[" + q + "]");
+								GL.uniform4fv(loc, dualQuats[q][0]);
+
+								var loc2 = GL.getUniformLocation(Shader._ActiveProgram._program, "DQd[" + q + "]");
+								GL.uniform4fv(loc2, dualQuats[q][1]);
+							}
+						}
+						else
+						{
+							var animationMatrices = this.gameObject.animationController.getCurrentFrameAnimationMatrices();
+							for (var m = 0; m < animationMatrices.length; m++)
+							{
+								var loc = GL.getUniformLocation(Shader._ActiveProgram._program, "boneMatrices[" + m + "]");
+								GL.uniformMatrix4fv(loc, GL.FALSE, animationMatrices[m]);
+							}
 						}
 					}
 
