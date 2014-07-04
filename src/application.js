@@ -54,7 +54,7 @@ Application.prototype.extend(
 		grid.addComponent(new GridRenderer(-100.0, -100.0, 100.0, 100.0));
 		this.sceneGraph.insert(grid);
 
-		var testProgram = new Shader(ResourceLoader.getContent("skin_dq_vertex"), ResourceLoader.getContent("show_normals_fragment"));
+		var testProgram = new Shader(ResourceLoader.getContent("skin_dq_vertex"), ResourceLoader.getContent("diffuse_fragment"));
 		var testMesh = new Mesh("lerpz");
 
 		var testObject = new GameObject("testMesh");
@@ -64,13 +64,15 @@ Application.prototype.extend(
 		testObject.getComponent("renderer").disableCulling = true;
 		testObject.getComponent("animationController").playbackSpeed = 1.3;
 		testObject.getComponent("animationController").play(0, 40);
+		testObject.getComponent("animationController").stop();
 
 		for(var q = 0; q < testMesh.submeshes.length; q++)
 		{
 			var submesh = testMesh.submeshes[q];
 			var material = new Material(submesh.material);
 			material.setProgram(testProgram);
-			var texture = new Texture(submesh.material);
+
+			var texture = new Texture("lerpz_diffuse");
 			texture.setWrap(Texture.WRAP_REPEAT);
 			material.addTexture("diffuse", texture);
 			testObject.renderer.materials.push(material);
@@ -120,7 +122,7 @@ Application.prototype.extend(
 
 		var time = 0.0;
 
-		var player = this._createPlayer(vec3.fromValues(0.0, 0.6, 5.0));
+		this.player = this._createPlayer(vec3.fromValues(0.0, 4.0, 8.0), testObject);
 
 		var frameStatsWindow = this._createWindow("Frame stats", vec2.fromValues(0, 0), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
 		frameStatsWindow.autoSize = true;
@@ -215,10 +217,11 @@ Application.prototype.extend(
 		return newWindow;
 	},
 
-	_createPlayer: function(position)
+	_createPlayer: function(position, link)
 	{
-		var newPlayer = new GameObject("FPS Controller");
-		newPlayer.addComponent(new FirstPersonController());
+		var newPlayer = new GameObject("Third Person Controller");
+		newPlayer.addComponent(new ThirdPersonController());
+		newPlayer.getComponent("script").link = link;
 		newPlayer.addComponent(new Camera(Renderer.screenWidth, Renderer.screenHeight, 120.0, 1, 1000.0));
 		newPlayer.getComponent("camera").setActive();
 		newPlayer.getComponent("transform").position = position;

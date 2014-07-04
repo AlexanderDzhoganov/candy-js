@@ -7,6 +7,7 @@ include([ "shim", "resourceloader", "application" ], function ()
 		"cursor": "resources/images/cursor.png",
 		"grass": "resources/images/grass.png",
 		"checker": "resources/images/checker.png",
+		"lerpz_diffuse": "resources/images/lerpz.png",
 /*
 		"sponza:floor": "resources/images/sponza/floor_diffuse.png",
 		"sponza:column_a": "resources/images/sponza/column_a_diffuse.png",

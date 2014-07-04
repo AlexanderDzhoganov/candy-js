@@ -81,11 +81,13 @@ include([], function ()
 		{
 			this.isPlaying = true;
 
-			this._currentStartFrame = startFrame;
-			this._currentEndFrame = endFrame;
+			if(startFrame != undefined && endFrame != undefined)
+			{
+				this._currentStartFrame = startFrame;
+				this._currentEndFrame = endFrame;
 
-			this._timeUntilNextFrame = 1.0 / this._fps;
-
+				this._timeUntilNextFrame = 1.0 / this._fps;
+			}
 		},
 
 		stop: function ()

@@ -12,26 +12,6 @@ include([], function ()
 		this.wireframe = false;
 
 		this.disableCulling = false;
-
-		this.currentFrame = 0;
-
-		InputController.add(InputController.keys.I, InputController.modes.DOWN, function (key)
-		{
-		 	this.currentFrame++;
-
-		 	console.log("Frame: " + this.currentFrame);
-		}.bind(this));
-
-		InputController.add(InputController.keys.U, InputController.modes.DOWN, function (key)
-		{
-			this.currentFrame--;
-			if(this.currentFrame < 0)
-			{
-				this.currentFrame = 0;
-			}
-	
-			console.log("Frame: " + this.currentFrame);
-		}.bind(this));
 	};
 
 	MeshRenderer.prototype = new Component();

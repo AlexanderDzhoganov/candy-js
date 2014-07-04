@@ -93,7 +93,7 @@ vec3 ReadNormalFromFbxMesh(FbxMesh* mesh, int controlPointIndex, int vertexIndex
 
 vec2 ReadUVFromFbxMesh(FbxMesh* mesh, int controlPointIndex, int vertexIndex, int polygonIndex, int uvElementIndex)
 {
-	auto uvElement = mesh->GetElementNormal(uvElementIndex);
+	auto uvElement = mesh->GetElementUV(uvElementIndex);
 	auto mappingMode = uvElement->GetMappingMode();
 	auto referenceMode = uvElement->GetReferenceMode();
 

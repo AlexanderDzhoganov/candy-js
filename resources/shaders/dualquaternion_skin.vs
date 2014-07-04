@@ -13,8 +13,8 @@ uniform mat4 viewProjection;
 uniform mat4 model;
 uniform mat4 inverseModelView;
 
-uniform vec4 DQn[64];
-uniform vec4 DQd[64];
+uniform vec4 DQn[72];
+uniform vec4 DQd[72];
 
 mat4 transpose(mat4 m)
 {

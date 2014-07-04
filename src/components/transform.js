@@ -16,6 +16,19 @@ include([ "math/headers" ], function ()
 	Transform.extend(
 	{
 		
+		lookAt: function (eye, center, upVector)
+		{
+			var lookAtMatrix = mat4.create();
+			mat4.lookAt(lookAtMatrix, eye, center, upVector);
+
+			var m3 = mat3.create();
+			mat3.fromMat4(m3, lookAtMatrix);
+
+			var orientation = quat.create();
+			quat.fromMat3(orientation, m3);
+			return orientation;
+		},
+
 	});
 
 	Transform.prototype.extend(
