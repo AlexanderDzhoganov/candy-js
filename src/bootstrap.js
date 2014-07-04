@@ -62,7 +62,7 @@ include([ "shim", "resourceloader", "application" ], function ()
 		"wireframe_vertex": "resources/shaders/wireframe.vs",
 		"wireframe_fragment": "resources/shaders/wireframe.fs",
 
-		"skin_vertex": "resources/shaders/skin.vs",
+		"skin_vertex": "resources/shaders/dualquaternion_skin.vs",
 		
 	},
 	function (resName, progress, final)

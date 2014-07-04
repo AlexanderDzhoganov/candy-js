@@ -180,6 +180,16 @@ include([], function ()
 
 					currentAnimationFrame.push({ rotation: rotation, translation: translation });
 				}
+				else if (components[0] == 'dq')
+				{
+					var dq =
+					[
+						vec4.fromValues(components[1], components[2], components[3], components[4]),
+						vec4.fromValues(components[5], components[6], components[7], components[8])
+					];
+
+					currentAnimationFrame.push(dq);
+				}
 			}
 
 			if (currentSubmesh)
