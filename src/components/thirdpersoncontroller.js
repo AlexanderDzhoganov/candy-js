@@ -17,16 +17,27 @@ include([], function ()
 		}.bind(this));
 
 		this._movement = vec3.create();
+		var idle = true;
+
 		InputController.add(InputController.keys.W, InputController.modes.DOWN, function (key)
 		{
 			this._movement[2] = 1;
-			this.link.animationController.play();
+			if(idle)
+			{
+				this.link.animationController.playAnimation("walk");
+				idle = false;
+			}
 		}.bind(this));
 
 		InputController.add(InputController.keys.W, InputController.modes.UP, function (key)
 		{
 			this._movement[2] = 0;
-			this.link.animationController.stop();
+
+			if(!idle)
+			{
+				this.link.animationController.playAnimation("idle");
+				idle = true;
+			}
 		}.bind(this));
 
 	};
@@ -57,11 +68,16 @@ include([], function ()
 				var offset = vec3.fromValues(0, 4, -6);
 				vec3.transformQuat(offset, offset, this.link.transform.orientation);
 
-				vec3.add(this.gameObject.transform.position, this.link.transform.position, offset);
+				var position = vec3.create();
+				vec3.add(position, this.link.transform.position, offset);
+
+				vec3.lerp(this.gameObject.transform.position, this.gameObject.transform.position, position, deltaTime);
 
 				var lookAtPoint = vec3.clone(this.link.transform.position);
 				lookAtPoint[1] += this.link.meshBoundsProvider.meshAABB.extents[1] * 2.0;
-				this.gameObject.transform.orientation = Transform.lookAt(this.gameObject.transform.position, lookAtPoint, vec3.fromValues(0.0, 1.0, 0.0));
+				var orientation = Transform.lookAt(this.gameObject.transform.position, lookAtPoint, vec3.fromValues(0.0, 1.0, 0.0));
+
+				quat.slerp(this.gameObject.transform.orientation, this.gameObject.transform.orientation, orientation, deltaTime);
 			}
 		},
 

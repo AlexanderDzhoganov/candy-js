@@ -52,7 +52,7 @@ Application.prototype.extend(
 
 		var grid = new GameObject("Grid");
 		grid.addComponent(new GridRenderer(-100.0, -100.0, 100.0, 100.0));
-		this.sceneGraph.insert(grid);
+		//this.sceneGraph.insert(grid);
 
 		var testProgram = new Shader(ResourceLoader.getContent("skin_dq_vertex"), ResourceLoader.getContent("diffuse_fragment"));
 		var testMesh = new Mesh("lerpz");
@@ -62,8 +62,9 @@ Application.prototype.extend(
 		lerpz.getComponent("renderer").setMesh(testMesh);
 		lerpz.getComponent("renderer").disableCulling = true;
 		lerpz.getComponent("animationController").playbackSpeed = 1.3;
-		lerpz.getComponent("animationController").play(0, 40);
-		lerpz.getComponent("animationController").stop();
+		lerpz.animationController.setAnimation("walk", 0, 40);
+		lerpz.animationController.setAnimation("idle", 300, 500);
+		lerpz.animationController.playAnimation("idle");
 
 		for(var q = 0; q < testMesh.submeshes.length; q++)
 		{
@@ -81,7 +82,7 @@ Application.prototype.extend(
 
 		this.sceneGraph.insert(lerpz);
 
-		var levelMesh = new Mesh("sponza");
+		/*var levelMesh = new Mesh("sponza");
 		var levelProgram = new Shader(ResourceLoader.getContent("diffuse_vertex"), ResourceLoader.getContent("show_normals_fragment"));
 
 		var levelObject = new GameObject("Level");
@@ -103,7 +104,7 @@ Application.prototype.extend(
 		}
 
 	 	this.sceneGraph.insert(levelObject);
-
+*/
 		var gameObjectEditor = null;
 
 		Gui.addMouseClickCallback(function (x, y)
@@ -241,7 +242,7 @@ Application.prototype.extend(
 	_createPlayer: function(position, link)
 	{
 		var newPlayer = new GameObject("Third Person Controller");
-		newPlayer.addComponent(new FirstPersonController());
+		newPlayer.addComponent(new ThirdPersonController());
 		newPlayer.getComponent("script").link = link;
 		newPlayer.addComponent(new Camera(Renderer.screenWidth, Renderer.screenHeight, 120.0, 1, 1000.0));
 		newPlayer.getComponent("camera").setActive();

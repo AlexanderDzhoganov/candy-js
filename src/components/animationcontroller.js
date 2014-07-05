@@ -12,11 +12,13 @@ include([], function ()
 		this.loopAnimation = true;
 		this.currentAnimation = "";
 		this.isPlaying = false;
+		this.namedAnimations = {};
 
 		// private
 
 		this._fps = 30.0; // temp
 		this._timeUntilNextFrame = 0.0;
+		this._nextFrameDuration = 0.0;
 		this._currentFrame = 0;
 		this._currentEndFrame = 0;
 		this._currentStartFrame = 0;
@@ -72,9 +74,28 @@ include([], function ()
 						this.isPlaying = false;
 					}
 				}
+				else if(this._currentFrame < this._currentStartFrame)
+				{
+					this._currentFrame = this._currentStartFrame;
+				}
 
 				this._timeUntilNextFrame = 1.0 / this._fps;
+				this._nextFrameDuration = 1.0 / this._fps;
 			}
+		},
+
+		setAnimation: function (name, startFrame, endFrame)
+		{
+			this.namedAnimations[name] = [startFrame, endFrame];
+		},
+
+		playAnimation: function (name)
+		{
+			this.isPlaying = true;
+			this._currentStartFrame = this.namedAnimations[name][0];
+			this._currentEndFrame = this.namedAnimations[name][1];
+			this._timeUntilNextFrame = 0.5;
+			this._nextFrameDuration = 0.5;
 		},
 
 		play: function (startFrame, endFrame)
@@ -108,7 +129,15 @@ include([], function ()
 
 			var interpolatedDualQuats = [];
 
-			var t = (1.0 / this._fps) - this._timeUntilNextFrame;
+			var t = this._nextFrameDuration - this._timeUntilNextFrame;//(1.0 / this._fps) - this._timeUntilNextFrame;
+			if(t < 0.0)
+			{
+				t = 0.0;
+			}
+			else if(t > 1.0)
+			{
+				t = 1.0;
+			}
 
 			var nextFrame = this._currentFrame + 1;
 
@@ -123,11 +152,16 @@ include([], function ()
 					nextFrame = this._currentFrame;
 				}
 			}
+			else if(this._currentFrame < this._currentStartFrame)
+			{
+				nextFrame = this._currentStartFrame;
+			}
+			console.log(nextFrame);
 
 			for (var i = 0; i < mesh.animationFrames[this._currentFrame].length; i++)
 			{
 				var dqA = mesh.animationFrames[this._currentFrame][i];
-				var dqB = mesh.animationFrames[nextFrame][i];
+				var dqB = mesh.animationFrames[nextFrame][i]; 
 
 				var result = [ quat.create(), quat.create() ];
 				quat.slerp(result[0], dqA[0], dqB[0], t);
@@ -137,6 +171,9 @@ include([], function ()
 				quat.scale(dqA1, dqA1, 1.0 - t);
 				quat.scale(dqB1, dqB1, t);
 				quat.add(result[1], dqA1, dqB1);
+
+				result[1] = dqA[1];
+				quat.normalize(result[0], result[0]);
 
 				interpolatedDualQuats.push(result);
 			}

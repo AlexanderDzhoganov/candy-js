@@ -145,6 +145,22 @@ void FbxSkeletonReader::ReadAnimationBlendingIndexWeightPairs()
 			pair.weight = 0.0f;
 			vertexPairs.push_back(pair);
 		}
+
+		bool allZero = true;
+		
+		for (auto& pair : vertexPairs)
+		{
+			if (pair.weight > 0.0f)
+			{
+				allZero = false;
+				break;
+			}
+		}
+
+		if (allZero)
+		{
+			LOG("Warning: joint weights are all 0.0");
+		}
 	}
 
 	m_IndexWeightPairs = indexWeightPairs;
