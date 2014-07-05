@@ -13,7 +13,7 @@ using System.Diagnostics;
 namespace fbx2gui
 {
     public partial class Form1 : Form
-    {
+    { 
         public Form1()
         {
             InitializeComponent();
@@ -109,7 +109,7 @@ namespace fbx2gui
         {
             if(m_Process != null)
             {
-                m_Process.Kill();
+                m_Process.WaitForExit();
             }
 
             if(FBXPathTextbox.Text.Length == 0)
@@ -124,6 +124,7 @@ namespace fbx2gui
             var dontExportAnimation = DontExportAnimationCheckbox.Checked;
             var dontWriteResult = DontWriteResultCheckbox.Checked;
             var includeIdentityFrame = IncludeIdentityFrameCheckbox.Checked;
+            var buildNavigationMesh = BuildNavigationMeshCheckbox.Checked;
 
             var args = "";
 
@@ -157,6 +158,25 @@ namespace fbx2gui
                 args += " --include-identity-frame";
             }
 
+            if (buildNavigationMesh)
+            {
+                args += " --build-navmesh";
+
+                args += String.Format(" --navmesh-cell-size={0}", CellSizeTextbox.Text);
+                args += String.Format(" --navmesh-cell-height={0}", CellHeightTextbox.Text);
+                args += String.Format(" --navmesh-walkable-slope-angle={0}", WalkableSlopeAngleTextbox.Text);
+                args += String.Format(" --navmesh-walkable-height={0}", WalkableHeightTextbox.Text);
+                args += String.Format(" --navmesh-walkable-climb={0}", WalkableClimbTextbox.Text);
+                args += String.Format(" --navmesh-walkable-radius={0}", WalkableRadiusTextbox.Text);
+                args += String.Format(" --navmesh-max-edge-length={0}", MaxEdgeLengthTextbox.Text);
+                args += String.Format(" --navmesh-max-simplification-error={0}", MaxSimplificationErrorTextbox.Text);
+                args += String.Format(" --navmesh-min-region-area={0}", MinRegionAreaTextbox.Text);
+                args += String.Format(" --navmesh-merge-region-area={0}", MergeRegionAreaTextbox.Text);
+                args += String.Format(" --navmesh-max-verts-per-poly={0}", MaxVertsPerPolyTextbox.Text);
+                args += String.Format(" --navmesh-detail-sample-distance={0}", DetailsampleDistanceTextbox.Text);
+                args += String.Format(" --navmesh-detail-sample-max-error={0}", DetailSampleErrorTextbox.Text);
+            }
+
             var inputFbx = FBXPathTextbox.Text;
             var commandLine = String.Format("{0} {1}", args, inputFbx);
 
@@ -166,7 +186,7 @@ namespace fbx2gui
                 return;
             }
 
-            LogTextbox.Text = "";
+            LogTextbox.Text = String.Format("Running with command-line: {0}", commandLine);
 
             RunWithRedirect("fbx2obj2.exe", commandLine);
         }
@@ -180,6 +200,46 @@ namespace fbx2gui
                 FBXPathTextbox.Enabled = false;
                 BrowseFBXButton.Enabled = false;
             }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox10_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox7_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox8_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox9_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void BuildNavigationMeshCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            NavMeshSettingsGroupBox.Enabled = BuildNavigationMeshCheckbox.Checked;
         }
     }
 }

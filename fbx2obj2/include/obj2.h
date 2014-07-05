@@ -36,7 +36,7 @@ void WriteDualQuaternion(stringstream& ss, const FbxAMatrix& matrix)
 	{
 		ss << dQ.GetFirstQuaternion().GetAt(i) << " ";
 	}
-	
+
 	for (auto i = 0; i < 4; i++)
 	{
 		ss << dQ.GetSecondQuaternion().GetAt(i) << " ";
@@ -45,7 +45,7 @@ void WriteDualQuaternion(stringstream& ss, const FbxAMatrix& matrix)
 	ss << endl;
 }
 
-auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, const Skeleton* skeleton) -> void
+auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, const Skeleton* skeleton = nullptr, const NavMesh* navmesh = nullptr) -> void
 {
 	fstream f(fileName, ios::out);
 
@@ -67,6 +67,11 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, co
 		{
 			ss << "anim-store-dq ";
 		}
+	}
+
+	if (navmesh != nullptr)
+	{
+		ss << "navmesh ";
 	}
 
 	ss << endl;
@@ -139,6 +144,23 @@ auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, co
 					}
 				}
 			}
+		}
+
+		ss << endl;
+	}
+
+	if (navmesh != nullptr)
+	{
+		for (auto& vertex : navmesh->GetVertices())
+		{
+			ss << "nmv " << vertex.x << " " << vertex.y << " " << vertex.z << endl;
+		}
+
+
+		ss << "nmi ";
+		for (auto idx : navmesh->GetIndices())
+		{
+			ss << idx << " ";
 		}
 
 		ss << endl;

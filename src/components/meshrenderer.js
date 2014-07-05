@@ -9,9 +9,14 @@ include([], function ()
 		this.mesh = null;
 
 		this.drawBounds = false;
+		this.drawNavMesh = false;
 		this.wireframe = false;
 
 		this.disableCulling = false;
+
+		this._navMeshVertexBuffer = null;
+		this._navMeshIndexBuffer = null;
+
 	};
 
 	MeshRenderer.prototype = new Component();
@@ -66,6 +71,18 @@ include([], function ()
 
 				this.gameObject.addComponent(new AnimationController());
 				var animationController = this.gameObject.getComponent("animationController");
+			}
+
+			if (this.mesh.navMesh != null)
+			{
+				this._navMeshVertexBuffer = GL.createBuffer();
+				this._navMeshIndexBuffer = GL.createBuffer();
+
+				GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._navMeshIndexBuffer);
+				GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, this.mesh.navMesh.indices, GL.STATIC_DRAW);
+
+				GL.bindBuffer(GL.ARRAY_BUFFER, this._navMeshVertexBuffer);
+				GL.bufferData(GL.ARRAY_BUFFER, this.mesh.navMesh.vertices, GL.STATIC_DRAW);
 			}
 		},
 
@@ -172,6 +189,11 @@ include([], function ()
 			{
 				this._drawBounds(worldModelMatrix);
 			}
+
+			if (this.drawNavMesh && this.mesh.navMesh != null)
+			{
+				this._drawNavMesh(worldModelMatrix);
+			}
 		},
 
 		_isCulled: function (index, frustum)
@@ -263,6 +285,16 @@ include([], function ()
 				var aabb = AABB.transform(boundsProvider.aabbs[i], worldModelMatrix);
 				Renderer.debug.drawAABB(aabb.center, aabb.extents);
 			}
+		},
+
+		_drawNavMesh: function (worldModelMatrix)
+		{
+			//GL.disable(GL.DEPTH_TEST);
+
+			GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, this._navMeshIndexBuffer);
+			GL.bindBuffer(GL.ARRAY_BUFFER, this._navMeshVertexBuffer);
+
+			Renderer.drawIndexedTriangles(this.mesh.navMesh.indices.length, Renderer.VERTEX_FORMAT.PPP);
 		},
 
 	});

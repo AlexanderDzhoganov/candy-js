@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\fbxanim.cpp" />
+    <ClCompile Include="src\fbxelement.cpp" />
+    <ClCompile Include="src\fbxinfo.cpp" />
+    <ClCompile Include="src\fbxmesh.cpp" />
+    <ClCompile Include="src\fbxscene.cpp" />
+    <ClCompile Include="src\fbxutil.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\md5.cpp" />
+    <ClCompile Include="dep\Recast\Recast.cpp">
+      <Filter>recast</Filter>
+    </ClCompile>
+    <ClCompile Include="dep\Recast\RecastAlloc.cpp">
+      <Filter>recast</Filter>
+    </ClCompile>
+    <ClCompile Include="dep\Recast\RecastArea.cpp">
+      <Filter>recast</Filter>
+    </ClCompile>
+    <ClCompile Include="dep\Recast\RecastContour.cpp">
+      <Filter>recast</Filter>
+    </ClCompile>
+    <ClCompile Include="dep\Recast\RecastFilter.cpp">
+      <Filter>recast</Filter>
+    </ClCompile>
+    <ClCompile Include="dep\Recast\RecastLayers.cpp">
+      <Filter>recast</Filter>
+    </ClCompile>
+    <ClCompile Include="dep\Recast\RecastMesh.cpp">
+      <Filter>recast</Filter>
+    </ClCompile>
+    <ClCompile Include="dep\Recast\RecastMeshDetail.cpp">
+      <Filter>recast</Filter>
+    </ClCompile>
+    <ClCompile Include="dep\Recast\RecastRasterization.cpp">
+      <Filter>recast</Filter>
+    </ClCompile>
+    <ClCompile Include="dep\Recast\RecastRegion.cpp">
+      <Filter>recast</Filter>
+    </ClCompile>
+    <ClCompile Include="src\navmesh.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\config.h" />
+    <ClInclude Include="include\fbxanim.h" />
+    <ClInclude Include="include\fbxanimutil.h" />
+    <ClInclude Include="include\fbxelement.h" />
+    <ClInclude Include="include\fbxinfo.h" />
+    <ClInclude Include="include\fbxmesh.h" />
+    <ClInclude Include="include\fbxscene.h" />
+    <ClInclude Include="include\fbxutil.h" />
+    <ClInclude Include="include\logging.h" />
+    <ClInclude Include="include\md5.h" />
+    <ClInclude Include="include\obj2.h" />
+    <ClInclude Include="dep\Recast\Recast.h">
+      <Filter>recast</Filter>
+    </ClInclude>
+    <ClInclude Include="dep\Recast\RecastAlloc.h">
+      <Filter>recast</Filter>
+    </ClInclude>
+    <ClInclude Include="dep\Recast\RecastAssert.h">
+      <Filter>recast</Filter>
+    </ClInclude>
+    <ClInclude Include="include\navmesh.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="recast">
+      <UniqueIdentifier>{607d4e9a-4d46-42c5-a915-acdf2bf2877f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

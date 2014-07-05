@@ -435,9 +435,9 @@ pair<vector<Vertex>, vector<size_t>> FbxMeshReader::DeduplicateVertices(const ve
 	for (auto i = 0u; i < vertices.size(); i++)
 	{
 		const auto& hash = vertexHashes[i];
-		indices.push_back(i);// dedupeIndexMap[hash]);
+		indices.push_back(dedupeIndexMap[hash]);// dedupeIndexMap[hash]);
 	}
 
 	LOG_VERBOSE("Removed % duplicate vertices.", duplicatesCount);
-	return make_pair(vertices, indices);
+	return make_pair(dedupedVertices, indices);
 }

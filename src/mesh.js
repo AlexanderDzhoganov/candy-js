@@ -4,6 +4,7 @@ include([], function ()
 	Mesh = function (name)
 	{
 		this.animationUseDualQuaternions = false;
+		this.navMesh = null;
 		this.submeshes = this._extractDataFromOBJ2(ResourceLoader.getContent(name));
 		this._uploadVertexData();
 	};
@@ -46,6 +47,7 @@ include([], function ()
 
 			var animated = false;
 			var animationDualQuats = false;
+			var hasNavmesh = false;
 
 			var flags = lines[0].split(':')[1].split(' ');
 			for(var i = 0; i < flags.length; i++)
@@ -55,17 +57,23 @@ include([], function ()
 				{
 					animated = true;
 				}
-
-				if(flag == "anim-store-dq")
+				else if (flag == "anim-store-dq")
 				{
 					animationDualQuats = true;
 				}
+				else if (flag == "navmesh")
+				{
+					hasNavmesh = true;
+				}
 			}
 
-			if(animationDualQuats)
+			if (animationDualQuats)
 			{
 				this.animationUseDualQuaternions = true;
 			}
+
+			var navMeshVertices = [];
+			var navMeshIndices = [];
 
 			var submeshes = [];
 			var newSubmesh = function (vertexCount, indexCount, materialName)
@@ -179,20 +187,6 @@ include([], function ()
 
 					currentAnimationFrame.push(matrix);
 				}
-				else if (components[0] == 'qt')
-				{
-					var rotation = quat.fromValues
-					(
-						parseFloat(components[1]),
-						parseFloat(components[2]),
-						parseFloat(components[3]),
-						parseFloat(components[4])
-					);
-
-					var translation = vec3.fromValues(parseFloat(components[5]), parseFloat(components[6]), parseFloat(components[7]));
-
-					currentAnimationFrame.push({ rotation: rotation, translation: translation });
-				}
 				else if (components[0] == 'dq')
 				{
 					var dq =
@@ -202,6 +196,19 @@ include([], function ()
 					];
 
 					currentAnimationFrame.push(dq);
+				}
+				else if (components[0] == 'nmv')
+				{
+					navMeshVertices.push(parseFloat(components[1])); 
+					navMeshVertices.push(parseFloat(components[2]));
+					navMeshVertices.push(parseFloat(components[3]));
+				}
+				else if (components[0] == 'nmi')
+				{
+					for (var idx = 1; idx < components.length - 1; idx++)
+					{
+						navMeshIndices.push(parseInt(components[idx])); 
+					}
 				}
 			}
 
@@ -216,6 +223,12 @@ include([], function ()
 			}
 			this.animationFrames = animationFrames;
 			this.animated = animated;
+
+			if (hasNavmesh)
+			{
+				this.navMesh = { vertices: new Float32Array(navMeshVertices), indices: new Uint16Array(navMeshIndices) };
+			}
+
 			return submeshes;
 		},
 

@@ -133,6 +133,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="dep\Recast\Recast.cpp" />
+    <ClCompile Include="dep\Recast\RecastAlloc.cpp" />
+    <ClCompile Include="dep\Recast\RecastArea.cpp" />
+    <ClCompile Include="dep\Recast\RecastContour.cpp" />
+    <ClCompile Include="dep\Recast\RecastFilter.cpp" />
+    <ClCompile Include="dep\Recast\RecastLayers.cpp" />
+    <ClCompile Include="dep\Recast\RecastMesh.cpp" />
+    <ClCompile Include="dep\Recast\RecastMeshDetail.cpp" />
+    <ClCompile Include="dep\Recast\RecastRasterization.cpp" />
+    <ClCompile Include="dep\Recast\RecastRegion.cpp" />
     <ClCompile Include="src\fbxanim.cpp" />
     <ClCompile Include="src\fbxelement.cpp" />
     <ClCompile Include="src\fbxinfo.cpp" />
@@ -144,8 +154,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="src\md5.cpp" />
+    <ClCompile Include="src\navmesh.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="dep\Recast\Recast.h" />
+    <ClInclude Include="dep\Recast\RecastAlloc.h" />
+    <ClInclude Include="dep\Recast\RecastAssert.h" />
     <ClInclude Include="include\config.h" />
     <ClInclude Include="include\fbxanim.h" />
     <ClInclude Include="include\fbxanimutil.h" />
@@ -156,6 +170,7 @@
     <ClInclude Include="include\fbxutil.h" />
     <ClInclude Include="include\logging.h" />
     <ClInclude Include="include\md5.h" />
+    <ClInclude Include="include\navmesh.h" />
     <ClInclude Include="include\obj2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

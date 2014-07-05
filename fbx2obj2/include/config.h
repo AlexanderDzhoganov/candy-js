@@ -2,6 +2,10 @@
 #define __CONFIG_H
 
 #define CONFIG_KEY(KEY, EXPECTED_VAL) (Config::Instance().GetValue(KEY) == EXPECTED_VAL)
+#define CONFIG_HAS_KEY(KEY) (Config::Instance().HasKey(KEY))
+#define CONFIG_GET_FLOAT_VALUE(KEY) (stof(Config::Instance().GetValue(KEY)))
+#define CONFIG_GET_INT_VALUE(KEY) (stoi(Config::Instance().GetValue(KEY)))
+
 #define LOG_VERBOSE(s, ...) ((CONFIG_KEY("log", "verbose")) ? Log(__FUNCTION__, s, __VA_ARGS__) : 0)
 
 class Config
@@ -74,6 +78,11 @@ class Config
 	const string& GetValue(const string& key)
 	{
 		return m_CommandLine[key];
+	}
+
+	bool HasKey(const string& key)
+	{
+		return m_CommandLine.find(key) != m_CommandLine.end();
 	}
 
 	const string& GetInputFilename()

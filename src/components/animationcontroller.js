@@ -156,7 +156,6 @@ include([], function ()
 			{
 				nextFrame = this._currentStartFrame;
 			}
-			console.log(nextFrame);
 
 			for (var i = 0; i < mesh.animationFrames[this._currentFrame].length; i++)
 			{

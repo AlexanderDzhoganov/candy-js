@@ -49,6 +49,7 @@ Global
 		{E0AD9275-EB70-4457-8307-0E56A3457462}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{E0AD9275-EB70-4457-8307-0E56A3457462}.Release|Win32.ActiveCfg = Release|Any CPU
 		{E0AD9275-EB70-4457-8307-0E56A3457462}.Release|x64.ActiveCfg = Release|Any CPU
+		{E0AD9275-EB70-4457-8307-0E56A3457462}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

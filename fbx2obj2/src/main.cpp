@@ -1,5 +1,5 @@
 #include <fbxsdk.h>
-#include <fbxsdk/fileio/fbxiosettings.h>
+#include <fbxsdk\fileio\fbxiosettings.h>
 
 #include <fstream>
 #include <iostream>
@@ -17,7 +17,8 @@
 #include <future>
 
 #include "..\dep\glm\glm.hpp"
-#include "../dep/glm/gtx/quaternion.hpp"
+#include "..\dep\glm\gtx\quaternion.hpp"
+#include "..\dep\Recast\Recast.h"
 
 using namespace std;
 using namespace glm;
@@ -31,6 +32,8 @@ using namespace glm;
 #include "..\include\fbxmesh.h"
 #include "..\include\fbxinfo.h"
 #include "..\include\fbxscene.h"
+
+#include "..\include\navmesh.h"
 
 #include "..\include\obj2.h"
 
@@ -90,11 +93,18 @@ void ProcessFbx(const string& fileName)
 
 	auto meshReader = TraverseFbxScene(scene);
 
+	unique_ptr<NavMesh> navMesh = nullptr;
+
+	if (CONFIG_KEY("build-navmesh", "true"))
+	{
+		navMesh = make_unique<NavMesh>(meshReader.get());
+	}
+
 	if (CONFIG_KEY("no-file-write", "true"))
 	{
 		return;
 	}
 	
 	string outFilename = fileName.substr(0, fileName.find_last_of(".")) + "_fbx.obj2";
-	writeOutToFile(meshReader->GetSubMeshes(), outFilename, &meshReader->GetSkeleton());
+	writeOutToFile(meshReader->GetSubMeshes(), outFilename, &meshReader->GetSkeleton(), navMesh.get());
 }

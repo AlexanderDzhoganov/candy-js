@@ -37,13 +37,13 @@ include([ "shim", "resourceloader", "application" ], function ()
 */
 		// meshes
 		//"mesh": "resources/meshes/teapot_lowres.obj",
-		"sponza": "resources/meshes/sponza_fbx.obj2",
+		//"sponza": "resources/meshes/sponza_fbx.obj2",
 		//"city": "resources/meshes/city.obj2",
 		"lerpz": "resources/meshes/lerpz_fixed_fbx.obj2",
 		//"level": "resources/meshes/level_fbx.obj2",
 		//"sibenik": "resources/meshes/sibenik.obj2",
 		//"de_dust2": "resources/meshes/de_dust2_fbx.obj2",
-		//"de_dust22": "resources/meshes/de_dust2/de_dust2.obj2",
+		"de_dust2": "resources/meshes/de_dust2_fbx.obj2",
 
 		// shaders
 		"terrain_vertex": "resources/shaders/terrain.vs",

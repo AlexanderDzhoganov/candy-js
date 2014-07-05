@@ -82,14 +82,15 @@ Application.prototype.extend(
 
 		this.sceneGraph.insert(lerpz);
 
-		/*var levelMesh = new Mesh("sponza");
-		var levelProgram = new Shader(ResourceLoader.getContent("diffuse_vertex"), ResourceLoader.getContent("show_normals_fragment"));
+		var levelMesh = new Mesh("de_dust2");
+		var levelProgram = new Shader(ResourceLoader.getContent("show_normals_vertex"), ResourceLoader.getContent("show_normals_fragment"));
 
 		var levelObject = new GameObject("Level");
 		levelObject.addComponent(new MeshRenderer());
 		levelObject.getComponent("renderer").setMesh(levelMesh);
 		//testObject.addComponent(new OctreeFrustumCullingProvider());
 		levelObject.getComponent("renderer").disableCulling = true;
+		levelObject.renderer.drawNavMesh = true;
 
 		for(var q = 0; q < levelMesh.submeshes.length; q++)
 		{
@@ -104,7 +105,7 @@ Application.prototype.extend(
 		}
 
 	 	this.sceneGraph.insert(levelObject);
-*/
+
 		var gameObjectEditor = null;
 
 		Gui.addMouseClickCallback(function (x, y)
@@ -242,7 +243,7 @@ Application.prototype.extend(
 	_createPlayer: function(position, link)
 	{
 		var newPlayer = new GameObject("Third Person Controller");
-		newPlayer.addComponent(new ThirdPersonController());
+		newPlayer.addComponent(new FirstPersonController());
 		newPlayer.getComponent("script").link = link;
 		newPlayer.addComponent(new Camera(Renderer.screenWidth, Renderer.screenHeight, 120.0, 1, 1000.0));
 		newPlayer.getComponent("camera").setActive();

@@ -61,9 +61,11 @@ struct AABB
 {
 	vec3 center;
 	vec3 extents;
+	vec3 vmin;
+	vec3 vmax;
 
 	AABB() = default;
-	AABB(const vec3& _center, const vec3& _extents) : center(_center), extents(_extents) {}
+	AABB(const vec3& _center, const vec3& _extents, const vec3& _vmin, const vec3& _vmax) : center(_center), extents(_extents), vmin(_vmin), vmax(_vmax) {}
 
 	static auto fromVertices(const vector<Vertex>& vertices) -> AABB
 	{
@@ -83,7 +85,33 @@ struct AABB
 		vec3 center = vmin + diff;
 		vec3 extents = diff;
 
-		return AABB(center, extents);
+		return AABB(center, extents, vmin, vmax);
+	}
+
+	static auto fromVertices(const vector<float>& vertices) -> AABB
+	{
+		vec3 vmin(numeric_limits<float>::max(), numeric_limits<float>::max(), numeric_limits<float>::max());
+		vec3 vmax(numeric_limits<float>::min(), numeric_limits<float>::min(), numeric_limits<float>::min());
+
+		for (auto i = 0u; i < vertices.size() / 3; i++)
+		{
+			vec3 position
+				(
+				vertices[i * 3 + 0],
+				vertices[i * 3 + 1],
+				vertices[i * 3 + 2]
+				);
+
+			vmin = min(vmin, position);
+			vmax = max(vmax, position);
+		}
+		vec3 diff = vmax - vmin;
+		diff *= 0.5f;
+
+		vec3 center = vmin + diff;
+		vec3 extents = diff;
+
+		return AABB(center, extents, vmin, vmax);
 	}
 };
 

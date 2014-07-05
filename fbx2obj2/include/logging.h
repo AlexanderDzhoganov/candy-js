@@ -82,24 +82,26 @@ class Log
 	public:
 	Log()
 	{
-		m_DispatchThread = make_unique<thread>(bind(&Log::DispatchThread, this));
+	//	m_DispatchThread = make_unique<thread>(bind(&Log::DispatchThread, this));
 	}
 
 	void Deinitialize()
 	{
-		m_Deinitialize = true;
+	/*	m_Deinitialize = true;
 		while (m_Deinitialize) {}
 		m_DispatchThread->join();
-		m_DispatchThread = nullptr;
+		m_DispatchThread = nullptr;*/
 	}
 
 	void LogMessage(const string& sender, const string& message)
 	{
 		unique_lock<mutex> _(m_QueueMutex);
 		auto formatted = FormatMessage(sender, message);
-		m_Queue.push_back(formatted);
+		cout << formatted << endl;
+
+	/*	m_Queue.push_back(formatted);
 		m_History.push_back(formatted);
-		m_QueueInsert.notify_all();
+		m_QueueInsert.notify_all();*/
 	}
 
 	static Log& Instance()
@@ -120,7 +122,7 @@ class Log
 		{
 			std::unique_lock<std::mutex> _(m_QueueMutex);
 
-			m_QueueInsert.wait(_, [this] () { return !m_Queue.empty(); });
+			m_QueueInsert.wait(_, [this] () { return !m_Queue.empty() || !m_Deinitialize; });
 
 			for (auto& item : m_Queue)
 			{
