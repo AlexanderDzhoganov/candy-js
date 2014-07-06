@@ -81,14 +81,13 @@ Application.prototype.extend(
 		lerpz.transform.setOrientationEuler(0.0, 90.0, 0.0);
 		this.sceneGraph.insert(lerpz);
 
-	/*	var levelMesh = new Mesh("de_dust2");
+		var levelMesh = new Mesh("de_dust2");
 		var levelProgram = new Shader(ResourceLoader.getContent("show_normals_vertex"), ResourceLoader.getContent("show_normals_fragment"));
 
 		var levelObject = new GameObject("Level");
 		levelObject.addComponent(new MeshRenderer());
 		levelObject.getComponent("renderer").setMesh(levelMesh);
-		//testObject.addComponent(new OctreeFrustumCullingProvider());
-		levelObject.getComponent("renderer").disableCulling = true;
+		levelObject.addComponent(new OctreeFrustumCullingProvider());
 		levelObject.renderer.drawNavMesh = true;
 
 		for(var q = 0; q < levelMesh.submeshes.length; q++)
@@ -103,7 +102,7 @@ Application.prototype.extend(
 			levelObject.renderer.materials.push(material);
 		}
 
-	 	this.sceneGraph.insert(levelObject);*/
+	 	this.sceneGraph.insert(levelObject);
 
 		var gameObjectEditor = null;
 

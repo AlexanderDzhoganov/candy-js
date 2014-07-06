@@ -225,6 +225,31 @@ include([], function ()
 				animations.push(animationFrames);
 			}
 
+			if(hasNavMesh)
+			{
+				var navMeshVertexCount = data.readUint32();
+				var navMeshVertices = new Float32Array(navMeshVertexCount * 3);
+
+				for (var u = 0; u < navMeshVertexCount * 3; u++)
+				{
+					navMeshVertices[u] = data.readFloat32();
+				}
+
+				var navMeshIndexCount = data.readUint32();
+				var navMeshIndices = new Uint16Array(navMeshIndexCount);
+
+				for (var u = 0; u < navMeshIndexCount; u++)
+				{
+					navMeshIndices[u] = data.readUint32();
+				}
+
+				this.navMesh = { vertices: navMeshVertices, indices: navMeshIndices };
+			}
+			else
+			{
+				this.navMesh = null;
+			}
+
 			if (animated)
 			{
 				this.animated = true;

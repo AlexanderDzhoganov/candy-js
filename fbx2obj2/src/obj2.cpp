@@ -104,7 +104,7 @@ size_t CalculateSize(OBJ2NavMesh* navmesh)
 	size += sizeof(uint32_t);
 
 	// navmesh->vertices
-	size = sizeof(float_t) * 3 * navmesh->vertexCount;
+	size += sizeof(float_t) * 3 * navmesh->vertexCount;
 
 	return size;
 }
