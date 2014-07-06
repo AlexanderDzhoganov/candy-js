@@ -54,7 +54,7 @@ Application.prototype.extend(
 		grid.addComponent(new GridRenderer(-100.0, -100.0, 100.0, 100.0));
 		this.sceneGraph.insert(grid);
 
-		var testProgram = new Shader(ResourceLoader.getContent("diffuse_vertex"), ResourceLoader.getContent("diffuse_fragment"));
+		var testProgram = new Shader(ResourceLoader.getContent("skin_dq_vertex"), ResourceLoader.getContent("diffuse_fragment"));
 		var testMesh = new Mesh("lerpz");
 
 		var lerpz = new GameObject("Lerpz");
@@ -79,7 +79,6 @@ Application.prototype.extend(
 		}
 
 		lerpz.transform.setOrientationEuler(0.0, 90.0, 0.0);
-
 		this.sceneGraph.insert(lerpz);
 
 	/*	var levelMesh = new Mesh("de_dust2");
@@ -142,9 +141,7 @@ Application.prototype.extend(
 			}
 		}.bind(this));
 
-
 		var time = 0.0;
-
 		this.player = this._createPlayer(vec3.fromValues(0.0, 4.0, 8.0), lerpz);
 
 		var frameStatsWindow = this._createWindow("Frame stats", vec2.fromValues(0, 0), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());

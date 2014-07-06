@@ -186,7 +186,7 @@ namespace fbx2gui
                 return;
             }
 
-            LogTextbox.Text = String.Format("Running with command-line: {0}", commandLine);
+            LogTextbox.Text = String.Format("Running with command-line: {0}\n", commandLine);
 
             RunWithRedirect("fbx2obj2.exe", commandLine);
         }
