@@ -193,9 +193,8 @@ void OBJ2BinaryWriter::SetSubMeshes(const vector<SubMesh>& subMeshes)
 	for (auto i = 0u; i < m_Binary->submeshesCount; i++)
 	{
 		auto& aabb = subMeshes[i].aabb;
-		float aabbFlattened[6];
-		memcpy(aabbFlattened, &(aabb.center[0]), sizeof(float_t)* 3);
-		memcpy(aabbFlattened + 3, &(aabb.extents[0]), sizeof(float_t)* 3);
+		memcpy(m_Binary->submeshes[i].aabb, &(aabb.center[0]), sizeof(float_t)* 3);
+		memcpy(m_Binary->submeshes[i].aabb + 3, &(aabb.extents[0]), sizeof(float_t)* 3);
 
 		m_Binary->submeshes[i].materialIndex = m_MaterialToIndex[subMeshes[i].material];
 		auto componentsCount = subMeshes[i].hasAnimation ? 16 : 8;
@@ -204,17 +203,53 @@ void OBJ2BinaryWriter::SetSubMeshes(const vector<SubMesh>& subMeshes)
 		m_Binary->submeshes[i].vertexComponentsCount = componentsCount;
 
 		m_Binary->submeshes[i].vertexCount = vertexCount;
-		m_Binary->submeshes[i].vertices = new float_t[vertexCount * componentsCount];
+		m_Binary->submeshes[i].vertices.resize(vertexCount * componentsCount);
 
 		for (auto q = 0u; q < vertexCount; q++)
 		{
-			memcpy(&(m_Binary->submeshes[i].vertices[q * componentsCount]), &(subMeshes[i].vertices[q]), componentsCount * sizeof(float_t));
+			auto& position = subMeshes[i].vertices[q].position;
+			auto& normal = subMeshes[i].vertices[q].normal;
+			auto& uvs = subMeshes[i].vertices[q].uv;
+
+			auto& boneWeights = subMeshes[i].vertices[q].boneWeights;
+			auto& boneIndices = subMeshes[i].vertices[q].boneIndices;
+
+			float boneIndicesFloat[4];
+			for (auto bi = 0; bi < 4; bi++)
+			{
+				boneIndicesFloat[bi] = (float)boneIndices[bi];
+			}
+
+			float vertex[] =
+			{
+				position.x,
+				position.y,
+				position.z,
+				normal.x,
+				normal.y,
+				normal.z,
+				uvs.x,
+				uvs.y,
+				boneIndicesFloat[0],
+				boneIndicesFloat[1],
+				boneIndicesFloat[2],
+				boneIndicesFloat[3],
+				boneWeights[0],
+				boneWeights[1],
+				boneWeights[2],
+				boneWeights[3]
+			};
+
+			memcpy(&(m_Binary->submeshes[i].vertices[q * componentsCount]), vertex, sizeof(float_t) * componentsCount);
 		}
 
 		auto indicesCount = subMeshes[i].indices.size();
-		m_Binary->submeshes[i].indicesCount = indicesCount;
+		m_Binary->submeshes[i].indicesCount = (uint32_t)indicesCount;
 		m_Binary->submeshes[i].indices = new uint32_t[indicesCount];
-		memcpy(m_Binary->submeshes[i].indices, subMeshes[i].indices.data(), indicesCount * sizeof(uint32_t));
+		for (auto idx = 0; idx < indicesCount; idx++)
+		{
+			m_Binary->submeshes[i].indices[idx] = subMeshes[i].indices[idx];
+		}
 	}
 }
 
@@ -234,13 +269,11 @@ void OBJ2BinaryWriter::SetSkeleton(const Skeleton& skeleton)
 	auto i = 0u;
 	for (auto& anim : skeleton.animations)
 	{
-		m_Binary->animations[i].animationNameLength = anim.first.size();
-//		m_Binary->animations[i].animationName = new int8_t[anim.first.size()];
+		m_Binary->animations[i].animationNameLength = (uint32_t)anim.first.size();
 		memcpy(m_Binary->animations[i].animationName, anim.first.c_str(), anim.first.size());
 		
-		m_Binary->animations[i].jointsCount = skeleton.joints.size();
-
-		m_Binary->animations[i].framesCount = anim.second.size();
+		m_Binary->animations[i].jointsCount = (uint32_t)skeleton.joints.size();
+		m_Binary->animations[i].framesCount = (uint32_t)anim.second.size();
 		
 		auto dualQuaternionsCount = skeleton.joints.size() * anim.second.size();
 		m_Binary->animations[i].frameData = new float_t[dualQuaternionsCount * 8];
@@ -296,10 +329,14 @@ void OBJ2BinaryWriter::SetNavMesh(const NavMesh& navMesh)
 
 	m_Binary->navMesh->indexCount = indices.size();
 	m_Binary->navMesh->indices = new uint32_t[indices.size()];
-	memcpy(m_Binary->navMesh->indices, indices.data(), sizeof(float_t)* indices.size());
+	
+	for (auto i = 0u; i < indices.size(); i++)
+	{
+		m_Binary->navMesh->indices[i] = indices[i];
+	}
 }
 
-void Flatten(OBJ2Material* material, uint8_t* result)
+uint8_t* Flatten(OBJ2Material* material, uint8_t* result)
 {
 	auto ptr = result;
 	// nameLength
@@ -309,42 +346,46 @@ void Flatten(OBJ2Material* material, uint8_t* result)
 	// name
 	memcpy(ptr, material->name, sizeof(int8_t)* material->nameLength);
 	ptr += sizeof(int8_t) * 256;
+
+	return ptr;
 }
 
-void Flatten(OBJ2SubMesh* submesh, uint8_t* result)
+uint8_t* Flatten(OBJ2SubMesh* submesh, uint8_t* result)
 {
 	auto ptr = result;
-
-	// aabb 
-	memcpy(ptr, submesh->aabb, sizeof(float_t)* 6);
-	ptr += sizeof(float_t)* 6;
 
 	// materialIndex
 	memcpy(ptr, &submesh->materialIndex, sizeof(uint32_t));
 	ptr += sizeof(uint32_t);
 
+	// aabb 
+	memcpy(ptr, &(submesh->aabb[0]), sizeof(float_t) * 6);
+	ptr += sizeof(float_t) * 6;
+
+	// vertexCount
+	memcpy(ptr, &(submesh->vertexCount), sizeof(uint32_t));
+	ptr += sizeof(uint32_t);
+
+	// vertexComponentsCount
+	memcpy(ptr, &(submesh->vertexComponentsCount), sizeof(uint32_t));
+	ptr += sizeof(uint32_t);
+
+	// vertices
+	memcpy(ptr, submesh->vertices.data(), sizeof(float_t) * submesh->vertexComponentsCount * submesh->vertexCount);
+	ptr += sizeof(float_t) * submesh->vertexComponentsCount * submesh->vertexCount;
+
 	// indexCount
-	memcpy(ptr, &submesh->indicesCount, sizeof(uint32_t));
+	memcpy(ptr, &(submesh->indicesCount), sizeof(uint32_t));
 	ptr += sizeof(uint32_t);
 
 	// indices
 	memcpy(ptr, submesh->indices, sizeof(uint32_t) * submesh->indicesCount);
-	ptr += sizeof(uint32_t)* submesh->indicesCount;
+	ptr += sizeof(uint32_t) * submesh->indicesCount;
 
-	// vertexCount
-	memcpy(ptr, &submesh->vertexCount, sizeof(uint32_t));
-	ptr += sizeof(uint32_t);
-
-	// vertexComponentsCount
-	memcpy(ptr, &submesh->vertexComponentsCount, sizeof(uint32_t));
-	ptr += sizeof(uint32_t);
-
-	// vertices
-	memcpy(ptr, submesh->vertices, sizeof(float_t) * submesh->vertexComponentsCount * submesh->vertexCount);
-	ptr += sizeof(float_t) * submesh->vertexComponentsCount * submesh->vertexCount;
+	return ptr;
 }
 
-void Flatten(OBJ2Animation* animation, uint8_t* result)
+uint8_t* Flatten(OBJ2Animation* animation, uint8_t* result)
 {
 	auto ptr = result;
 
@@ -356,22 +397,32 @@ void Flatten(OBJ2Animation* animation, uint8_t* result)
 	memcpy(ptr, animation->animationName, sizeof(int8_t) * animation->animationNameLength);
 	ptr += sizeof(int8_t) * 256;
 
-	// frameCount
-	memcpy(ptr, &(animation->framesCount), sizeof(uint32_t));
-	ptr += sizeof(uint32_t);
-
 	// jointsCount
 	memcpy(ptr, &(animation->jointsCount), sizeof(uint32_t));
+	ptr += sizeof(uint32_t);
+
+	// frameCount
+	memcpy(ptr, &(animation->framesCount), sizeof(uint32_t));
 	ptr += sizeof(uint32_t);
 	
 	// frameData
 	memcpy(ptr, animation->frameData, sizeof(float_t) * 8 * animation->framesCount * animation->jointsCount);
-	ptr += sizeof(float_t);
+	ptr += sizeof(float_t) * 8 * animation->framesCount * animation->jointsCount;
+
+	return ptr;
 }
 
-void Flatten(OBJ2NavMesh* navmesh, uint8_t* result)
+uint8_t* Flatten(OBJ2NavMesh* navmesh, uint8_t* result)
 {
 	auto ptr = result;
+
+	// vertexCount
+	memcpy(ptr, &(navmesh->vertexCount), sizeof(uint32_t));
+	ptr += sizeof(uint32_t);
+
+	// vertices
+	memcpy(ptr, navmesh->vertices, sizeof(float_t) * 3 * navmesh->vertexCount);
+	ptr += sizeof(float_t) * 3 * navmesh->vertexCount;
 
 	// indexCount
 	memcpy(ptr, &(navmesh->indexCount), sizeof(uint32_t));
@@ -381,16 +432,10 @@ void Flatten(OBJ2NavMesh* navmesh, uint8_t* result)
 	memcpy(ptr, navmesh->indices, sizeof(uint32_t) * navmesh->indexCount);
 	ptr += sizeof(uint32_t) * navmesh->indexCount;
 
-	// vertexCount
-	memcpy(ptr, &(navmesh->vertexCount), sizeof(uint32_t));
-	ptr += sizeof(uint32_t);
-
-	// vertices
-	memcpy(ptr, navmesh->vertices, sizeof(float_t) * 3 * navmesh->vertexCount);
-	ptr += sizeof(float_t)* 3 * navmesh->vertexCount;
+	return ptr;
 }
 
-void Flatten(OBJ2Binary* obj2, uint8_t* result)
+uint8_t* Flatten(OBJ2Binary* obj2, uint8_t* result)
 {
 	auto ptr = result;
 
@@ -414,49 +459,47 @@ void Flatten(OBJ2Binary* obj2, uint8_t* result)
 	for (auto i = 0u; i < obj2->materialsCount; i++)
 	{
 		auto material = &(obj2->materials[i]);
-		Flatten(material, ptr);
-		ptr += CalculateSize(material);
+	 	ptr = Flatten(material, ptr);
 	}
 
 	// submeshesCount
-	memcpy(ptr, &(obj2->materialsCount), sizeof(uint32_t));
+	memcpy(ptr, &(obj2->submeshesCount), sizeof(uint32_t));
 	ptr += sizeof(uint32_t);
 
 	// submeshes
 	for (auto i = 0u; i < obj2->submeshesCount; i++)
 	{
 		auto submesh = &(obj2->submeshes[i]);
-		Flatten(submesh, ptr);
-		ptr += CalculateSize(submesh);
+		ptr = Flatten(submesh, ptr);
 	}
 
 	// jointsCount
-	memcpy(ptr, &(obj2->materialsCount), sizeof(uint32_t));
+	memcpy(ptr, &(obj2->jointsCount), sizeof(uint32_t));
 	ptr += sizeof(uint32_t);
 
 	// animationsCount
-	memcpy(ptr, &(obj2->materialsCount), sizeof(uint32_t));
+	memcpy(ptr, &(obj2->animationsCount), sizeof(uint32_t));
 	ptr += sizeof(uint32_t);
 
 	// animations
 	for (auto i = 0u; i < obj2->animationsCount; i++)
 	{
 		auto animation = &(obj2->animations[i]);
-		Flatten(animation, ptr);
-		ptr += CalculateSize(animation);
+		ptr = Flatten(animation, ptr);
 	}
 
 	// navMesh
 	if (obj2->navMesh != nullptr)
 	{
-		Flatten(obj2->navMesh, ptr);
-		ptr += CalculateSize(obj2->navMesh);
+		ptr = Flatten(obj2->navMesh, ptr);
 	}
+
+	return ptr;
 }
 
 void OBJ2BinaryWriter::WriteToFile(const string& filename)
 {
-	ofstream f(filename);
+	ofstream f(filename, ios::binary);
 
 	if (!f.is_open())
 	{
@@ -466,7 +509,12 @@ void OBJ2BinaryWriter::WriteToFile(const string& filename)
 
 	auto size = CalculateSize(m_Binary.get());
 	auto result = new uint8_t[size];
-	Flatten(m_Binary.get(), result);
+	auto ptr = Flatten(m_Binary.get(), result);
+
+	if (ptr - result != size)
+	{
+		int x = 5;
+	}
 
 	f.write((char*)result, size * sizeof(uint8_t));
 	LOG("Written to \"%\"", filename);

@@ -21,7 +21,7 @@ struct OBJ2SubMesh
 	// vertices
 	uint32_t vertexCount = 0;
 	uint32_t vertexComponentsCount = 0;
-	float_t* vertices = nullptr;
+	vector<float_t> vertices;
 
 	// indices
 	uint32_t indicesCount = 0;
@@ -31,7 +31,7 @@ struct OBJ2SubMesh
 struct OBJ2Animation
 {
 	uint32_t animationNameLength = 0;
-	int8_t animationName[256];
+	int8_t* animationName[256];
 
 	uint32_t jointsCount = 0;
 
@@ -86,11 +86,11 @@ size_t CalculateSize(OBJ2Animation* animation);
 size_t CalculateSize(OBJ2NavMesh* navmesh);
 size_t CalculateSize(OBJ2Binary* obj2);
 
-void Flatten(OBJ2Material* material, uint8_t* result);
-void Flatten(OBJ2SubMesh* submesh, uint8_t* result);
-void Flatten(OBJ2Animation* animation, uint8_t* result);
-void Flatten(OBJ2NavMesh* navmesh, uint8_t* result);
-void Flatten(OBJ2Binary* obj2, uint8_t* result);
+uint8_t* Flatten(OBJ2Material* material, uint8_t* result);
+uint8_t* Flatten(OBJ2SubMesh* submesh, uint8_t* result);
+uint8_t* Flatten(OBJ2Animation* animation, uint8_t* result);
+uint8_t* Flatten(OBJ2NavMesh* navmesh, uint8_t* result);
+uint8_t* Flatten(OBJ2Binary* obj2, uint8_t* result);
 
 class OBJ2BinaryWriter
 {
