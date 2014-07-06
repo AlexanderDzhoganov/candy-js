@@ -39,11 +39,16 @@ include([ "shim", "resourceloader", "application" ], function ()
 		//"mesh": "resources/meshes/teapot_lowres.obj",
 		//"sponza": "resources/meshes/sponza_fbx.obj2",
 		//"city": "resources/meshes/city.obj2",
-		"lerpz": "resources/meshes/lerpz_fixed_fbx.obj2",
+		"lerpz": "resources/meshes/lerpz_fixed_fbx.obj2b",
 		//"level": "resources/meshes/level_fbx.obj2",
 		//"sibenik": "resources/meshes/sibenik.obj2",
 		//"de_dust2": "resources/meshes/de_dust2_fbx.obj2",
-		"de_dust2": "resources/meshes/de_dust2_fbx.obj2",
+		//"de_dust2": "resources/meshes/de_dust2_fbx.obj2",
+
+		//binary
+		//"binary1": "resources/meshes/test.obj2b",
+
+
 
 		// shaders
 		"terrain_vertex": "resources/shaders/terrain.vs",

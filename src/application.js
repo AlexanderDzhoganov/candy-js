@@ -52,9 +52,9 @@ Application.prototype.extend(
 
 		var grid = new GameObject("Grid");
 		grid.addComponent(new GridRenderer(-100.0, -100.0, 100.0, 100.0));
-		//this.sceneGraph.insert(grid);
+		this.sceneGraph.insert(grid);
 
-		var testProgram = new Shader(ResourceLoader.getContent("skin_dq_vertex"), ResourceLoader.getContent("diffuse_fragment"));
+		var testProgram = new Shader(ResourceLoader.getContent("diffuse_vertex"), ResourceLoader.getContent("diffuse_fragment"));
 		var testMesh = new Mesh("lerpz");
 
 		var lerpz = new GameObject("Lerpz");
@@ -82,7 +82,7 @@ Application.prototype.extend(
 
 		this.sceneGraph.insert(lerpz);
 
-		var levelMesh = new Mesh("de_dust2");
+	/*	var levelMesh = new Mesh("de_dust2");
 		var levelProgram = new Shader(ResourceLoader.getContent("show_normals_vertex"), ResourceLoader.getContent("show_normals_fragment"));
 
 		var levelObject = new GameObject("Level");
@@ -104,7 +104,7 @@ Application.prototype.extend(
 			levelObject.renderer.materials.push(material);
 		}
 
-	 	this.sceneGraph.insert(levelObject);
+	 	this.sceneGraph.insert(levelObject);*/
 
 		var gameObjectEditor = null;
 

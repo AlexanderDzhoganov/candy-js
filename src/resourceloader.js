@@ -19,7 +19,7 @@ ResourceLoader.extend(
 		image: ["jpg", "png", "gif"],
 		text: ["txt", "vs", "fs", "obj", "obj2"],
 		json: ["json"],
-		uint8array: ["bin", "obj2b"]
+		arrayBuffer: ["bin", "obj2b"],
 	}
 });
 
@@ -130,7 +130,14 @@ ResourceLoader.prototype.extend(
 				{
 					if (this.xmlHttp.readyState == 4 && this.xmlHttp.status == 200)
 					{
-						this.resources[elementKey].content = this.xmlHttp.responseText;
+						if(this.xmlHttp.responseType == "arraybuffer")
+						{
+							this.resources[elementKey].content = this.xmlHttp.response;
+						}
+						else
+						{
+							this.resources[elementKey].content = this.xmlHttp.responseText;
+						}
 						elements.shift();
 						this._updateProgress(elementKey);
 						this._fetchResources(elements);
@@ -138,6 +145,7 @@ ResourceLoader.prototype.extend(
 				}.bind(this);
 
 				this.xmlHttp.open("GET", elementObject.path, true);
+				this.xmlHttp.responseType = '';
 				this.xmlHttp.send();
 			}
 			else if (elementObject.type == "json")
@@ -154,15 +162,16 @@ ResourceLoader.prototype.extend(
 				}.bind(this);
 
 				this.xmlHttp.open("GET", elementObject.path, true);
+				this.xmlHttp.responseType = '';
 				this.xmlHttp.send();
 			}
-			else if (elementObject.type == "uint8array")
+			else if (elementObject.type == "arrayBuffer")
 			{
 				this.xmlHttp.onreadystatechange = function ()
 				{
 					if (this.xmlHttp.readyState == 4 && this.xmlHttp.status == 200)
 					{
-						this.resources[elementKey].content = new Uint8Array(this.xmlHttp.responseText);
+						this.resources[elementKey].content = this.xmlHttp.response;	
 						elements.shift();
 						this._updateProgress( elementKey );
 						this._fetchResources( elements );
@@ -170,6 +179,7 @@ ResourceLoader.prototype.extend(
 				}.bind(this);
 
 				this.xmlHttp.open("GET", elementObject.path, true);
+				this.xmlHttp.responseType = 'arraybuffer';
 				this.xmlHttp.send();
 			}
 			else
