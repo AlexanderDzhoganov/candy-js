@@ -17,13 +17,13 @@
 #include "..\dep\glm\glm.hpp"
 
 using namespace std;
-using namespace glm;
+
 
 #include "..\include\logging.h"
 #include "..\include\fbxelement.h"
 #include "..\include\fbxutil.h"
 
-vec3 ReadNormalFromFbxMesh(FbxMesh* mesh, int controlPointIndex, int vertexIndex, int polygonIndex, int normalElementIndex)
+glm::vec3 ReadNormalFromFbxMesh(FbxMesh* mesh, int controlPointIndex, int vertexIndex, int polygonIndex, int normalElementIndex)
 {
 	auto normalElement = mesh->GetElementNormal(normalElementIndex);
 	auto mappingMode = normalElement->GetMappingMode();
@@ -78,20 +78,20 @@ vec3 ReadNormalFromFbxMesh(FbxMesh* mesh, int controlPointIndex, int vertexIndex
 	else
 	{
 		LOG("Unsupported mapping mode: %", EnumToString(mappingMode));
-		return vec3(0.0);
+		return glm::vec3(0.0);
 	}
 
 	if (normalDirectIndex == -1)
 	{
 		LOG("Invalid normal direct index");
-		return vec3(0.0);
+		return glm::vec3(0.0);
 	}
 
 	auto normal = normalElement->GetDirectArray().GetAt(normalDirectIndex);
-	return vec3(normal[0], normal[1], normal[2]);
+	return glm::vec3(normal[0], normal[1], normal[2]);
 }
 
-vec2 ReadUVFromFbxMesh(FbxMesh* mesh, int controlPointIndex, int vertexIndex, int polygonIndex, int uvElementIndex)
+glm::vec2 ReadUVFromFbxMesh(FbxMesh* mesh, int controlPointIndex, int vertexIndex, int polygonIndex, int uvElementIndex)
 {
 	auto uvElement = mesh->GetElementUV(uvElementIndex);
 	auto mappingMode = uvElement->GetMappingMode();
@@ -146,17 +146,17 @@ vec2 ReadUVFromFbxMesh(FbxMesh* mesh, int controlPointIndex, int vertexIndex, in
 	else
 	{
 		LOG("Unsupported mapping mode: %", EnumToString(mappingMode));
-		return vec2(0.0);
+		return glm::vec2(0.0);
 	}
 
 	if (uvDirectIndex == -1)
 	{
 		LOG("Invalid uv direct index");
-		return vec2(0.0);
+		return glm::vec2(0.0);
 	}
 
 	auto uv = uvElement->GetDirectArray().GetAt(uvDirectIndex);
-	return vec2(uv[0], uv[1]);
+	return glm::vec2(uv[0], uv[1]);
 }
 
 size_t ReadMaterialFromFbxMesh(FbxMesh* mesh, int controlPointIndex, int polygonIndex, int materialElementIndex)

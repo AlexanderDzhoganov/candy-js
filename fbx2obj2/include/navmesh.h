@@ -8,12 +8,12 @@ class NavMesh
 	NavMesh::NavMesh(FbxMeshReader* mesh);
 
 	const vector<int>& GetIndices() const { return m_NavmeshIndices; }
-	const vector<vec3>& GetVertices() const { return m_NavmeshVertices; }
+	const vector<glm::vec3>& GetVertices() const { return m_NavmeshVertices; }
 
 	private:
 
 	vector<int> m_NavmeshIndices;
-	vector<vec3> m_NavmeshVertices;
+	vector<glm::vec3> m_NavmeshVertices;
 
 	FbxMeshReader* m_Mesh = nullptr;
 	float m_CellSize = 0.3f;

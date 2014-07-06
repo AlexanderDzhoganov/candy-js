@@ -17,7 +17,7 @@
 #include "..\dep\glm\glm.hpp"
 
 using namespace std;
-using namespace glm;
+
 
 #include "..\include\logging.h"
 #include "..\include\config.h"
@@ -135,14 +135,14 @@ void FbxMeshReader::CalculateAABBs()
 	}
 }
 
-vector<vec3> FbxMeshReader::ReadPositionsByPolyVertex()
+vector<glm::vec3> FbxMeshReader::ReadPositionsByPolyVertex()
 {
 	LOG_VERBOSE("Reading positions");
 
 	FbxVector4* controlPoints = m_Mesh->GetControlPoints();
 	size_t polygonCount = m_Mesh->GetPolygonCount();
 
-	vector<vec3> positions;
+	vector<glm::vec3> positions;
 	for (auto i = 0u; i < polygonCount; i++)
 	{
 		auto polygonSize = m_Mesh->GetPolygonSize(i);
@@ -157,14 +157,14 @@ vector<vec3> FbxMeshReader::ReadPositionsByPolyVertex()
 	return positions;
 }
 
-vector<vec3> FbxMeshReader::ReadNormalsByPolyVertex(int normalElementIndex)
+vector<glm::vec3> FbxMeshReader::ReadNormalsByPolyVertex(int normalElementIndex)
 {
 	LOG_VERBOSE("Reading normals");
 	auto polygonCount = m_Mesh->GetPolygonCount();
 
 	int vertexCounter = 0;
 
-	vector<vec3> normals;
+	vector<glm::vec3> normals;
 
 	for (auto i = 0; i < polygonCount; i++)
 	{
@@ -182,13 +182,13 @@ vector<vec3> FbxMeshReader::ReadNormalsByPolyVertex(int normalElementIndex)
 	return normals;
 }
 
-vector<vec2> FbxMeshReader::ReadUVsByPolyVertex(int uvElementIndex)
+vector<glm::vec2> FbxMeshReader::ReadUVsByPolyVertex(int uvElementIndex)
 {
 	LOG_VERBOSE("Reading UVs");
 
 	auto polygonCount = m_Mesh->GetPolygonCount();
 	int vertexCounter = 0;
-	vector<vec2> uvs;
+	vector<glm::vec2> uvs;
 
 	for (auto i = 0; i < polygonCount; i++)
 	{
@@ -240,7 +240,7 @@ vector<vector<Vertex>> FbxMeshReader::ProcessMesh()
 
 			if (m_Skeleton.joints.size() > 0)
 			{
-				vertex.position = vec3((m_Skeleton.transform * vec4(positions[vertexCount], 1.0)));
+				vertex.position = glm::vec3((m_Skeleton.transform * glm::vec4(positions[vertexCount], 1.0)));
 
 				for (auto k = 0u; k < 4; k++)
 				{

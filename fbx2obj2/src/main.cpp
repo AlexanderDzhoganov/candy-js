@@ -21,7 +21,6 @@
 #include "..\dep\Recast\Recast.h"
 
 using namespace std;
-using namespace glm;
 
 #include "..\include\logging.h"
 #include "..\include\config.h"
@@ -105,6 +104,41 @@ void ProcessFbx(const string& fileName)
 		return;
 	}
 	
-	string outFilename = fileName.substr(0, fileName.find_last_of(".")) + "_fbx.obj2";
-	writeOutToFile(meshReader->GetSubMeshes(), outFilename, &meshReader->GetSkeleton(), navMesh.get());
+	if (CONFIG_KEY("binary", "true"))
+	{
+		OBJ2BinaryWriter writer;
+		set<string> materialSet;
+
+		for (auto& submesh : meshReader->GetSubMeshes())
+		{
+			materialSet.insert(submesh.material);
+		}
+
+		vector<string> materials;
+		for (auto& m : materialSet)
+		{
+			materials.push_back(m);
+		}
+
+		writer.SetMaterials(materials);
+		writer.SetSubMeshes(meshReader->GetSubMeshes());
+	
+		if (meshReader->GetSkeleton().joints.size() > 0)
+		{
+			writer.SetSkeleton(meshReader->GetSkeleton());
+		}
+
+		if (navMesh)
+		{
+			writer.SetNavMesh(*navMesh);
+		}
+
+		string outFilename = fileName.substr(0, fileName.find_last_of(".")) + "_fbx.obj2b";
+		writer.WriteToFile(outFilename);
+	}
+	else
+	{
+		string outFilename = fileName.substr(0, fileName.find_last_of(".")) + "_fbx.obj2";
+		writeOutToFile(meshReader->GetSubMeshes(), outFilename, &meshReader->GetSkeleton(), navMesh.get());
+	}
 }

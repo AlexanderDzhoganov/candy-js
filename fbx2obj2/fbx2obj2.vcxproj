@@ -155,6 +155,7 @@
     </ClCompile>
     <ClCompile Include="src\md5.cpp" />
     <ClCompile Include="src\navmesh.cpp" />
+    <ClCompile Include="src\obj2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dep\Recast\Recast.h" />

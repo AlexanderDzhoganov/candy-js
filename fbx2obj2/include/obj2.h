@@ -1,175 +1,120 @@
 #ifndef __OBJ2_H
 #define __OBJ2_H
 
-void WriteMatrix(stringstream& ss, const FbxAMatrix& matrix)
+#define OBJ2_VERSION 1000
+#define OBJ2_MAGIC 0xCADCFFFF
+
+struct OBJ2Material
 {
-	ss << "mat4 ";
+	uint32_t nameLength = 0;
+	int8_t name[256];
+};
 
-	for (auto x = 0u; x < 4; x++)
-	for (auto y = 0u; y < 4; y++)
-	{
-		ss << matrix.Get(x, y) << " ";
-	}
-
-	ss << endl;
-}
-
-void WriteQuaternionTranslation(stringstream& ss, const FbxAMatrix& matrix)
+struct OBJ2SubMesh
 {
-	auto translation = matrix.GetT();
-	auto rotation = matrix.GetQ();
+	// material
+	uint32_t materialIndex = 0;
 
-	ss << "qt " << rotation[0] << " " << rotation[1] << " " << rotation[2] << " " << rotation[3] << " "
-		<< translation[0] << " " << translation[1] << " " << translation[2] << endl;
-}
+	// aabb
+	float_t aabb[6];
 
-void WriteDualQuaternion(stringstream& ss, const FbxAMatrix& matrix)
+	// vertices
+	uint32_t vertexCount = 0;
+	uint32_t vertexComponentsCount = 0;
+	float_t* vertices = nullptr;
+
+	// indices
+	uint32_t indicesCount = 0;
+	uint32_t* indices = nullptr;
+};
+
+struct OBJ2Animation
 {
-	auto translation = matrix.GetT();
-	auto rotation = matrix.GetQ();
+	uint32_t animationNameLength = 0;
+	int8_t animationName[256];
 
-	FbxDualQuaternion dQ(rotation, translation);
+	uint32_t jointsCount = 0;
 
-	ss << "dq ";
+	uint32_t framesCount = 0;
+	float_t* frameData = nullptr;
+};
 
-	for (auto i = 0; i < 4; i++)
-	{
-		ss << dQ.GetFirstQuaternion().GetAt(i) << " ";
-	}
-
-	for (auto i = 0; i < 4; i++)
-	{
-		ss << dQ.GetSecondQuaternion().GetAt(i) << " ";
-	}
-
-	ss << endl;
-}
-
-auto writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, const Skeleton* skeleton = nullptr, const NavMesh* navmesh = nullptr) -> void
+struct OBJ2NavMesh
 {
-	fstream f(fileName, ios::out);
+	// vertices
+	uint32_t vertexCount = 0;
+	float_t* vertices = nullptr;
 
-	stringstream ss;
+	// indices
+	uint32_t indexCount = 0;
+	uint32_t* indices = nullptr;
+};
 
-	LOG("Writing out to \"%\"", fileName);
+enum class OBJ2BinaryFlags
+{
+	ANIMATED = 1 << 0,
+	CONTAINS_NAVMESH = 1 << 1,
+};
 
-	ss << "flags: ";
+struct OBJ2Binary
+{
+	uint32_t magic = OBJ2_MAGIC;
+	uint32_t version = OBJ2_VERSION;
 
-	if (skeleton->joints.size() > 0)
-	{
-		ss << "animated ";
+	uint32_t flags = 0;
 
-		if (CONFIG_KEY("export-mat4", "true"))
-		{
-			ss << "anim-store-mat4 ";
-		}
-		else
-		{
-			ss << "anim-store-dq ";
-		}
-	}
+	// materials
+	uint32_t materialsCount = 0;
+	OBJ2Material* materials = nullptr;
 
-	if (navmesh != nullptr)
-	{
-		ss << "navmesh ";
-	}
+	// submeshes
+	uint32_t submeshesCount = 0;
+	OBJ2SubMesh* submeshes = nullptr;
 
-	ss << endl;
+	// animations
+	uint32_t jointsCount = 0;
+	uint32_t animationsCount = 0;
+	OBJ2Animation* animations = nullptr;
 
-	auto count = 0u;
-	for (auto& subMesh : submeshes)
-	{
-		ss << "m " << subMesh.material << " " << subMesh.vertices.size() << " " << subMesh.indices.size() << endl;
+	// navmesh
+	OBJ2NavMesh* navMesh = nullptr;
+};
 
-		for (auto& vertex : subMesh.vertices)
-		{
-			ss << "vnt " << vertex.position.x << " " << vertex.position.y << " " << vertex.position.z << " "
-				<< vertex.normal.x << " " << vertex.normal.y << " " << vertex.normal.z << " "
-				<< vertex.uv.x << " " << vertex.uv.y;
+size_t CalculateSize(OBJ2Material* material);
+size_t CalculateSize(OBJ2SubMesh* submesh);
+size_t CalculateSize(OBJ2Animation* animation);
+size_t CalculateSize(OBJ2NavMesh* navmesh);
+size_t CalculateSize(OBJ2Binary* obj2);
 
-			if (subMesh.hasAnimation)
-			{
-				ss << " ";
+void Flatten(OBJ2Material* material, uint8_t* result);
+void Flatten(OBJ2SubMesh* submesh, uint8_t* result);
+void Flatten(OBJ2Animation* animation, uint8_t* result);
+void Flatten(OBJ2NavMesh* navmesh, uint8_t* result);
+void Flatten(OBJ2Binary* obj2, uint8_t* result);
 
-				for (auto i = 0u; i < 4; i++)
-				{
-					ss << vertex.boneIndices[i] << " ";
-				}
+class OBJ2BinaryWriter
+{
 
-				for (auto i = 0u; i < 4; i++)
-				{
-					ss << vertex.boneWeights[i] << " ";
-				}
-			}
+	public:
+	void SetMaterials(const vector<string>& materialNames);
+	void SetSubMeshes(const vector<SubMesh>& subMeshes);
+	void SetSkeleton(const Skeleton& skeleton);
+	void SetNavMesh(const NavMesh& navMesh);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 
-			ss << endl;
-		}
+	void WriteToFile(const string& filename);
 
-		ss << "i ";
+	private:
+	unique_ptr<OBJ2Binary> m_Binary = make_unique<OBJ2Binary>();
+	unordered_map<string, size_t> m_MaterialToIndex;
 
-		for (auto& i : subMesh.indices)
-		{
-			ss << i << " ";
-		}
-		ss << endl;
+};
 
-		ss << "aabb " << subMesh.aabb.center.x << " " << subMesh.aabb.center.y << " " << subMesh.aabb.center.z << " "
-			<< subMesh.aabb.extents.x << " " << subMesh.aabb.extents.y << " " << subMesh.aabb.extents.z << endl;
+void WriteMatrix(stringstream& ss, const FbxAMatrix& matrix);
 
-		ss << endl;
+void WriteQuaternionTranslation(stringstream& ss, const FbxAMatrix& matrix);
 
-		count++;
-	}
+void WriteDualQuaternion(stringstream& ss, const FbxAMatrix& matrix);
 
-	if (skeleton && skeleton->animations.size() > 0)
-	{
-		for (auto& animationTake : skeleton->animations)
-		{
-			auto frameCount = animationTake.second.size();
-			ss << "a \"" << animationTake.first << "\" " << frameCount << " " << skeleton->joints.size() << endl;
-
-			for (auto i = 0u; i < frameCount; i++)
-			{
-				ss << "f " << i << endl;
-
-				for (auto q = 0u; q < animationTake.second[i].size(); q++)
-				{
-					if (CONFIG_KEY("export-mat4", "true"))
-					{
-						WriteMatrix(ss, animationTake.second[i][q]);
-					}
-					else
-					{
-						WriteDualQuaternion(ss, animationTake.second[i][q]);
-					}
-				}
-			}
-		}
-
-		ss << endl;
-	}
-
-	if (navmesh != nullptr)
-	{
-		for (auto& vertex : navmesh->GetVertices())
-		{
-			ss << "nmv " << vertex.x << " " << vertex.y << " " << vertex.z << endl;
-		}
-
-
-		ss << "nmi ";
-		for (auto idx : navmesh->GetIndices())
-		{
-			ss << idx << " ";
-		}
-
-		ss << endl;
-	}
-
-	string result = ss.str();
-	f.write(result.c_str(), result.size());
-
-	LOG("Conversion finished. Wrote % kbytes.", result.size() / 1024);
-}
+void writeOutToFile(const vector<SubMesh>& submeshes, const string& fileName, const Skeleton* skeleton = nullptr, const NavMesh* navmesh = nullptr);
 
 #endif

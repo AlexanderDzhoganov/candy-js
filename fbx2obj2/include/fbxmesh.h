@@ -14,9 +14,9 @@ static string GetHashCodeForBytes(const char * bytes, int numBytes)
 
 struct Vertex
 {
-	vec3 position;
-	vec3 normal;
-	vec2 uv;
+	glm::vec3 position;
+	glm::vec3 normal;
+	glm::vec2 uv;
 	float boneWeights[4];
 	int boneIndices[4];
 };
@@ -49,7 +49,7 @@ static bool VertexCompare(const Vertex& a, const Vertex& b, bool animated)
 
 static string GetStaticVertexHash(const Vertex& vertex)
 {
-	return GetHashCodeForBytes((const char*)(&vertex), sizeof(vec3)+sizeof(vec3)+sizeof(vec2));
+	return GetHashCodeForBytes((const char*)(&vertex), sizeof(glm::vec3)+sizeof(glm::vec3)+sizeof(glm::vec2));
 }
 
 static string GetAnimatedVertexHash(const Vertex& vertex)
@@ -59,57 +59,57 @@ static string GetAnimatedVertexHash(const Vertex& vertex)
 
 struct AABB
 {
-	vec3 center;
-	vec3 extents;
-	vec3 vmin;
-	vec3 vmax;
+	glm::vec3 center;
+	glm::vec3 extents;
+	glm::vec3 vmin;
+	glm::vec3 vmax;
 
 	AABB() = default;
-	AABB(const vec3& _center, const vec3& _extents, const vec3& _vmin, const vec3& _vmax) : center(_center), extents(_extents), vmin(_vmin), vmax(_vmax) {}
+	AABB(const glm::vec3& _center, const glm::vec3& _extents, const glm::vec3& _vmin, const glm::vec3& _vmax) : center(_center), extents(_extents), vmin(_vmin), vmax(_vmax) {}
 
 	static auto fromVertices(const vector<Vertex>& vertices) -> AABB
 	{
-		vec3 vmin(numeric_limits<float>::max(), numeric_limits<float>::max(), numeric_limits<float>::max());
-		vec3 vmax(numeric_limits<float>::min(), numeric_limits<float>::min(), numeric_limits<float>::min());
+		glm::vec3 vmin(numeric_limits<float>::max(), numeric_limits<float>::max(), numeric_limits<float>::max());
+		glm::vec3 vmax(numeric_limits<float>::min(), numeric_limits<float>::min(), numeric_limits<float>::min());
 
 		for (auto i = 0u; i < vertices.size(); i++)
 		{
-			vec3 position = vertices[i].position;
+			glm::vec3 position = vertices[i].position;
 
-			vmin = min(vmin, position);
-			vmax = max(vmax, position);
+			vmin = glm::min(vmin, position);
+			vmax = glm::max(vmax, position);
 		}
-		vec3 diff = vmax - vmin;
+		glm::vec3 diff = vmax - vmin;
 		diff *= 0.5f;
 
-		vec3 center = vmin + diff;
-		vec3 extents = diff;
+		glm::vec3 center = vmin + diff;
+		glm::vec3 extents = diff;
 
 		return AABB(center, extents, vmin, vmax);
 	}
 
 	static auto fromVertices(const vector<float>& vertices) -> AABB
 	{
-		vec3 vmin(numeric_limits<float>::max(), numeric_limits<float>::max(), numeric_limits<float>::max());
-		vec3 vmax(numeric_limits<float>::min(), numeric_limits<float>::min(), numeric_limits<float>::min());
+		glm::vec3 vmin(numeric_limits<float>::max(), numeric_limits<float>::max(), numeric_limits<float>::max());
+		glm::vec3 vmax(numeric_limits<float>::min(), numeric_limits<float>::min(), numeric_limits<float>::min());
 
 		for (auto i = 0u; i < vertices.size() / 3; i++)
 		{
-			vec3 position
+			glm::vec3 position
 				(
 				vertices[i * 3 + 0],
 				vertices[i * 3 + 1],
 				vertices[i * 3 + 2]
 				);
 
-			vmin = min(vmin, position);
-			vmax = max(vmax, position);
+			vmin = glm::min(vmin, position);
+			vmax = glm::max(vmax, position);
 		}
-		vec3 diff = vmax - vmin;
+		glm::vec3 diff = vmax - vmin;
 		diff *= 0.5f;
 
-		vec3 center = vmin + diff;
-		vec3 extents = diff;
+		glm::vec3 center = vmin + diff;
+		glm::vec3 extents = diff;
 
 		return AABB(center, extents, vmin, vmax);
 	}
@@ -149,9 +149,9 @@ class FbxMeshReader
 	private:
 	bool ReadMeshSkeletonAndAnimations(FbxScene* scene, FbxNode* skeletonRoot);
 	void CalculateAABBs();
-	vector<vec3> ReadPositionsByPolyVertex();
-	vector<vec3> ReadNormalsByPolyVertex(int normalElementIndex = 0);
-	vector<vec2> ReadUVsByPolyVertex(int uvElementIndex = 0);
+	vector<glm::vec3> ReadPositionsByPolyVertex();
+	vector<glm::vec3> ReadNormalsByPolyVertex(int normalElementIndex = 0);
+	vector<glm::vec2> ReadUVsByPolyVertex(int uvElementIndex = 0);
 	vector<vector<Vertex>> ProcessMesh();
 
 	static vector<SubMesh> SplitToVertexLimit(size_t maxVerticesPerBucket, SubMesh submesh, size_t depth = 0);
@@ -165,7 +165,7 @@ class FbxMeshReader
 
 	vector<SubMesh> m_SubMeshes;
 
-	vector<vec3> m_ControlPoints;
+	vector<glm::vec3> m_ControlPoints;
 
 	vector<vector<BlendingIndexWeightPair>> m_BlendingIndexWeightPairs;
 

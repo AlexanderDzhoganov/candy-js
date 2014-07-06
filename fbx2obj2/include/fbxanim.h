@@ -24,7 +24,7 @@ struct Skeleton
 {
 	JointLinkMode linkMode;
 	vector<Joint> joints;
-	mat4 transform;
+	glm::mat4 transform;
 
 	unordered_map<string, vector<vector<FbxAMatrix>>> animations;
 

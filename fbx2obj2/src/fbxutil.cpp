@@ -17,7 +17,7 @@
 #include "..\dep\glm\glm.hpp"
 
 using namespace std;
-using namespace glm;
+
 
 #include "..\include\logging.h"
 #include "..\include\fbxutil.h"
