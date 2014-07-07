@@ -10,7 +10,6 @@ include([], function ()
 
 		this.playbackSpeed = 1.0;
 		this.loopAnimation = true;
-		this.currentAnimation = "";
 		this.isPlaying = false;
 		this.namedAnimations = {};
 
@@ -19,6 +18,8 @@ include([], function ()
 		this._fps = 30.0; // temp
 		this._timeUntilNextFrame = 0.0;
 		this._nextFrameDuration = 0.0;
+
+		this._currentAnimation = 0;
 		this._currentFrame = 0;
 		this._currentEndFrame = 0;
 		this._currentStartFrame = 0;
@@ -45,8 +46,7 @@ include([], function ()
 			else
 			{
 				var mesh = meshRenderer.mesh;
-				//debugger;
-				this._currentEndFrame = mesh.animationFrames.length - 1;
+				this._currentEndFrame = mesh.animations[this._currentAnimation].framesCount;
 			}
 		},
 
@@ -156,11 +156,44 @@ include([], function ()
 			{
 				nextFrame = this._currentStartFrame;
 			}
+	
+			var animation = mesh.animations[this._currentAnimation];
+			var framesCount = animation.framesCount;
+			var jointsCount = animation.jointsCount;
+			var dataPtrCurrent = this._currentFrame * jointsCount * 8;
+			var dataPtrNext = nextFrame * jointsCount * 8;
 
-			for (var i = 0; i < mesh.animationFrames[this._currentFrame].length; i++)
-			{
-				var dqA = mesh.animationFrames[this._currentFrame][i];
-				var dqB = mesh.animationFrames[nextFrame][i]; 
+			for (var i = 0; i < jointsCount; i++)
+			{	
+				var dqA1x = animation.frameData[dataPtrCurrent++];
+				var dqA1y = animation.frameData[dataPtrCurrent++];
+				var dqA1z = animation.frameData[dataPtrCurrent++];
+				var dqA1w = animation.frameData[dataPtrCurrent++];
+				var dqA2x = animation.frameData[dataPtrCurrent++];
+				var dqA2y = animation.frameData[dataPtrCurrent++];
+				var dqA2z = animation.frameData[dataPtrCurrent++];
+				var dqA2w = animation.frameData[dataPtrCurrent++];
+
+				var dqB1x = animation.frameData[dataPtrNext++];
+				var dqB1y = animation.frameData[dataPtrNext++];
+				var dqB1z = animation.frameData[dataPtrNext++];
+				var dqB1w = animation.frameData[dataPtrNext++];
+				var dqB2x = animation.frameData[dataPtrNext++];
+				var dqB2y = animation.frameData[dataPtrNext++];
+				var dqB2z = animation.frameData[dataPtrNext++];
+				var dqB2w = animation.frameData[dataPtrNext++];
+
+				var dqA = 
+				[
+					quat.fromValues(dqA1x, dqA1y, dqA1z, dqA1w),
+					quat.fromValues(dqA2x, dqA2y, dqA2z, dqA2w)
+				];
+
+				var dqB = 
+				[
+					quat.fromValues(dqB1x, dqB1y, dqB1z, dqB1w),
+					quat.fromValues(dqB2x, dqB2y, dqB2z, dqB2w)
+				];
 
 				var result = [ quat.create(), quat.create() ];
 				quat.slerp(result[0], dqA[0], dqB[0], t);
