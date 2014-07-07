@@ -90,10 +90,10 @@ struct OBJ2Binary
 		PROPERTY(submeshes);
 		PROPERTY(animations);
 
-		/*if (navMesh != nullptr)
+		if (navMesh != nullptr)
 		{
-			PROPERTY(navMesh);
-		}*/
+			PROPERTY(*navMesh);
+		}
 	}
 };
 
