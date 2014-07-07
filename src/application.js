@@ -4,6 +4,7 @@ include(
 	"scenegraph",
 	"component",
 	"gameobject",
+	"serialization",
 	"mesh",
 	"tests/headers",
 	"components/headers",

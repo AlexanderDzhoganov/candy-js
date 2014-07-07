@@ -86,7 +86,7 @@ include([], function ()
 
 			quat.slerp(this.gameObject.transform.orientation, this.gameObject.transform.orientation, orientation, deltaTime);
 
-			if(this.navMeshLink != null)
+		/*	if(this.navMeshLink != null)
 			{
 				var navMesh = this.navMeshLink.getComponent("navMeshCollider");
 				if(!navMesh)
@@ -109,7 +109,7 @@ include([], function ()
 				{
 					//this.link.transform.position[1] = result.intersectionPoint[1];
 				}
-			}
+			}*/
 		},
 
 	});

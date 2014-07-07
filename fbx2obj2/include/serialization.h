@@ -1,12 +1,25 @@
 #ifndef __SERIALIZATION_H
 #define __SERIALIZATION_H
 
+#define SERIALIZATION_DEF void SerializeSelf(BinaryArchive& ar) const
+#define PROPERTY(prop) Serialize(ar, #prop, prop)
+
+enum class BinaryType
+{
+	Uint32 = 0,
+	Float32 = 1,
+	String = 2,
+	Uint32Array = 3,
+	Float32Array = 4,
+	Object = 5,
+	ObjectEnd = 6,
+	ObjectArray = 7,
+};
+
 class BinaryArchive
 {
-
 	public:
 	virtual void WriteBytes(const uint8_t* item, size_t size) = 0;
-
 };
 
 class BinarySizeCalculator : public BinaryArchive
@@ -51,48 +64,108 @@ class BinaryWriter : public BinaryArchive
 
 };
 
-template <typename T>
-inline void SerializeObject(BinaryArchive& archive, const T& item)
+inline void SerializePropertyName(BinaryArchive& archive, const string& propertyName)
 {
-	item.SerializeSelf(archive);
-}
-
-template <typename T>
-inline void SerializeObjectVector(BinaryArchive& archive, const vector<T>& vec)
-{
-	auto size = (uint32_t)vec.size();
-	archive.WriteBytes((const uint8_t*)&size, sizeof(uint32_t));
-
-	for (auto& item : vec)
-	{
-		item.SerializeSelf(archive);
-	}
-}
-
-template <typename T>
-inline void Serialize(BinaryArchive& archive, const T& item)
-{
-	archive.WriteBytes((const uint8_t*)&item, sizeof(T));
-}
-
-template <typename T>
-inline void Serialize(BinaryArchive& archive, const vector<T>& vec)
-{
-	auto size = (uint32_t)vec.size();
-	archive.WriteBytes((const uint8_t*)&size, sizeof(uint32_t));
-
-	for (auto& item : vec)
-	{
-		archive.WriteBytes((const uint8_t*)&item, sizeof(T));
-	}
-}
-
-template <>
-inline void Serialize(BinaryArchive& archive, const string& s)
-{
-	auto length = (uint32_t)s.size();
+	auto length = (uint32_t)propertyName.size();
 	archive.WriteBytes((const uint8_t*)&length, sizeof(uint32_t));
-	archive.WriteBytes((const uint8_t*)s.c_str(), sizeof(uint8_t) * length);
+	archive.WriteBytes((const uint8_t*)propertyName.c_str(), sizeof(uint8_t) * length);
+}
+
+// Uint32
+inline void Serialize(BinaryArchive& archive, const string& name, uint32_t value)
+{
+	auto type = BinaryType::Uint32;
+	archive.WriteBytes((const uint8_t*)&type, sizeof(uint32_t));
+	SerializePropertyName(archive, name);
+
+	archive.WriteBytes((const uint8_t*)&value, sizeof(uint32_t));
+}
+
+// Float32
+inline void Serialize(BinaryArchive& archive, const string& name, float_t value)
+{
+	auto type = BinaryType::Float32;
+	archive.WriteBytes((const uint8_t*)&type, sizeof(uint32_t));
+	SerializePropertyName(archive, name);
+
+	archive.WriteBytes((const uint8_t*)&value, sizeof(float_t));
+}
+
+// String
+inline void Serialize(BinaryArchive& archive, const string& name, const string& value)
+{
+	auto type = BinaryType::String;
+	archive.WriteBytes((const uint8_t*)&type, sizeof(uint32_t));
+	SerializePropertyName(archive, name);
+
+	auto length = (uint32_t)value.size();
+	archive.WriteBytes((const uint8_t*)&length, sizeof(uint32_t));
+	archive.WriteBytes((const uint8_t*)value.c_str(), sizeof(uint8_t)* length);
+}
+
+// Uint32Array
+inline void Serialize(BinaryArchive& archive, const string& name, const vector<uint32_t>& value)
+{
+	auto type = BinaryType::Uint32Array;
+	archive.WriteBytes((const uint8_t*)&type, sizeof(uint32_t));
+	SerializePropertyName(archive, name);
+
+	auto length = (uint32_t)value.size();
+	archive.WriteBytes((const uint8_t*)&length, sizeof(uint32_t));
+
+	for (auto& item : value)
+	{
+		archive.WriteBytes((const uint8_t*)&item, sizeof(uint32_t));
+	}
+}
+
+// Float32Array
+inline void Serialize(BinaryArchive& archive, const string& name, const vector<float_t>& value)
+{
+	auto type = BinaryType::Float32Array;
+	archive.WriteBytes((const uint8_t*)&type, sizeof(uint32_t));
+	SerializePropertyName(archive, name);
+
+	auto length = (uint32_t)value.size();
+	archive.WriteBytes((const uint8_t*)&length, sizeof(uint32_t));
+
+	for (auto& item : value)
+	{
+		archive.WriteBytes((const uint8_t*)&item, sizeof(float_t));
+	}
+}
+
+// Object
+template <typename T>
+inline void Serialize(BinaryArchive& archive, const string& name, const T& object)
+{
+	auto type = BinaryType::Object;
+	archive.WriteBytes((const uint8_t*)&type, sizeof(uint32_t));
+	SerializePropertyName(archive, name);
+
+	object.SerializeSelf(archive);
+
+	type = BinaryType::ObjectEnd;
+	archive.WriteBytes((const uint8_t*)&type, sizeof(uint32_t));
+}
+
+// ObjectArray
+template <typename T>
+inline void Serialize(BinaryArchive& archive, const string& name, const vector<T>& objects)
+{
+	auto type = BinaryType::ObjectArray;
+	archive.WriteBytes((const uint8_t*)&type, sizeof(uint32_t));
+	SerializePropertyName(archive, name);
+
+	auto size = objects.size();
+	archive.WriteBytes((const uint8_t*)&size, sizeof(uint32_t));
+
+	for (auto& object : objects)
+	{
+		object.SerializeSelf(archive);
+		auto end = BinaryType::ObjectEnd;
+		archive.WriteBytes((const uint8_t*)&end, sizeof(uint32_t));
+	}
 }
 
 #endif

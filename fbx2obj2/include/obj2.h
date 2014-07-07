@@ -14,9 +14,9 @@ struct OBJ2Material
 {
 	string name = "";
 
-	void SerializeSelf(BinaryArchive& ar) const
+	SERIALIZATION_DEF
 	{
-		Serialize(ar, name);
+		PROPERTY(name);
 	}
 };
 
@@ -28,13 +28,13 @@ struct OBJ2SubMesh
 	vector<float_t> vertices;
 	vector<uint32_t> indices;
 
-	void SerializeSelf(BinaryArchive& ar) const
+	SERIALIZATION_DEF
 	{
-		Serialize(ar, materialIndex);
-		Serialize(ar, aabb);
-		Serialize(ar, vertexComponentsCount);
-		Serialize(ar, vertices);
-		Serialize(ar, indices);
+		PROPERTY(materialIndex);
+		PROPERTY(aabb);
+		PROPERTY(vertexComponentsCount);
+		PROPERTY(vertices);
+		PROPERTY(indices);
 	}
 };
 
@@ -45,12 +45,12 @@ struct OBJ2Animation
 	uint32_t framesCount = 0;
 	vector<float_t> frameData;
 
-	void SerializeSelf(BinaryArchive& ar) const
+	SERIALIZATION_DEF
 	{
-		Serialize(ar, name);
-		Serialize(ar, jointsCount);
-		Serialize(ar, framesCount);
-		Serialize(ar, frameData);
+		PROPERTY(name);
+		PROPERTY(jointsCount);
+		PROPERTY(framesCount);
+		PROPERTY(frameData);
 	}
 };
 
@@ -59,10 +59,10 @@ struct OBJ2NavMesh
 	vector<float_t> vertices;
 	vector<uint32_t> indices;
 
-	void SerializeSelf(BinaryArchive& ar) const
+	SERIALIZATION_DEF
 	{
-		Serialize(ar, vertices);
-		Serialize(ar, indices);
+		PROPERTY(vertices);
+		PROPERTY(indices);
 	}
 };
 
@@ -80,20 +80,20 @@ struct OBJ2Binary
 
 	OBJ2NavMesh* navMesh = nullptr;
 
-	void SerializeSelf(BinaryArchive& ar) const
+	SERIALIZATION_DEF
 	{
-		Serialize(ar, magic);
-		Serialize(ar, version);
-		Serialize(ar, flags);
-		
-		SerializeObjectVector(ar, materials);
-		SerializeObjectVector(ar, submeshes);
-		SerializeObjectVector(ar, animations);
+		PROPERTY(magic);
+		PROPERTY(version);
+		PROPERTY(flags);
 
-		if (navMesh)
+		PROPERTY(materials);
+		PROPERTY(submeshes);
+		PROPERTY(animations);
+
+		/*if (navMesh != nullptr)
 		{
-			SerializeObject(ar, *navMesh);
-		}
+			PROPERTY(navMesh);
+		}*/
 	}
 };
 

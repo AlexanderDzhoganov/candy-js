@@ -201,9 +201,9 @@ void OBJ2BinaryWriter::WriteToFile(const string& filename)
 	LOG("Writing to \"%\"", filename);
 
 	BinarySizeCalculator sizeCalculator;
-	SerializeObject(sizeCalculator, *m_Binary);
+	Serialize(sizeCalculator, "obj2", *m_Binary);
 	BinaryWriter writer(sizeCalculator.GetSize());
-	SerializeObject(writer, *m_Binary);
+	Serialize(writer, "obj2", *m_Binary);
 
 	f.write((char*)writer.GetData().data(), writer.GetData().size() * sizeof(uint8_t));
 	LOG("Done! Written % kbytes.", writer.GetData().size() / 1024);
