@@ -4,6 +4,18 @@
 #define SERIALIZATION_DEF void SerializeSelf(BinaryArchive& ar) const
 #define PROPERTY(prop) Serialize(ar, #prop, prop)
 
+/*
+	OBJ2 binary structure
+
+	uint32: void(value)
+	float32: void(value)
+	string: uint32(length) | int8[](data)
+	property: BinaryType(...) | string(name) | void[](data)
+	object: BinaryType(Object) | property[](properties) | BinaryType(ObjectEnd)
+	array: BinaryType(Array) | string(name) | uint32(itemType) | uint32(length) | void[](data)
+
+*/
+
 enum class BinaryType
 {
 	Uint32 = 0,

@@ -129,7 +129,7 @@ include([], function ()
 
 			var interpolatedDualQuats = [];
 
-			var t = this._nextFrameDuration - this._timeUntilNextFrame;//(1.0 / this._fps) - this._timeUntilNextFrame;
+			var t = this._nextFrameDuration - this._timeUntilNextFrame;
 			if(t < 0.0)
 			{
 				t = 0.0;
@@ -212,51 +212,6 @@ include([], function ()
 			
 			return interpolatedDualQuats;
 		},
-
-		getCurrentFrameAnimationMatrices: function ()
-		{
-			var meshRenderer = this.gameObject.getComponent("renderer");
-			var interpolatedMatrices = []; 
-
-			if(meshRenderer == null)
-			{
-				return;
-			}
-			var mesh = meshRenderer.mesh;
-
-			var t = 1.0 - this._timeUntilNextFrame;
-
-			if(t > 1.0)
-			{
-				debugger;
-			}
-			else if(t < 0.0)
-			{
-				debugger;
-			}
-
-			var nextFrame = this._currentFrame + 1;
-
-			if (this._currentFrame + 1 > this._currentEndFrame)
-			{
-				if (this.loopAnimation)
-				{
-					nextFrame = this._currentStartFrame;
-				}
-				else
-				{
-					nextFrame = this._currentFrame;
-				}
-			}
-
-			for (var i = 0; i < mesh.animationFrames[this._currentFrame].length; i++)
-			{
-				interpolatedMatrices.push(mesh.animationFrames[this._currentFrame][i]);
-			}
-
-			return interpolatedMatrices;
-		},
-
 		
 	});
 

@@ -8,9 +8,14 @@ include([], function ()
 
 		var reader = new BinaryReader(ResourceLoader.getContent(name));
 		var obj2 = reader.get();
+		if(obj2.magic != 0xCADCFFFF)
+		{
+			console.log("failed to load \"" + name + "\", mesh has an invalid header");
+			return;
+		}
 
 		this.animated = obj2.flags & Mesh.OBJ2FLAGS.ANIMATED;
-		
+
 		if(this.animated)
 		{
 			this.animations = obj2.animations;
