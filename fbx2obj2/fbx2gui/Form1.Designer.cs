@@ -43,6 +43,12 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.BuildNavigationMeshCheckbox = new System.Windows.Forms.CheckBox();
             this.NavMeshSettingsGroupBox = new System.Windows.Forms.GroupBox();
+            this.DetailSampleErrorTextbox = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.DetailsampleDistanceTextbox = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.MaxVertsPerPolyTextbox = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.MergeRegionAreaTextbox = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
             this.MinRegionAreaTextbox = new System.Windows.Forms.TextBox();
@@ -63,12 +69,7 @@
             this.CellHeightLabel = new System.Windows.Forms.Label();
             this.CellSizeTextbox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.DetailSampleErrorTextbox = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.DetailsampleDistanceTextbox = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.MaxVertsPerPolyTextbox = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
+            this.SaveConfigurationButton = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.NavMeshSettingsGroupBox.SuspendLayout();
             this.SuspendLayout();
@@ -76,23 +77,22 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 19);
+            this.label1.Location = new System.Drawing.Point(12, 18);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(51, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Input .fbx";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // FBXPathTextbox
             // 
             this.FBXPathTextbox.Location = new System.Drawing.Point(69, 15);
             this.FBXPathTextbox.Name = "FBXPathTextbox";
-            this.FBXPathTextbox.Size = new System.Drawing.Size(201, 20);
+            this.FBXPathTextbox.Size = new System.Drawing.Size(536, 20);
             this.FBXPathTextbox.TabIndex = 1;
             // 
             // BrowseFBXButton
             // 
-            this.BrowseFBXButton.Location = new System.Drawing.Point(276, 15);
+            this.BrowseFBXButton.Location = new System.Drawing.Point(611, 14);
             this.BrowseFBXButton.Name = "BrowseFBXButton";
             this.BrowseFBXButton.Size = new System.Drawing.Size(75, 20);
             this.BrowseFBXButton.TabIndex = 2;
@@ -109,7 +109,6 @@
             this.VerboseLoggingCheckbox.TabIndex = 3;
             this.VerboseLoggingCheckbox.Text = "Verbose logging";
             this.VerboseLoggingCheckbox.UseVisualStyleBackColor = true;
-            this.VerboseLoggingCheckbox.CheckedChanged += new System.EventHandler(this.VerboseLoggingCheckbox_CheckedChanged);
             // 
             // DontWriteResultCheckbox
             // 
@@ -120,7 +119,6 @@
             this.DontWriteResultCheckbox.TabIndex = 4;
             this.DontWriteResultCheckbox.Text = "Don\'t write result";
             this.DontWriteResultCheckbox.UseVisualStyleBackColor = true;
-            this.DontWriteResultCheckbox.CheckedChanged += new System.EventHandler(this.DontWriteResultCheckbox_CheckedChanged);
             // 
             // DontExportConversionLogCheckbox
             // 
@@ -131,7 +129,6 @@
             this.DontExportConversionLogCheckbox.TabIndex = 5;
             this.DontExportConversionLogCheckbox.Text = "Don\'t export conversion log";
             this.DontExportConversionLogCheckbox.UseVisualStyleBackColor = true;
-            this.DontExportConversionLogCheckbox.CheckedChanged += new System.EventHandler(this.DontExportConversionLogCheckbox_CheckedChanged);
             // 
             // PrintFBXInfoCheckbox
             // 
@@ -142,7 +139,6 @@
             this.PrintFBXInfoCheckbox.TabIndex = 6;
             this.PrintFBXInfoCheckbox.Text = "Print FBX info (doesn\'t export)";
             this.PrintFBXInfoCheckbox.UseVisualStyleBackColor = true;
-            this.PrintFBXInfoCheckbox.CheckedChanged += new System.EventHandler(this.PrintFBXInfoCheckbox_CheckedChanged);
             // 
             // DontExportAnimationCheckbox
             // 
@@ -153,7 +149,6 @@
             this.DontExportAnimationCheckbox.TabIndex = 7;
             this.DontExportAnimationCheckbox.Text = "Don\'t export animation";
             this.DontExportAnimationCheckbox.UseVisualStyleBackColor = true;
-            this.DontExportAnimationCheckbox.CheckedChanged += new System.EventHandler(this.DontExportAnimationCheckbox_CheckedChanged);
             // 
             // IncludeIdentityFrameCheckbox
             // 
@@ -164,7 +159,6 @@
             this.IncludeIdentityFrameCheckbox.TabIndex = 8;
             this.IncludeIdentityFrameCheckbox.Text = "Include animation identity frame";
             this.IncludeIdentityFrameCheckbox.UseVisualStyleBackColor = true;
-            this.IncludeIdentityFrameCheckbox.CheckedChanged += new System.EventHandler(this.IncludeIdentityFrameCheckbox_CheckedChanged);
             // 
             // ExportButton
             // 
@@ -261,6 +255,64 @@
             this.NavMeshSettingsGroupBox.TabStop = false;
             this.NavMeshSettingsGroupBox.Text = "NavMesh settings";
             // 
+            // DetailSampleErrorTextbox
+            // 
+            this.DetailSampleErrorTextbox.Location = new System.Drawing.Point(312, 190);
+            this.DetailSampleErrorTextbox.MaxLength = 8;
+            this.DetailSampleErrorTextbox.Name = "DetailSampleErrorTextbox";
+            this.DetailSampleErrorTextbox.Size = new System.Drawing.Size(98, 20);
+            this.DetailSampleErrorTextbox.TabIndex = 32;
+            this.DetailSampleErrorTextbox.Text = "0.2";
+            this.DetailSampleErrorTextbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(213, 193);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(85, 13);
+            this.label5.TabIndex = 31;
+            this.label5.Text = "Detail sample err";
+            // 
+            // DetailsampleDistanceTextbox
+            // 
+            this.DetailsampleDistanceTextbox.Location = new System.Drawing.Point(312, 164);
+            this.DetailsampleDistanceTextbox.MaxLength = 8;
+            this.DetailsampleDistanceTextbox.Name = "DetailsampleDistanceTextbox";
+            this.DetailsampleDistanceTextbox.Size = new System.Drawing.Size(98, 20);
+            this.DetailsampleDistanceTextbox.TabIndex = 30;
+            this.DetailsampleDistanceTextbox.Text = "3.0";
+            this.DetailsampleDistanceTextbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(213, 167);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(89, 13);
+            this.label6.TabIndex = 29;
+            this.label6.Text = "Detail sample dist";
+            // 
+            // MaxVertsPerPolyTextbox
+            // 
+            this.MaxVertsPerPolyTextbox.Enabled = false;
+            this.MaxVertsPerPolyTextbox.Location = new System.Drawing.Point(312, 138);
+            this.MaxVertsPerPolyTextbox.MaxLength = 8;
+            this.MaxVertsPerPolyTextbox.Name = "MaxVertsPerPolyTextbox";
+            this.MaxVertsPerPolyTextbox.Size = new System.Drawing.Size(98, 20);
+            this.MaxVertsPerPolyTextbox.TabIndex = 28;
+            this.MaxVertsPerPolyTextbox.Text = "3";
+            this.MaxVertsPerPolyTextbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(213, 141);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(93, 13);
+            this.label9.TabIndex = 27;
+            this.label9.Text = "Max verts per poly";
+            // 
             // MergeRegionAreaTextbox
             // 
             this.MergeRegionAreaTextbox.Location = new System.Drawing.Point(311, 112);
@@ -270,7 +322,6 @@
             this.MergeRegionAreaTextbox.TabIndex = 26;
             this.MergeRegionAreaTextbox.Text = "400";
             this.MergeRegionAreaTextbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.MergeRegionAreaTextbox.TextChanged += new System.EventHandler(this.textBox10_TextChanged);
             // 
             // label13
             // 
@@ -290,7 +341,6 @@
             this.MinRegionAreaTextbox.TabIndex = 24;
             this.MinRegionAreaTextbox.Text = "64";
             this.MinRegionAreaTextbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.MinRegionAreaTextbox.TextChanged += new System.EventHandler(this.textBox7_TextChanged);
             // 
             // label10
             // 
@@ -310,7 +360,6 @@
             this.MaxSimplificationErrorTextbox.TabIndex = 22;
             this.MaxSimplificationErrorTextbox.Text = "1.3";
             this.MaxSimplificationErrorTextbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.MaxSimplificationErrorTextbox.TextChanged += new System.EventHandler(this.textBox8_TextChanged);
             // 
             // label11
             // 
@@ -330,7 +379,6 @@
             this.MaxEdgeLengthTextbox.TabIndex = 20;
             this.MaxEdgeLengthTextbox.Text = "40";
             this.MaxEdgeLengthTextbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.MaxEdgeLengthTextbox.TextChanged += new System.EventHandler(this.textBox9_TextChanged);
             // 
             // label12
             // 
@@ -454,71 +502,23 @@
             this.label2.Size = new System.Drawing.Size(45, 13);
             this.label2.TabIndex = 1;
             this.label2.Text = "Cell size";
-            this.label2.Click += new System.EventHandler(this.label2_Click);
             // 
-            // DetailSampleErrorTextbox
+            // SaveConfigurationButton
             // 
-            this.DetailSampleErrorTextbox.Location = new System.Drawing.Point(312, 190);
-            this.DetailSampleErrorTextbox.MaxLength = 8;
-            this.DetailSampleErrorTextbox.Name = "DetailSampleErrorTextbox";
-            this.DetailSampleErrorTextbox.Size = new System.Drawing.Size(98, 20);
-            this.DetailSampleErrorTextbox.TabIndex = 32;
-            this.DetailSampleErrorTextbox.Text = "0.2";
-            this.DetailSampleErrorTextbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(213, 193);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(85, 13);
-            this.label5.TabIndex = 31;
-            this.label5.Text = "Detail sample err";
-            // 
-            // DetailsampleDistanceTextbox
-            // 
-            this.DetailsampleDistanceTextbox.Location = new System.Drawing.Point(312, 164);
-            this.DetailsampleDistanceTextbox.MaxLength = 8;
-            this.DetailsampleDistanceTextbox.Name = "DetailsampleDistanceTextbox";
-            this.DetailsampleDistanceTextbox.Size = new System.Drawing.Size(98, 20);
-            this.DetailsampleDistanceTextbox.TabIndex = 30;
-            this.DetailsampleDistanceTextbox.Text = "3.0";
-            this.DetailsampleDistanceTextbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(213, 167);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(89, 13);
-            this.label6.TabIndex = 29;
-            this.label6.Text = "Detail sample dist";
-            // 
-            // MaxVertsPerPolyTextbox
-            // 
-            this.MaxVertsPerPolyTextbox.Enabled = false;
-            this.MaxVertsPerPolyTextbox.Location = new System.Drawing.Point(312, 138);
-            this.MaxVertsPerPolyTextbox.MaxLength = 8;
-            this.MaxVertsPerPolyTextbox.Name = "MaxVertsPerPolyTextbox";
-            this.MaxVertsPerPolyTextbox.Size = new System.Drawing.Size(98, 20);
-            this.MaxVertsPerPolyTextbox.TabIndex = 28;
-            this.MaxVertsPerPolyTextbox.Text = "3";
-            this.MaxVertsPerPolyTextbox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(213, 141);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(93, 13);
-            this.label9.TabIndex = 27;
-            this.label9.Text = "Max verts per poly";
+            this.SaveConfigurationButton.Location = new System.Drawing.Point(436, 318);
+            this.SaveConfigurationButton.Name = "SaveConfigurationButton";
+            this.SaveConfigurationButton.Size = new System.Drawing.Size(122, 23);
+            this.SaveConfigurationButton.TabIndex = 14;
+            this.SaveConfigurationButton.Text = "Save configuration";
+            this.SaveConfigurationButton.UseVisualStyleBackColor = true;
+            this.SaveConfigurationButton.Click += new System.EventHandler(this.SaveConfigurationButton_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(698, 672);
+            this.Controls.Add(this.SaveConfigurationButton);
             this.Controls.Add(this.NavMeshSettingsGroupBox);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.StatusLabel);
@@ -582,6 +582,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox MaxVertsPerPolyTextbox;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Button SaveConfigurationButton;
     }
 }
 

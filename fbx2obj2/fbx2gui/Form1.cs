@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
+using System.Xml.Serialization;
 
 namespace fbx2gui
 {
@@ -17,41 +18,6 @@ namespace fbx2gui
         public Form1()
         {
             InitializeComponent();
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void IncludeIdentityFrameCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void DontExportAnimationCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void DontWriteResultCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void DontExportConversionLogCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void PrintFBXInfoCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void VerboseLoggingCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-
         }
 
         public OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -71,6 +37,40 @@ namespace fbx2gui
                 }
 
                 FBXPathTextbox.Text = filename;
+
+                var savedConfigurationFilename = Path.GetFileNameWithoutExtension(filename) + ".fbx2obj2.xml";
+                var savedConfigurationPath = Path.Combine(Path.GetDirectoryName(filename), savedConfigurationFilename);
+
+                if (File.Exists(savedConfigurationPath))
+                {
+                    var serializer = new XmlSerializer(typeof(FormConfiguration));
+
+                    StreamReader reader = new StreamReader(savedConfigurationPath);
+                    var config = (FormConfiguration)serializer.Deserialize(reader);
+                    reader.Close();
+
+                    VerboseLoggingCheckbox.Checked = config.verboseLogging;
+                    PrintFBXInfoCheckbox.Checked = config.printFbxInfo;
+                    DontExportConversionLogCheckbox.Checked = config.dontExportConversionLog;
+                    DontExportAnimationCheckbox.Checked = config.dontExportAnimation;
+                    DontWriteResultCheckbox.Checked = config.dontWriteResult;
+                    IncludeIdentityFrameCheckbox.Checked = config.includeIdentityFrame;
+                    BuildNavigationMeshCheckbox.Checked = config.buildNavigationMesh;
+
+                    CellSizeTextbox.Text = config.cellSize;
+                    CellHeightTextbox.Text = config.cellHeight;
+                    WalkableSlopeAngleTextbox.Text = config.walkableSlopeAngle;
+                    WalkableHeightTextbox.Text = config.walkableHeight;
+                    WalkableClimbTextbox.Text = config.walkableClimb;
+                    WalkableRadiusTextbox.Text = config.walkableRadius;
+                    MaxEdgeLengthTextbox.Text = config.maxEdgeLength;
+                    MaxSimplificationErrorTextbox.Text = config.maxSimplificationError;
+                    MinRegionAreaTextbox.Text = config.minRegionArea;
+                    MergeRegionAreaTextbox.Text = config.mergeRegionArea;
+                    MaxVertsPerPolyTextbox.Text = config.maxVertsPerPoly;
+                    DetailsampleDistanceTextbox.Text = config.detailsampleDistance;
+                    DetailSampleErrorTextbox.Text = config.detailSampleError;
+                }
             }
         }
 
@@ -202,44 +202,45 @@ namespace fbx2gui
             }
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox2_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox10_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox7_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox8_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void textBox9_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
         private void BuildNavigationMeshCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             NavMeshSettingsGroupBox.Enabled = BuildNavigationMeshCheckbox.Checked;
+        }
+
+        private void SaveConfigurationButton_Click(object sender, EventArgs e)
+        {
+            FormConfiguration config = new FormConfiguration();
+
+            config.verboseLogging = VerboseLoggingCheckbox.Checked;
+            config.printFbxInfo = PrintFBXInfoCheckbox.Checked;
+            config.dontExportConversionLog = DontExportConversionLogCheckbox.Checked;
+            config.dontExportAnimation = DontExportAnimationCheckbox.Checked;
+            config.dontWriteResult = DontWriteResultCheckbox.Checked;
+            config.includeIdentityFrame = IncludeIdentityFrameCheckbox.Checked;
+            config.buildNavigationMesh = BuildNavigationMeshCheckbox.Checked;
+
+            config.cellSize = CellSizeTextbox.Text;
+            config.cellHeight = CellHeightTextbox.Text;
+            config.walkableSlopeAngle = WalkableSlopeAngleTextbox.Text;
+            config.walkableHeight = WalkableHeightTextbox.Text;
+            config.walkableClimb = WalkableClimbTextbox.Text;
+            config.walkableRadius = WalkableRadiusTextbox.Text;
+            config.maxEdgeLength = MaxEdgeLengthTextbox.Text;
+            config.maxSimplificationError = MaxSimplificationErrorTextbox.Text;
+            config.minRegionArea = MinRegionAreaTextbox.Text;
+            config.mergeRegionArea = MergeRegionAreaTextbox.Text;
+            config.maxVertsPerPoly = MaxVertsPerPolyTextbox.Text;
+            config.detailsampleDistance = DetailsampleDistanceTextbox.Text;
+            config.detailSampleError = DetailSampleErrorTextbox.Text;
+
+            var filename = Path.GetFileNameWithoutExtension(FBXPathTextbox.Text) + ".fbx2obj2.xml";
+            var path = Path.Combine(Path.GetDirectoryName(FBXPathTextbox.Text), filename);
+            var serializer = new XmlSerializer(typeof(FormConfiguration));
+            
+            using (var writer = new StreamWriter(path))
+            {
+                serializer.Serialize(writer, config);
+            }
         }
     }
 }
