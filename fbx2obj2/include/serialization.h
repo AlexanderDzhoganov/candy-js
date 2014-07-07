@@ -92,6 +92,7 @@ inline void Serialize(BinaryArchive& archive, const string& s)
 {
 	auto length = (uint32_t)s.size();
 	archive.WriteBytes((const uint8_t*)&length, sizeof(uint32_t));
+	archive.WriteBytes((const uint8_t*)s.c_str(), sizeof(uint8_t) * length);
 }
 
 #endif

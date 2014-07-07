@@ -107,9 +107,7 @@ include([], function ()
 				}
 				else
 				{
-					console.log(result);
-					debugger;
-					this.link.transform.position[1] = result.intersectionPoint[1];
+					//this.link.transform.position[1] = result.intersectionPoint[1];
 				}
 			}
 		},

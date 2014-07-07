@@ -88,8 +88,6 @@ struct OBJ2Binary
 		
 		SerializeObjectVector(ar, materials);
 		SerializeObjectVector(ar, submeshes);
-
-		Serialize(ar, jointsCount);
 		SerializeObjectVector(ar, animations);
 
 		if (navMesh)

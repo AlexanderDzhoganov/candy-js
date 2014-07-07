@@ -102,8 +102,6 @@ include([], function ()
 							this._submeshes[i].vertices[indexC * 8 + 2]
 						);
 
-						debugger;
-
 						var intersectionPoint = ray.intersectTriangle(vertexA, vertexB, vertexC);
 						if(intersectionPoint != null)
 						{

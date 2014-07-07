@@ -13,7 +13,72 @@ include([], function ()
 
 	Mesh.extend(
 	{
-		OBJ2FLAGS: { ANIMATED: 1 << 0, CONTAINS_NAVMESH: 1 << 1, }
+		OBJ2FLAGS: { ANIMATED: 1 << 0, CONTAINS_NAVMESH: 1 << 1, },
+
+		getBinaryReader: function (obj)
+		{
+			var data = new DataView(obj);
+			data._ptr = 0;
+			data.endianess = false;
+
+			data.readFloat32 = function ()
+			{
+				var f = this.getFloat32(this._ptr, this.endianess);
+				this._ptr += 4;
+				return f;
+			};
+
+			data.readFloat32Array = function ()
+			{
+				var result = [];
+
+				var size = this.readUint32();
+				for (var i = 0; i < size; i++)
+				{
+					result.push(this.readFloat32());
+				}
+
+				return result;
+			};
+
+			data.readUint32 = function ()
+			{
+				var u = this.getUint32(this._ptr, this.endianess);
+				this._ptr += 4;
+				return u;
+			};
+
+			data.readUint32Array = function ()
+			{
+				var result = [];
+
+				var size = this.readUint32();
+				for (var i = 0; i < size; i++)
+				{
+					result.push(this.readUint32());
+				}
+
+				return result;
+			};
+
+			data.readString = function ()
+			{
+				var len = this.getUint32(this._ptr, this.endianess);
+				this._ptr += 4;
+
+				var s = "";
+				for (var i = 0; i < len; i++)
+				{
+					s += String.fromCharCode(this.getInt8(this._ptr + i, this.endianess));
+				}
+
+				this._ptr += len;
+				return s;
+			};
+
+			return data;
+		},
+
 	})
 
 	Mesh.prototype.extend(
@@ -43,38 +108,7 @@ include([], function ()
 
 		_extractDataFromOBJ2Binary: function (obj)
 		{
-			var data = new DataView(obj);
-			data._ptr = 0;
-			data.endianess = false;
-
-			data.readFloat32 = function ()
-			{
-				var f = this.getFloat32(this._ptr, this.endianess);
-				this._ptr += 4;
-				return f;
-			};
-
-			data.readUint32 = function ()
-			{
-				var u = this.getUint32(this._ptr, this.endianess);
-				this._ptr += 4;
-				return u;
-			};
-
-			data.readString = function ()
-			{
-				var len = this.getUint32(this._ptr, this.endianess);
-				this._ptr += 4;
-
-				var s = "";
-				for (var i = 0; i < len; i++)
-				{
-					s += String.fromCharCode(this.getInt8(this._ptr + i, this.endianess));
-				}
-
-				this._ptr += 256;
-				return s;
-			};
+			var data = Mesh.getBinaryReader(obj);
 
 			var magic = data.readUint32();
 
@@ -145,40 +179,21 @@ include([], function ()
 
 				var submesh = newSubmesh(submeshMaterial);
 
-				var centerX = data.readFloat32();
-				var centerY = data.readFloat32();
-				var centerZ = data.readFloat32();
-				
-				var extentsX = data.readFloat32();
-				var extentsY = data.readFloat32();
-				var extentsZ = data.readFloat32();
+				var aabbArray = data.readFloat32Array();
 
 				var aabb = new AABB();
-				aabb.center = vec3.fromValues(centerX, centerY, centerZ);
-				aabb.extents = vec3.fromValues(extentsX, extentsY, extentsZ);
+				aabb.center = vec3.fromValues(aabbArray[0], aabbArray[1], aabbArray[2]);
+				aabb.extents = vec3.fromValues(aabbArray[3], aabbArray[4], aabbArray[5]);
 				submesh.aabb = aabb;
 
-				var vertexCount = data.readUint32();
 				var vertexComponentCount = data.readUint32();
 
-				submesh.vertices = new Float32Array(vertexCount * vertexComponentCount);
-				for (var q = 0; q < vertexCount * vertexComponentCount; q++)
-				{
-					submesh.vertices[q] = data.readFloat32();
-				}
-
-				var indicesCount = data.readUint32();
-				submesh.indices = new Uint16Array(indicesCount);
-
-				for (var q = 0; q < indicesCount; q++)
-				{
-					submesh.indices[q] = data.readUint32();
-				}
+				submesh.vertices = new Float32Array(data.readFloat32Array());
+				submesh.indices = new Uint16Array(data.readUint32Array());
 
 				submeshes.push(submesh);
 			}
 
-			var jointsCount = data.readUint32();
 			var animationsCount = data.readUint32();
 
 			var animations = [];
@@ -187,14 +202,10 @@ include([], function ()
 			{
 				var animationName = data.readString();
 
-				var animJointsCount = data.readUint32();
-
-				if (jointsCount != animJointsCount)
-				{
-					console.log("Warning: jointsCount != animJointsCount !");
-				}
-
+				var jointsCount = data.readUint32();
 				var framesCount = data.readUint32();
+
+				var animationFramesSize = data.readUint32();
 				var animationFrames = [];
 
 				for (var frame = 0; frame < framesCount; frame++)
@@ -227,22 +238,8 @@ include([], function ()
 
 			if(hasNavMesh)
 			{
-				var navMeshVertexCount = data.readUint32();
-				var navMeshVertices = new Float32Array(navMeshVertexCount * 3);
-
-				for (var u = 0; u < navMeshVertexCount * 3; u++)
-				{
-					navMeshVertices[u] = data.readFloat32();
-				}
-
-				var navMeshIndexCount = data.readUint32();
-				var navMeshIndices = new Uint16Array(navMeshIndexCount);
-
-				for (var u = 0; u < navMeshIndexCount; u++)
-				{
-					navMeshIndices[u] = data.readUint32();
-				}
-
+				var navMeshVertices = new Float32Array(data.readFloat32Array());
+				var navMeshIndices = new Uint16Array(data.readUint32Array());
 				this.navMesh = { vertices: navMeshVertices, indices: navMeshIndices };
 			}
 			else
