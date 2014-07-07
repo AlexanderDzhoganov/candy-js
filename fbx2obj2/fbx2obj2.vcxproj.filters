@@ -40,7 +40,8 @@
       <Filter>recast</Filter>
     </ClCompile>
     <ClCompile Include="src\navmesh.cpp" />
-    <ClCompile Include="obj2.cpp" />
+    <ClCompile Include="src\obj2.cpp" />
+    <ClCompile Include="src\serialization.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\config.h" />
@@ -64,6 +65,7 @@
       <Filter>recast</Filter>
     </ClInclude>
     <ClInclude Include="include\navmesh.h" />
+    <ClInclude Include="include\serialization.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="recast">

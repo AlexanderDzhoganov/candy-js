@@ -34,6 +34,7 @@ using namespace std;
 
 #include "..\include\navmesh.h"
 
+#include "..\include\serialization.h"
 #include "..\include\obj2.h"
 
 /*
