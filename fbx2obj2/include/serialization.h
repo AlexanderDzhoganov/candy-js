@@ -9,11 +9,9 @@ enum class BinaryType
 	Uint32 = 0,
 	Float32 = 1,
 	String = 2,
-	Uint32Array = 3,
-	Float32Array = 4,
-	Object = 5,
-	ObjectEnd = 6,
-	ObjectArray = 7,
+	Object = 3,
+	ObjectEnd = 4,
+	Array = 5,
 };
 
 class BinaryArchive
@@ -106,9 +104,13 @@ inline void Serialize(BinaryArchive& archive, const string& name, const string& 
 // Uint32Array
 inline void Serialize(BinaryArchive& archive, const string& name, const vector<uint32_t>& value)
 {
-	auto type = BinaryType::Uint32Array;
+	auto type = BinaryType::Array;
 	archive.WriteBytes((const uint8_t*)&type, sizeof(uint32_t));
+
 	SerializePropertyName(archive, name);
+
+	auto itemType = BinaryType::Uint32;
+	archive.WriteBytes((const uint8_t*)&itemType, sizeof(uint32_t));
 
 	auto length = (uint32_t)value.size();
 	archive.WriteBytes((const uint8_t*)&length, sizeof(uint32_t));
@@ -122,9 +124,13 @@ inline void Serialize(BinaryArchive& archive, const string& name, const vector<u
 // Float32Array
 inline void Serialize(BinaryArchive& archive, const string& name, const vector<float_t>& value)
 {
-	auto type = BinaryType::Float32Array;
+	auto type = BinaryType::Array;
 	archive.WriteBytes((const uint8_t*)&type, sizeof(uint32_t));
+
 	SerializePropertyName(archive, name);
+
+	auto itemType = BinaryType::Float32;
+	archive.WriteBytes((const uint8_t*)&itemType, sizeof(uint32_t));
 
 	auto length = (uint32_t)value.size();
 	archive.WriteBytes((const uint8_t*)&length, sizeof(uint32_t));
@@ -153,12 +159,16 @@ inline void Serialize(BinaryArchive& archive, const string& name, const T& objec
 template <typename T>
 inline void Serialize(BinaryArchive& archive, const string& name, const vector<T>& objects)
 {
-	auto type = BinaryType::ObjectArray;
+	auto type = BinaryType::Array;
 	archive.WriteBytes((const uint8_t*)&type, sizeof(uint32_t));
+
 	SerializePropertyName(archive, name);
 
-	auto size = objects.size();
-	archive.WriteBytes((const uint8_t*)&size, sizeof(uint32_t));
+	auto itemType = BinaryType::Object;
+	archive.WriteBytes((const uint8_t*)&itemType, sizeof(uint32_t));
+
+	auto length = (uint32_t)objects.size();
+	archive.WriteBytes((const uint8_t*)&length, sizeof(uint32_t));
 
 	for (auto& object : objects)
 	{

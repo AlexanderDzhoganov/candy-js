@@ -12,11 +12,9 @@ BinaryReader.extend(
 		UINT32: 0,
 		FLOAT32: 1,
 		STRING: 2,
-		UINT32ARRAY: 3,
-		FLOAT32ARRAY: 4,
-		OBJECT: 5,
-		OBJECTEND: 6,
-		OBJECTARRAY: 7,
+		OBJECT: 3,
+		OBJECTEND: 4,
+		ARRAY: 5,
 	},
 
 });
@@ -38,6 +36,7 @@ BinaryReader.prototype.extend(
 	_readProperty: function ()
 	{
 		var type = this._readUint32();
+
 		if(type == BinaryReader.BINARY_TYPE.OBJECTEND)
 		{
 			return { type: BinaryReader.BINARY_TYPE.OBJECTEND, name: null, value: null };
@@ -57,17 +56,11 @@ BinaryReader.prototype.extend(
 		case BinaryReader.BINARY_TYPE.STRING:
 			value = this._readString();
 			break;
-		case BinaryReader.BINARY_TYPE.UINT32ARRAY:
-			value = this._readUint32Array();
-			break;
-		case BinaryReader.BINARY_TYPE.FLOAT32ARRAY:
-			value = this._readFloat32Array();
+		case BinaryReader.BINARY_TYPE.ARRAY:
+			value = this._readArray();
 			break;
 		case BinaryReader.BINARY_TYPE.OBJECT:
 			value = this._readObject();
-			break;
-		case BinaryReader.BINARY_TYPE.OBJECTARRAY:
-			value = this._readObjectArray();
 			break;
 		}
 
@@ -108,28 +101,42 @@ BinaryReader.prototype.extend(
 		return s;
 	},
 
-	_readUint32Array: function ()
+	_readValue: function (type)
 	{
-		var size = this._readUint32();
-		var value = [];
-		for (var i = 0; i < size; i++)
+		var value = null;
+
+		switch(type)
 		{
-			value.push(this._readUint32());
+		case BinaryReader.BINARY_TYPE.UINT32:
+			value = this._readUint32();
+			break;
+		case BinaryReader.BINARY_TYPE.FLOAT32:
+			value = this._readFloat32();
+			break;
+		case BinaryReader.BINARY_TYPE.STRING:
+			value = this._readString();
+			break;
+		case BinaryReader.BINARY_TYPE.OBJECT:
+			value = this._readObject();
+			break;
 		}
 
 		return value;
 	},
 
-	_readFloat32Array: function ()
+	_readArray: function (type)
 	{
-		var size = this._readUint32();
-		var value = [];
-		for (var i = 0; i < size; i++)
+		var itemType = this._readUint32();
+		var length = this._readUint32();
+
+		var arr = [];
+
+		for (var i = 0; i < length; i++)
 		{
-			value.push(this._readFloat32());
+			arr.push(this._readValue(itemType));
 		}
 
-		return value;
+		return arr;
 	},
 
 	_readObject: function ()
@@ -145,19 +152,6 @@ BinaryReader.prototype.extend(
 		}
 
 		return object;
-	},
-
-	_readObjectArray: function ()
-	{
-		var objects = [];
-		var size = this._readUint32();
-
-		for (var i = 0; i < size; i++)
-		{
-			objects.push(this._readObject());	
-		}
-
-		return objects;
 	},
 
 });

@@ -141,7 +141,7 @@ include([], function ()
 				GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, subMesh.indices, GL.STATIC_DRAW);
 			}
 		},
-		
+
 	});
 
 });
