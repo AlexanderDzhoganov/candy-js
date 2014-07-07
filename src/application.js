@@ -12,6 +12,7 @@ include(
 	"gui/headers",
 	"inputcontroller",
 	"octree",
+	"quadtree",
 ]);
 
 var Application = function()
@@ -78,6 +79,7 @@ Application.prototype.extend(
 			lerpz.renderer.materials.push(material);
 		}
 
+		lerpz.transform.position = vec3.fromValues(30, 0, 0);
 		lerpz.transform.setOrientationEuler(0.0, 90.0, 0.0);
 		this.sceneGraph.insert(lerpz);
 
@@ -88,6 +90,9 @@ Application.prototype.extend(
 		levelObject.addComponent(new MeshRenderer());
 		levelObject.getComponent("renderer").setMesh(levelMesh);
 		levelObject.addComponent(new OctreeFrustumCullingProvider());
+		levelObject.addComponent(new NavMeshCollider());
+		levelObject.navMeshCollider.recalculate();
+
 		levelObject.renderer.drawNavMesh = true;
 
 		for(var q = 0; q < levelMesh.submeshes.length; q++)
@@ -141,7 +146,7 @@ Application.prototype.extend(
 		}.bind(this));
 
 		var time = 0.0;
-		this.player = this._createPlayer(vec3.fromValues(0.0, 4.0, 8.0), lerpz);
+		this.player = this._createPlayer(vec3.fromValues(0.0, 4.0, 8.0), lerpz, levelObject);
 
 		var frameStatsWindow = this._createWindow("Frame stats", vec2.fromValues(0, 0), vec2.fromValues(420.0, 100.0), new GuiLayout(), new GuiSkin());
 		frameStatsWindow.autoSize = true;
@@ -236,11 +241,12 @@ Application.prototype.extend(
 		return newWindow;
 	},
 
-	_createPlayer: function(position, link)
+	_createPlayer: function(position, link, level)
 	{
 		var newPlayer = new GameObject("Third Person Controller");
-		newPlayer.addComponent(new FirstPersonController());
+		newPlayer.addComponent(new ThirdPersonController());
 		newPlayer.getComponent("script").link = link;
+		newPlayer.getComponent("script").navMeshLink = level;
 		newPlayer.addComponent(new Camera(Renderer.screenWidth, Renderer.screenHeight, 120.0, 1, 1000.0));
 		newPlayer.getComponent("camera").setActive();
 		newPlayer.getComponent("transform").position = position;

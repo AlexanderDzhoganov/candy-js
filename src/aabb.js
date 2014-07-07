@@ -114,16 +114,16 @@ AABB.prototype.extend(
 
 		var topLeft = vec3.clone(this.extents);
 		topLeft[0] *= -1.0;
-		vec3.scale(topLeft, topLeft, 0.5)
+		vec3.scale(topLeft, topLeft, 0.5);
 
 		var topLeft2 = vec3.clone(this.extents);
 		topLeft2[0] *= -1.0;
 		topLeft2[2] *= -1.0;
-		vec3.scale(topLeft2, topLeft2, 0.5)
+		vec3.scale(topLeft2, topLeft2, 0.5);
 
 		var topLeft3 = vec3.clone(this.extents);
 		topLeft3[2] *= -1.0;
-		vec3.scale(topLeft3, topLeft3, 0.5)
+		vec3.scale(topLeft3, topLeft3, 0.5);
 
 		var childrenAABB = [];
 
@@ -158,6 +158,46 @@ AABB.prototype.extend(
 
 		vec3.add(childrenAABB[7].center, this.center, topLeft3);
 		childrenAABB[7].extents = childExtents;
+
+		return childrenAABB;
+	},
+
+	quadtreeSplit: function ()
+	{
+		var vmin = vec3.create();
+		var vmax = vec3.create();
+
+		var topLeft = vec3.clone(this.extents);
+		topLeft[0] *= -1.0;
+		vec3.scale(topLeft, topLeft, 0.5);
+		topLeft[1] = 0;
+
+		var childrenAABB = [];
+
+		for (var i = 0; i < 4; i++)
+		{
+			childrenAABB.push(new AABB());
+		}
+
+		var childExtents = vec3.create();
+		vec3.scale(childExtents, this.extents, 0.5);
+		childExtents[1] = 0;
+
+		vec3.subtract(childrenAABB[0].center, this.center, childExtents);
+		childrenAABB[0].extents = vec3.clone(childExtents);
+		childrenAABB[0].extents[1] = this.extents[1];
+
+		vec3.add(childrenAABB[1].center, this.center, childExtents);
+		childrenAABB[1].extents = vec3.clone(childExtents);
+		childrenAABB[1].extents[1] = this.extents[1];
+
+		vec3.subtract(childrenAABB[2].center, this.center, topLeft);
+		childrenAABB[2].extents = vec3.clone(childExtents);
+		childrenAABB[2].extents[1] = this.extents[1];
+
+		vec3.add(childrenAABB[3].center, this.center, topLeft);
+		childrenAABB[3].extents = vec3.clone(childExtents);
+		childrenAABB[3].extents[1] = this.extents[1];
 
 		return childrenAABB;
 	},

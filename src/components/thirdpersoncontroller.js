@@ -7,6 +7,7 @@ include([], function ()
 		this.type = "script";
 
 		this.link = null;
+		this.navMeshLink = null;
 
 		Gui.addMouseDeltaCallback(function (dx, dy)
 		{
@@ -58,26 +59,58 @@ include([], function ()
 			
 		onUpdate: function (deltaTime)
 		{
-			if(this.link != null)
+			var savedPosition = vec3.clone(this.link.transform.position);
+			var savedOrientation = quat.clone(this.link.transform.orientation);
+
+			if(this.link == null)
 			{
-				var movement = vec3.create();
-				vec3.transformQuat(movement, this._movement, this.link.transform.orientation);
-				vec3.scale(movement, movement, deltaTime  * 2.0);
-				vec3.add(this.link.transform.position, this.link.transform.position, movement);
+				return;
+			}
 
-				var offset = vec3.fromValues(0, 4, -6);
-				vec3.transformQuat(offset, offset, this.link.transform.orientation);
+			var movement = vec3.create();
+			vec3.transformQuat(movement, this._movement, this.link.transform.orientation);
+			vec3.scale(movement, movement, deltaTime  * 2.0);
+			vec3.add(this.link.transform.position, this.link.transform.position, movement);
 
-				var position = vec3.create();
-				vec3.add(position, this.link.transform.position, offset);
+			var offset = vec3.fromValues(0, 4, -6);
+			vec3.transformQuat(offset, offset, this.link.transform.orientation);
 
-				vec3.lerp(this.gameObject.transform.position, this.gameObject.transform.position, position, deltaTime);
+			var position = vec3.create();
+			vec3.add(position, this.link.transform.position, offset);
 
-				var lookAtPoint = vec3.clone(this.link.transform.position);
-				lookAtPoint[1] += this.link.meshBoundsProvider.meshAABB.extents[1] * 2.0;
-				var orientation = Transform.lookAt(this.gameObject.transform.position, lookAtPoint, vec3.fromValues(0.0, 1.0, 0.0));
+			vec3.lerp(this.gameObject.transform.position, this.gameObject.transform.position, position, deltaTime);
 
-				quat.slerp(this.gameObject.transform.orientation, this.gameObject.transform.orientation, orientation, deltaTime);
+			var lookAtPoint = vec3.clone(this.link.transform.position);
+			lookAtPoint[1] += this.link.meshBoundsProvider.meshAABB.extents[1] * 2.0;
+			var orientation = Transform.lookAt(this.gameObject.transform.position, lookAtPoint, vec3.fromValues(0.0, 1.0, 0.0));
+
+			quat.slerp(this.gameObject.transform.orientation, this.gameObject.transform.orientation, orientation, deltaTime);
+
+			if(this.navMeshLink != null)
+			{
+				var navMesh = this.navMeshLink.getComponent("navMeshCollider");
+				if(!navMesh)
+				{
+					return;
+				}
+
+				var ray = new Ray(this.gameObject.transform.position, vec3.fromValues(0.0, -1.0, 0.0));
+				var rayEnd = vec3.create();
+				vec3.add(rayEnd, ray.origin, ray.direction);
+				Renderer.debug.drawLine(ray.origin, rayEnd);
+
+				var result = navMesh.raycast(ray);
+				if (result == null)
+				{
+					this.link.transform.position = savedPosition;
+					this.link.transform.orientation = savedOrientation;
+				}
+				else
+				{
+					console.log(result);
+					debugger;
+					this.link.transform.position[1] = result.intersectionPoint[1];
+				}
 			}
 		},
 

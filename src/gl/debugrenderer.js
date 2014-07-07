@@ -1,5 +1,7 @@
 DebugRenderer = function ()
 {
+	this.disableClear = true;
+
 	this._lineVertices = [];
 	this._lineIndices = [];
 
@@ -135,11 +137,16 @@ DebugRenderer.prototype.extend(
 
 		Renderer.drawIndexedLines(this._lineIndices.length, Renderer.VERTEX_FORMAT.PPP);
 
-		this._lineVertices = [];
-		this._lineIndices = [];
-
+		if(!this.disableClear)
+		{
+			this._lineVertices = [];
+			this._lineIndices = [];
+		}
+		
 		GL.bindBuffer(GL.ARRAY_BUFFER, null);
 		GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
+
+		GL.enable(GL.DEPTH_TEST);
 	},
 
 });

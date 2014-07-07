@@ -11,5 +11,6 @@ include(
 	"components/animationcontroller",
 	"components/gridrenderer",
 	"components/octreefrustumcullingprovider",
+	"components/navmeshcollider",
 	
 ], function () {});
